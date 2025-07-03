@@ -314,28 +314,23 @@ class AudioSystem {
             // Only start oscillators if they were just created
             this.windOsc.forEach(osc => osc.start());
         }
-        
-        // Add subtle modulation to wind
-        this.windModulation = setInterval(() => {
-            if (this.windFilter && this.audioContext) {
-                const freq = 800 + Math.sin(Date.now() * 0.001) * 300;
-                this.windFilter.frequency.exponentialRampToValueAtTime(freq, this.audioContext.currentTime + 0.5);
-            }
-        }, 500);
     }
 
     stopWind() {
         if (this.windOsc) {
             this.windOsc.forEach(osc => {
-                try { osc.stop(); } catch(e) {}
+                try {
+                    osc.stop();
+                    osc.disconnect();
+                } catch(e) {
+                    console.warn('Error stopping wind oscillator:', e);
+                }
             });
+            if (this.windGain) {
+                this.windGain.disconnect();
+            }
             this.windOsc = null;
             this.windGain = null;
-        }
-        
-        if (this.windModulation) {
-            clearInterval(this.windModulation);
-            this.windModulation = null;
         }
     }
 
@@ -442,70 +437,62 @@ const DEV_MODE = false;
 // Set dev mode attribute on body
 document.body.setAttribute('data-dev-mode', DEV_MODE);
 
-// Create status text element if it doesn't exist
-const statusText = document.createElement('div');
-statusText.id = 'audio-status';
-statusText.style.position = 'fixed';
-statusText.style.bottom = '3rem';
-statusText.style.left = '50%';
-statusText.style.transform = 'translateX(-50%)';
-statusText.style.cursor = 'pointer';
-statusText.style.zIndex = '1000';
-statusText.style.fontSize = '0.6rem';
-statusText.style.fontFamily = "'JetBrains Mono', monospace";
-statusText.style.color = 'var(--galaxy-outside-color)';
-statusText.style.padding = '0.75rem 1.5rem';
-statusText.style.display = 'flex';
-statusText.style.alignItems = 'center';
-statusText.innerHTML = `<span id="audio-control" style="font-size: 1.5em; line-height: 1; transform: translateY(-1px);">▶️</span>`;
-document.body.appendChild(statusText);
-
-// Get audio control button
-const audioControl = document.getElementById('audio-control');
+// Create audio control element
+const audioControl = document.createElement('div');
+audioControl.id = 'audio-control';
+audioControl.innerHTML = `
+    <div class="play-icon"></div>
+    <div class="pause-icon"></div>
+`;
+document.body.appendChild(audioControl);
 
 // Function to update audio control icon
 const updateAudioIcon = (isPlaying) => {
-    audioControl.textContent = isPlaying ? '⏸️' : '▶️';
+    audioControl.classList.toggle('playing', isPlaying);
 };
 
-// Start audio on user interaction
+// Handle audio toggle
 const toggleAudio = async (event) => {
-    event.preventDefault();
+    if (event) event.preventDefault();
     
-    try {
-        if (!audioSystem.isInitialized) {
-            await audioSystem.init();
-            await audioSystem.start();
-            updateAudioIcon(true);
-        } else {
-            if (audioSystem.isPlaying) {
-                audioSystem.stop();
-                updateAudioIcon(false);
-            } else {
-                await audioSystem.start();
-                updateAudioIcon(true);
-            }
-        }
-    } catch (error) {
-        console.error('Failed to toggle audio:', error);
-        audioControl.textContent = '⚠️';
+    if (audioSystem.isPlaying) {
+        audioSystem.stop();
+        updateAudioIcon(false);
+    } else {
+        await audioSystem.start();
+        updateAudioIcon(true);
     }
 };
 
 // Add click handler for audio control
 audioControl.addEventListener('click', toggleAudio);
 
-// Auto-start audio after a brief delay
-setTimeout(async () => {
+// Initialize and start audio
+(async () => {
     try {
         await audioSystem.init();
         await audioSystem.start();
         updateAudioIcon(true);
     } catch (error) {
-        console.error('Auto-start failed:', error);
-        // Will require user interaction to start
+        // If auto-start fails (which is expected), wait for user interaction
+        const startAudio = async () => {
+            try {
+                await audioSystem.start();
+                updateAudioIcon(true);
+                // Remove all listeners after successful start
+                window.removeEventListener('click', startAudio);
+                window.removeEventListener('touchstart', startAudio);
+                window.removeEventListener('keydown', startAudio);
+            } catch (error) {
+                console.error('Failed to start audio:', error);
+            }
+        };
+
+        window.addEventListener('click', startAudio);
+        window.addEventListener('touchstart', startAudio);
+        window.addEventListener('keydown', startAudio);
     }
-}, 1000);
+})();
 
 /**
  * Base
