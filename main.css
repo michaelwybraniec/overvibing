@@ -146,7 +146,7 @@ body[data-dev-mode="false"] .dg {
     color: var(--galaxy-outside-color);
     text-decoration: none;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.6rem;
+    font-size: 0.7rem;
     /* padding: 0.75rem 1.5rem; */
     /* background: rgba(0, 0, 0, 0.15); */
     /* border-radius: 100px; */
@@ -187,7 +187,7 @@ body[data-dev-mode="false"] .dg {
 }
 
 .preset-arrow:hover {
-    /* background: color-mix(in srgb, var(--galaxy-outside-color) 8%, transparent); */
+    /* background:  var(--galaxy-outside-color)  */
 }
 
 .preset-arrow:active {
@@ -197,7 +197,7 @@ body[data-dev-mode="false"] .dg {
 .preset-name {
     color: var(--galaxy-outside-color);
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.6rem;
+    font-size: 0.7rem;
     min-width: 180px;
     text-align: center;
     border-radius: 100px;
@@ -246,6 +246,133 @@ body[data-dev-mode="false"] .dg {
 
 .calendar-link:hover {
     background: color-mix(in srgb, var(--galaxy-outside-color) 15%, transparent);
+}
+
+.audio-control {
+    width: 40px;
+    height: 40px;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background 0.3s ease;
+}
+
+.audio-control:hover {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.play-icon {
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 8px 0 8px 12px;
+    border-color: transparent transparent transparent #ffffff;
+    margin-left: 3px; /* Center the triangle */
+}
+
+.pause-icon {
+    display: none;
+    width: 16px;
+    height: 16px;
+    position: relative;
+}
+
+.pause-icon::before,
+.pause-icon::after {
+    content: '';
+    position: absolute;
+    width: 4px;
+    height: 16px;
+    background-color: #ffffff;
+    top: 0;
+}
+
+.pause-icon::before {
+    left: 2px;
+}
+
+.pause-icon::after {
+    right: 2px;
+}
+
+.audio-control.playing .play-icon {
+    display: none;
+}
+
+.audio-control.playing .pause-icon {
+    display: block;
+}
+
+/* Audio Control Styles */
+#audio-control {
+    width: 32px;
+    height: 32px;
+    position: fixed;
+    bottom: 3rem;
+    left: 50%;
+    transform: translateX(-50%);
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+    z-index: 9999;
+    margin-bottom: 0.5rem;
+}
+
+#audio-control:hover {
+    background: rgba(0, 0, 0, 0.7);
+    transform: translateX(-50%) scale(1.1);
+}
+
+#audio-control .play-icon {
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 7px 0 7px 11px;
+    border-color: transparent transparent transparent var(--galaxy-outside-color);
+    margin-left: 2px;
+}
+
+#audio-control .pause-icon {
+    display: none;
+    width: 12px;
+    height: 12px;
+    position: relative;
+}
+
+#audio-control .pause-icon::before,
+#audio-control .pause-icon::after {
+    content: '';
+    position: absolute;
+    width: 3px;
+    height: 12px;
+    background-color: var(--galaxy-outside-color);
+    top: 0;
+}
+
+#audio-control .pause-icon::before {
+    left: 2px;
+}
+
+#audio-control .pause-icon::after {
+    right: 2px;
+}
+
+#audio-control.playing .play-icon {
+    display: none;
+}
+
+#audio-control.playing .pause-icon {
+    display: block;
 } 
 
 /*# sourceMappingURL=main.css.map*/
