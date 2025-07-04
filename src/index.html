@@ -3,8 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Galaxy Generator</title>
+    
+    <!-- Primary Meta Tags -->
+    <title>Overvibing - Meeting Page</title>
+    <meta name="title" content="Overvibing - Meeting Page">
+    <meta name="description" content="Join weekly discussions in an immersive 3D galaxy environment. Experience VIBE CODING - where Human and AI collaborate in a unique visual and audio experience.">
+    <meta name="keywords" content="overvibing, vibe coding, 3D galaxy, webgl, threejs, creative coding, AI collaboration, one-front">
+    <meta name="author" content="Michael Wybraniec (www.one-front.com)">
+    <meta name="theme-color" content="#000000">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.overvibing.com">
+    <meta property="og:title" content="Overvibing - Meeting Page">
+    <meta property="og:description" content="Join weekly discussions in an immersive 3D galaxy environment. Experience VIBE CODING - where Human and AI collaborate in a unique visual and audio experience.">
+    <meta property="og:image" content="https://www.overvibing.com/preview.jpg">
+    <meta property="og:site_name" content="Overvibing by Michael Wybraniec">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://www.overvibing.com">
+    <meta property="twitter:title" content="Overvibing - Meeting Page">
+    <meta property="twitter:description" content="Join weekly discussions in an immersive 3D galaxy environment. Experience VIBE CODING - where Human and AI collaborate in a unique visual and audio experience.">
+    <meta property="twitter:image" content="https://www.overvibing.com/preview.jpg">
+    <meta property="twitter:creator" content="@michaelwybraniec">
+
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌀</text></svg>">
+    <link rel="canonical" href="https://www.overvibing.com">
+    
+    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- PWA Support -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Overvibing">
+    
+    <!-- Performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
     <style>
         * {
             margin: 0;
@@ -25,33 +65,52 @@
     </style>
 </head>
 <body>
-    <canvas class="webgl"></canvas>
+    <canvas class="webgl" aria-label="Interactive 3D galaxy visualization"></canvas>
     
-    <div class="galaxy-title">
-        <div class="countdown-timer code-pill"></div>
-        <h1 class="galaxy-title__main">OVERVIBING</h1>
-        <p class="galaxy-title__subtitle">When Human and AI get lost together in the <code class="code-pill"><b>VIBE CODING</b></code> flow.</p>
-        <p class="galaxy-title__meeting">
-            <!-- Join weekly discussions Tuesday at 17:00 UTC+2 -->
-            Weekly discussions — every Tuesday at 17:00 (UTC+2)
-        </p>
-        <a href="https://meet.google.com/zzz-zzzz-zzz" target="_blank" class="modern-button">Join Now!</a>
-    </div>
+    <main>
+        <div class="galaxy-title">
+            <div class="countdown-timer code-pill" aria-live="polite"></div>
+            <h1 class="galaxy-title__main">OVERVIBING</h1>
+            <p class="galaxy-title__subtitle">When Human and AI get lost together in the <code class="code-pill"><b>VIBE CODING</b></code> flow.</p>
+            <p class="galaxy-title__meeting">
+                Weekly discussions — every Tuesday at 17:00 (UTC+2)
+            </p>
+            <a href="https://meet.google.com/zzz-zzzz-zzz" 
+               target="_blank" 
+               rel="noopener noreferrer" 
+               class="modern-button"
+               aria-label="Join the meeting">Join Now!</a>
+        </div>
 
-    <div class="preset-switcher">
-        <button class="preset-arrow" id="prevPreset" aria-label="Previous preset">
-            <svg viewBox="0 0 24 24" width="24" height="24">
-                <path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
-            </svg>
-        </button>
-        <div class="preset-name" id="currentPreset">Default Overvibing</div>
-        <button class="preset-arrow" id="nextPreset" aria-label="Next preset">
-            <svg viewBox="0 0 24 24" width="24" height="24">
-                <path fill="currentColor" d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
-            </svg>
-        </button>
-    </div>
+        <div class="preset-switcher" role="region" aria-label="Galaxy preset controls">
+            <button class="preset-arrow" 
+                    id="prevPreset" 
+                    aria-label="Previous preset">
+                <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+                    <path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+                </svg>
+            </button>
+            <div class="preset-name" id="currentPreset" aria-live="polite">Default Overvibing</div>
+            <button class="preset-arrow" 
+                    id="nextPreset" 
+                    aria-label="Next preset">
+                <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+                    <path fill="currentColor" d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                </svg>
+            </button>
+        </div>
+    </main>
 
-    <a href="https://one-front.com" target="_blank" class="corner-link">by ONE-FRONT</a>
+    <footer>
+        <a href="https://www.one-front.com" 
+           target="_blank" 
+           rel="noopener noreferrer" 
+           class="corner-link" 
+           aria-label="Visit Michael Wybraniec's website at ONE-FRONT">by Michael Wybraniec</a>
+    </footer>
+
+    <noscript>
+        <p>Please enable JavaScript to experience the interactive 3D galaxy visualization.</p>
+    </noscript>
 </body>
 </html> 

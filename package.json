@@ -1,7 +1,7 @@
 {
-  "name": "overvibing-cyberpunk-tunnel",
+  "name": "overvibing",
   "version": "1.0.0",
-  "description": "Epic cyberpunk 3D tunnel intro leading to OVERVIBING using Three.js - Based on Galaxy-M2999",
+  "description": "Join weekly discussions in an immersive 3D galaxy environment - Experience VIBE CODING where Human and AI collaborate",
   "main": "index.html",
   "scripts": {
     "build": "webpack --mode=production --env production",
@@ -11,18 +11,17 @@
   },
   "keywords": [
     "threejs",
-    "cyberpunk",
     "3d",
-    "tunnel",
     "particles",
     "webgl",
     "overvibing",
-    "intro",
     "galaxy",
     "glsl",
-    "brunosimon"
+    "one-front",
+    "vibe-coding",
+    "ai-collaboration"
   ],
-  "author": "OVERVIBING Team",
+  "author": "Michael Wybraniec (www.one-front.com)",
   "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.15.5",
@@ -53,5 +52,5 @@
     "type": "git",
     "url": "https://github.com/michaelwybraniec/overvibing.git"
   },
-  "homepage": "https://michaelwybraniec.github.io/overvibing/"
+  "homepage": "https://www.overvibing.com"
 }
