@@ -162,7 +162,7 @@ body[data-dev-mode="false"] .dg {
 .preset-switcher {
     position: fixed;
     bottom: 3rem;
-    left: 4rem;
+    left: 3rem;
     display: flex;
     align-items: center;
     /* gap: 1rem; */
