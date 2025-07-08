@@ -1220,7 +1220,7 @@ function updateTimer() {
     }
 }
 
-// Update timer every 10ms for smooth milliseconds display
+//  Update timer every 10ms for smooth milliseconds display
 setInterval(updateTimer, 10);
 
 // Add keyboard controls for audio manipulation
