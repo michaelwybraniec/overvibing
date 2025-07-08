@@ -1136,18 +1136,19 @@ function updateTimer() {
     nextMeeting.setUTCDate(nextMeeting.getUTCDate() + daysUntilTuesday);
     
     // If it's Tuesday after 17:00 UTC+2, move to next week
-    if (dayOfWeek === 2 && hours * 60 + minutes >= 15 * 60) {
+    if (dayOfWeek === 2 && hours >= 15) {
         nextMeeting.setUTCDate(nextMeeting.getUTCDate() + 7);
     }
     
     const diff = nextMeeting - now;
-    const meetingInProgress = dayOfWeek === 2 && 
-                            hours >= 15 && 
-                            hours < 17; // Meeting duration: 2 hours
+    const diffMinutes = diff / (1000 * 60);
+    const meetingInProgress = dayOfWeek === 2 && hours >= 15 && hours < 17;
     
     const timerElement = document.querySelector('.countdown-timer');
     const meetButton = document.querySelector('.modern-button');
-    
+    const meetLink = 'https://meet.google.com/svb-xcme-opq';
+
+    // Keep all existing countdown-timer logic
     if (meetingInProgress) {
         // Count up during the meeting
         const meetingStart = new Date(now);
@@ -1160,8 +1161,10 @@ function updateTimer() {
         
         const timeStr = `${String(elapsedHours).padStart(2, '0')}:${String(elapsedMinutes).padStart(2, '0')}:${String(elapsedSeconds).padStart(2, '0')}`;
         timerElement.innerHTML = `<b>LIVE</b> ${timeStr}<span class="milliseconds">.${String(elapsedMs).padStart(3, '0')}</span>`;
-        meetButton.textContent = 'Join Now!';
-        meetButton.href = 'https://meet.google.com/zzz-zzzz-zzz';
+        
+        // Update button during meeting
+        meetButton.textContent = 'JOIN NOW!';
+        meetButton.href = meetLink;
     } else {
         // Countdown to next meeting
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -1179,44 +1182,58 @@ function updateTimer() {
             timeStr = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
         }
 
-        // Generate Google Calendar link
-        const endMeeting = new Date(nextMeeting);
-        endMeeting.setUTCHours(endMeeting.getUTCHours() + 2); // 2 hour duration
-        
-        const eventDetails = encodeURIComponent(
-            'OVERVIBING - When Humans and AI get lost together in the VIBE CODING flow.\n\n' +
-            '🗓 Every Tuesday\n' +
-            '🕔 17:00 – 18:00 (Europe/Paris)\n' +
-            '📍 Google Meet → https://meet.google.com/svb-xcme-opq\n\n' +
-            '⸻\n\n' +
-            '🎯 Purpose\n\n' +
-            'A weekly meeting to examine what really happens when AI becomes part of the development process.\n\n' +
-            'We focus on:\n' +
-            '	•	What goes wrong when AI-generated code or flow-based work causes misalignment\n' +
-            '	•	How to detect early signs of confusion, lost context, and overdependence on tooling\n' +
-            '	•	What practical steps teams can take to stay in control — through boundaries, checks, and better habits\n\n' +
-            'No hype — just a space to talk through real examples and avoid common traps.\n\n' +
-            '🔍 Definitions\n\n' +
-            'VIBE-CODING → Coding with AI in a fast, creative flow that feels productive.\n' +
-            'OVER-VIBING → Losing clarity, structure, or intent by going too deep into flow without critical checkpoints.\n\n' +
-            '⸻\n\n' +
-            '— Michael\n' +
-            'one-front.com'
-        );
-        
-        const calendarLink = 
-            'https://calendar.google.com/calendar/render' +
-            '?action=TEMPLATE' +
-            '&text=🌀 OVERVIBING - Weekly Meeting' +
-            `&details=${eventDetails}` +
-            '&location=https://meet.google.com/svb-xcme-opq' +
-            `&dates=${nextMeeting.toISOString().replace(/[-:]/g, '').split('.')[0]}Z` +
-            `/${endMeeting.toISOString().replace(/[-:]/g, '').split('.')[0]}Z` +
-            '&recur=RRULE:FREQ=WEEKLY';
-        
         timerElement.innerHTML = `<b>NEXT MEETING:</b> ${timeStr}<span class="milliseconds">.${String(ms).padStart(3, '0')}</span>`;
-        meetButton.textContent = 'ADD TO CALENDAR!';
-        meetButton.href = calendarLink;
+
+        // Update button based on time until meeting
+        if (diffMinutes <= 60 && diffMinutes > 15) {
+            const mins = Math.floor(diffMinutes);
+            const secs = Math.floor((diff % (1000 * 60)) / 1000);
+            meetButton.textContent = `JOIN SOON! ${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            meetButton.href = meetLink;
+        } else if (diffMinutes <= 15 && diffMinutes > 0) {
+            const mins = Math.floor(diffMinutes);
+            const secs = Math.floor((diff % (1000 * 60)) / 1000);
+            meetButton.textContent = `JOIN NOW! ${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            meetButton.href = meetLink;
+        } else {
+            // Generate Google Calendar link
+            const endMeeting = new Date(nextMeeting);
+            endMeeting.setUTCHours(endMeeting.getUTCHours() + 2); // 2 hour duration
+            
+            const eventDetails = encodeURIComponent(
+                'OVERVIBING - When Humans and AI get lost together in the VIBE CODING flow.\n\n' +
+                '🗓 Every Tuesday\n' +
+                '🕔 17:00 – 18:00 (Europe/Paris)\n' +
+                '📍 Google Meet → https://meet.google.com/svb-xcme-opq\n\n' +
+                '⸻\n\n' +
+                '🎯 Purpose\n\n' +
+                'A weekly meeting to examine what really happens when AI becomes part of the development process.\n\n' +
+                'We focus on:\n' +
+                '	•	What goes wrong when AI-generated code or flow-based work causes misalignment\n' +
+                '	•	How to detect early signs of confusion, lost context, and overdependence on tooling\n' +
+                '	•	What practical steps teams can take to stay in control — through boundaries, checks, and better habits\n\n' +
+                'No hype — just a space to talk through real examples and avoid common traps.\n\n' +
+                '🔍 Definitions\n\n' +
+                'VIBE-CODING → Coding with AI in a fast, creative flow that feels productive.\n' +
+                'OVER-VIBING → Losing clarity, structure, or intent by going too deep into flow without critical checkpoints.\n\n' +
+                '⸻\n\n' +
+                '— Michael\n' +
+                'one-front.com'
+            );
+            
+            const calendarLink = 
+                'https://calendar.google.com/calendar/render' +
+                '?action=TEMPLATE' +
+                '&text=🌀 OVERVIBING - Weekly Meeting' +
+                `&details=${eventDetails}` +
+                '&location=https://meet.google.com/svb-xcme-opq' +
+                `&dates=${nextMeeting.toISOString().replace(/[-:]/g, '').split('.')[0]}Z` +
+                `/${endMeeting.toISOString().replace(/[-:]/g, '').split('.')[0]}Z` +
+                '&recur=RRULE:FREQ=WEEKLY';
+            
+            meetButton.textContent = 'ADD TO CALENDAR!';
+            meetButton.href = calendarLink;
+        }
     }
 }
 
