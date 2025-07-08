@@ -67,7 +67,7 @@
 <body>
     <canvas class="webgl" aria-label="Interactive 3D galaxy visualization"></canvas>
     
-    <main>
+    <main>  
         <div class="galaxy-title">
             <div class="countdown-timer code-pill" aria-live="polite"></div>
             <h1 class="galaxy-title__main">OVERVIBING</h1>
@@ -79,35 +79,41 @@
                target="_blank" 
                rel="noopener noreferrer" 
                class="modern-button"
-               aria-label="Join the meeting">Join Now!</a>
-        </div>
-
-        <div class="preset-switcher" role="region" aria-label="Galaxy preset controls">
-            <button class="preset-arrow" 
-                    id="prevPreset" 
-                    aria-label="Previous preset">
-                <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
-                    <path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
-                </svg>
-            </button>
-            <div class="preset-name" id="currentPreset" aria-live="polite">Default Overvibing</div>
-            <button class="preset-arrow" 
-                    id="nextPreset" 
-                    aria-label="Next preset">
-                <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
-                    <path fill="currentColor" d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
-                </svg>
-            </button>
+               aria-label="Join the meeting">JOIN NOW!</a>
         </div>
     </main>
 
-    <footer>
-        <a href="https://www.one-front.com" 
-           target="_blank" 
-           rel="noopener noreferrer" 
-           class="corner-link" 
-           aria-label="Visit Michael Wybraniec's website at ONE-FRONT">by Michael Wybraniec</a>
-    </footer>
+    <div class="footer-bar">
+        <div class="footer-section preset-switcher-section">
+            <div class="preset-switcher" role="region" aria-label="Galaxy preset controls">
+                <button class="preset-arrow" 
+                        id="prevPreset" 
+                        aria-label="Previous preset">
+                    <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+                        <path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+                    </svg>
+                </button>
+                <div class="preset-name" id="currentPreset" aria-live="polite">Default Overvibing</div>
+                <button class="preset-arrow" 
+                        id="nextPreset" 
+                        aria-label="Next preset">
+                    <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+                        <path fill="currentColor" d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div class="footer-section audio-control-section">
+            <div id="audio-control"></div>
+        </div>
+        <div class="footer-section corner-link-section">
+            <a href="https://www.one-front.com" 
+               target="_blank" 
+               rel="noopener noreferrer" 
+               class="corner-link" 
+               aria-label="Visit Michael Wybraniec's website at ONE-FRONT">by ONE-FRONT</a>
+        </div>
+    </div>
 
     <noscript>
         <p>Please enable JavaScript to experience the interactive 3D galaxy visualization.</p>

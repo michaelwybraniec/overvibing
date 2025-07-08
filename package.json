@@ -50,7 +50,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/michaelwybraniec/overvibing.git"
+    "url": "git+https://github.com/michaelwybraniec/overvibing.git"
   },
   "homepage": "https://www.overvibing.com"
 }

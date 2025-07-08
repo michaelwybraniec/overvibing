@@ -438,13 +438,11 @@ const DEV_MODE = false;
 document.body.setAttribute('data-dev-mode', DEV_MODE);
 
 // Create audio control element
-const audioControl = document.createElement('div');
-audioControl.id = 'audio-control';
+const audioControl = document.getElementById('audio-control');
 audioControl.innerHTML = `
     <div class="play-icon"></div>
     <div class="pause-icon"></div>
 `;
-document.body.appendChild(audioControl);
 
 // Function to update audio control icon
 const updateAudioIcon = (isPlaying) => {
@@ -1217,7 +1215,7 @@ function updateTimer() {
             '&recur=RRULE:FREQ=WEEKLY';
         
         timerElement.innerHTML = `<b>NEXT MEETING:</b> ${timeStr}<span class="milliseconds">.${String(ms).padStart(3, '0')}</span>`;
-        meetButton.textContent = 'Add to Calendar!';
+        meetButton.textContent = 'ADD TO CALENDAR!';
         meetButton.href = calendarLink;
     }
 }
