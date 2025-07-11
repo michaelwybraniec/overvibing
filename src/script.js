@@ -7,495 +7,10 @@ import fragmentShader from './shaders/galaxy/fragment.glsl'
 import presetsConfig from './configs/presets.json'
 
 /**
- * Audio System
- */
-class AudioSystem {
-    constructor() {
-        this.audioContext = null;
-        this.masterGain = null;
-        this.isInitialized = false;
-        this.isPlaying = false;
-        
-        // Audio nodes
-        this.bassOsc = null;
-        this.leadOsc = null;
-        this.padOsc = null;
-        this.hihatOsc = null;
-        this.kickOsc = null;
-        
-        // Effects
-        this.reverb = null;
-        this.delay = null;
-        this.filter = null;
-        
-        // Configuration
-        this.config = {
-            bpm: 60,
-            volume: 0.3,
-            bassFreq: 80,
-            leadFreq:120,
-            padFreq: 440,
-            reverbWet: 0.22,
-            delayTime: 1,
-            filterFreq: 500
-        };
-        
-        this.startTime = 0;
-        this.currentStep = 0;
-        
-        // 16-beat sequencer patterns
-        this.sequencer = {
-            bass: [false, false, true, false, false, true, false, true, false, false, true, false, false, true, false, false],
-            lead: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            pad: [true, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false],
-            kick: [true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false]
-        };
-        this.currentBeat = 0;
-        
-        // Wind sound
-        this.windOsc = null;
-        this.windGain = null;
-    }
-
-    async init() {
-        try {
-            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            
-            // Master gain
-            this.masterGain = this.audioContext.createGain();
-            this.masterGain.gain.setValueAtTime(this.config.volume, this.audioContext.currentTime);
-            this.masterGain.connect(this.audioContext.destination);
-            
-            // Create reverb
-            await this.createReverb();
-            
-            // Create delay
-            this.createDelay();
-            
-            // Create filter
-            this.createFilter();
-            
-            this.isInitialized = true;
-            console.log('Audio system initialized');
-            
-        } catch (error) {
-            console.error('Failed to initialize audio system:', error);
-        }
-    }
-
-    async createReverb() {
-        const convolver = this.audioContext.createConvolver();
-        const reverbTime = 3;
-        const sampleRate = this.audioContext.sampleRate;
-        const length = sampleRate * reverbTime;
-        const impulse = this.audioContext.createBuffer(2, length, sampleRate);
-        
-        for (let channel = 0; channel < 2; channel++) {
-            const channelData = impulse.getChannelData(channel);
-            for (let i = 0; i < length; i++) {
-                channelData[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, 2);
-            }
-        }
-        
-        convolver.buffer = impulse;
-        
-        const reverbGain = this.audioContext.createGain();
-        reverbGain.gain.setValueAtTime(this.config.reverbWet, this.audioContext.currentTime);
-        
-        convolver.connect(reverbGain);
-        reverbGain.connect(this.masterGain);
-        
-        this.reverb = { convolver, gain: reverbGain };
-    }
-
-    createDelay() {
-        const delayNode = this.audioContext.createDelay(1.0);
-        delayNode.delayTime.setValueAtTime(this.config.delayTime, this.audioContext.currentTime);
-        
-        const delayGain = this.audioContext.createGain();
-        delayGain.gain.setValueAtTime(0.3, this.audioContext.currentTime);
-        
-        const feedback = this.audioContext.createGain();
-        feedback.gain.setValueAtTime(0.4, this.audioContext.currentTime);
-        
-        delayNode.connect(delayGain);
-        delayGain.connect(feedback);
-        feedback.connect(delayNode);
-        delayGain.connect(this.masterGain);
-        
-        this.delay = { node: delayNode, gain: delayGain, feedback };
-    }
-
-    createFilter() {
-        this.filter = this.audioContext.createBiquadFilter();
-        this.filter.type = 'lowpass';
-        this.filter.frequency.setValueAtTime(this.config.filterFreq, this.audioContext.currentTime);
-        this.filter.Q.setValueAtTime(1, this.audioContext.currentTime);
-        this.filter.connect(this.masterGain);
-    }
-
-    createBass() {
-        const osc = this.audioContext.createOscillator();
-        const gain = this.audioContext.createGain();
-        
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(this.config.bassFreq, this.audioContext.currentTime);
-        
-        gain.gain.setValueAtTime(0, this.audioContext.currentTime);
-        
-        osc.connect(gain);
-        gain.connect(this.filter);
-        gain.connect(this.reverb.convolver);
-        
-        return { osc, gain };
-    }
-
-    createLead() {
-        const osc = this.audioContext.createOscillator();
-        const gain = this.audioContext.createGain();
-        
-        osc.type = 'square';
-        osc.frequency.setValueAtTime(this.config.leadFreq, this.audioContext.currentTime);
-        
-        gain.gain.setValueAtTime(0, this.audioContext.currentTime);
-        
-        osc.connect(gain);
-        gain.connect(this.delay.node);
-        gain.connect(this.masterGain);
-        
-        return { osc, gain };
-    }
-
-    createPad() {
-        const osc = this.audioContext.createOscillator();
-        const gain = this.audioContext.createGain();
-        
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(this.config.padFreq, this.audioContext.currentTime);
-        
-        gain.gain.setValueAtTime(0, this.audioContext.currentTime);
-        
-        osc.connect(gain);
-        gain.connect(this.reverb.convolver);
-        
-        return { osc, gain };
-    }
-
-    createKick() {
-        const osc = this.audioContext.createOscillator();
-        const gain = this.audioContext.createGain();
-        
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(60, this.audioContext.currentTime);
-        
-        gain.gain.setValueAtTime(0, this.audioContext.currentTime);
-        
-        osc.connect(gain);
-        gain.connect(this.masterGain);
-        
-        return { osc, gain };
-    }
-
-    createHihat() {
-        const bufferSize = this.audioContext.sampleRate * 0.1;
-        const buffer = this.audioContext.createBuffer(1, bufferSize, this.audioContext.sampleRate);
-        const data = buffer.getChannelData(0);
-        
-        for (let i = 0; i < bufferSize; i++) {
-            data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 2);
-        }
-        
-        const source = this.audioContext.createBufferSource();
-        const gain = this.audioContext.createGain();
-        const filter = this.audioContext.createBiquadFilter();
-        
-        filter.type = 'highpass';
-        filter.frequency.setValueAtTime(8000, this.audioContext.currentTime);
-        
-        source.buffer = buffer;
-        gain.gain.setValueAtTime(0, this.audioContext.currentTime);
-        
-        source.connect(filter);
-        filter.connect(gain);
-        gain.connect(this.masterGain);
-        
-        return { source, gain };
-    }
-
-    createArp() {
-        const osc = this.audioContext.createOscillator();
-        const gain = this.audioContext.createGain();
-        const filter = this.audioContext.createBiquadFilter();
-        
-        osc.type = 'triangle';
-        filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(1500, this.audioContext.currentTime);
-        filter.Q.setValueAtTime(2, this.audioContext.currentTime);
-        
-        gain.gain.setValueAtTime(0, this.audioContext.currentTime);
-        
-        osc.connect(filter);
-        filter.connect(gain);
-        gain.connect(this.delay.node);
-        gain.connect(this.masterGain);
-        
-        return { osc, gain };
-    }
-
-    createSubBass() {
-        const osc = this.audioContext.createOscillator();
-        const gain = this.audioContext.createGain();
-        const filter = this.audioContext.createBiquadFilter();
-        
-        osc.type = 'triangle';
-        filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(120, this.audioContext.currentTime);
-        filter.Q.setValueAtTime(3, this.audioContext.currentTime);
-        
-        gain.gain.setValueAtTime(0, this.audioContext.currentTime);
-        
-        osc.connect(filter);
-        filter.connect(gain);
-        gain.connect(this.reverb.convolver);
-        
-        return { osc, gain };
-    }
-
-    createWind() {
-        if (this.windOsc) return; // Already created
-        
-        // Create multiple oscillators for rich wind texture
-        const osc1 = this.audioContext.createOscillator();
-        const osc2 = this.audioContext.createOscillator();
-        const osc3 = this.audioContext.createOscillator();
-        
-        const windGain = this.audioContext.createGain();
-        const filter1 = this.audioContext.createBiquadFilter();
-        const filter2 = this.audioContext.createBiquadFilter();
-        
-        // Configure oscillators for wind-like sound
-        osc1.type = 'sawtooth';
-        osc1.frequency.setValueAtTime(80, this.audioContext.currentTime);
-        
-        osc2.type = 'sine';
-        osc2.frequency.setValueAtTime(120, this.audioContext.currentTime);
-        
-        osc3.type = 'triangle';
-        osc3.frequency.setValueAtTime(200, this.audioContext.currentTime);
-        
-        // Filters for wind texture
-        filter1.type = 'highpass';
-        filter1.frequency.setValueAtTime(200, this.audioContext.currentTime);
-        
-        filter2.type = 'lowpass';
-        filter2.frequency.setValueAtTime(1000, this.audioContext.currentTime);
-        filter2.Q.setValueAtTime(0.5, this.audioContext.currentTime);
-        
-        // Connect wind chain
-        windGain.gain.setValueAtTime(0.15, this.audioContext.currentTime);
-        
-        osc1.connect(filter1);
-        osc2.connect(filter1);
-        osc3.connect(filter1);
-        filter1.connect(filter2);
-        filter2.connect(windGain);
-        windGain.connect(this.reverb.convolver);
-        
-        this.windOsc = [osc1, osc2, osc3];
-        this.windGain = windGain;
-        this.windFilter = filter2;
-        
-        return { oscs: [osc1, osc2, osc3], gain: windGain };
-    }
-
-    startWind() {
-        if (!this.windOsc) {
-            this.createWind();
-            // Only start oscillators if they were just created
-            this.windOsc.forEach(osc => osc.start());
-        }
-    }
-
-    stopWind() {
-        if (this.windOsc) {
-            this.windOsc.forEach(osc => {
-                try {
-                    osc.stop();
-                    osc.disconnect();
-                } catch(e) {
-                    console.warn('Error stopping wind oscillator:', e);
-                }
-            });
-            if (this.windGain) {
-                this.windGain.disconnect();
-            }
-            this.windOsc = null;
-            this.windGain = null;
-        }
-    }
-
-    playSequence() {
-        if (!this.isInitialized) return;
-        
-        const stepTime = 60 / this.config.bpm / 4; // 16th notes
-        const currentTime = this.audioContext.currentTime;
-        
-        // Bass pattern - check sequencer
-        if (this.sequencer.bass[this.currentBeat]) {
-            const bass = this.createBass();
-            bass.osc.frequency.setValueAtTime(this.config.bassFreq, currentTime);
-            bass.osc.start(currentTime);
-            bass.gain.gain.setValueAtTime(0.4, currentTime);
-            bass.gain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.5);
-            bass.osc.stop(currentTime + 0.5);
-        }
-        
-        // Kick pattern - check sequencer
-        if (this.sequencer.kick[this.currentBeat]) {
-            const kick = this.createKick();
-            kick.osc.start(currentTime);
-            kick.gain.gain.setValueAtTime(0.6, currentTime);
-            kick.gain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.2);
-            kick.osc.stop(currentTime + 0.2);
-        }
-        
-        // Lead pattern - check sequencer
-        if (this.sequencer.lead[this.currentBeat]) {
-            const lead = this.createLead();
-            lead.osc.frequency.setValueAtTime(this.config.leadFreq, currentTime);
-            lead.osc.start(currentTime);
-            lead.gain.gain.setValueAtTime(0.3, currentTime);
-            lead.gain.gain.exponentialRampToValueAtTime(0.001, currentTime + 1.5);
-            lead.osc.stop(currentTime + 1.5);
-        }
-        
-        // Pad pattern - check sequencer
-        if (this.sequencer.pad[this.currentBeat]) {
-            const pad = this.createPad();
-            pad.osc.frequency.setValueAtTime(this.config.padFreq, currentTime);
-            pad.osc.start(currentTime);
-            pad.gain.gain.setValueAtTime(0.15, currentTime);
-            pad.gain.gain.exponentialRampToValueAtTime(0.001, currentTime + 4.0);
-            pad.osc.stop(currentTime + 4.0);
-        }
-        
-        this.currentBeat = (this.currentBeat + 1) % 16;
-        
-        // Schedule next step
-        if (this.isPlaying) {
-            setTimeout(() => this.playSequence(), stepTime * 1000);
-        }
-    }
-
-    async start() {
-        if (!this.isInitialized) {
-            await this.init();
-        }
-        
-        if (this.audioContext.state === 'suspended') {
-            await this.audioContext.resume();
-        }
-        
-        this.isPlaying = true;
-        this.startTime = this.audioContext.currentTime;
-        this.startWind(); // Start continuous wind
-        this.playSequence();
-        
-        console.log('Audio started');
-    }
-
-    stop() {
-        this.isPlaying = false;
-        this.stopWind(); // Stop wind
-        console.log('Audio stopped');
-    }
-
-    updateParams(galaxyParams) {
-        if (!this.isInitialized) return;
-        
-        // Map galaxy parameters to audio
-        this.config.bassFreq = 40 + (galaxyParams.radius / 20) * 60;
-        this.config.leadFreq = 200 + (galaxyParams.spin / 5) * 400;
-        this.config.padFreq = 300 + (galaxyParams.randomness / 2) * 300;
-        this.config.filterFreq = 1000 + (galaxyParams.branches / 20) * 3000;
-        
-        if (this.filter) {
-            this.filter.frequency.exponentialRampToValueAtTime(
-                this.config.filterFreq, 
-                this.audioContext.currentTime + 0.1
-            );
-        }
-    }
-}
-
-// Initialize audio system
-const audioSystem = new AudioSystem();
-
-// Dev mode flag - set to true to show controls
-const DEV_MODE = false;
-
-// Set dev mode attribute on body
-document.body.setAttribute('data-dev-mode', DEV_MODE);
-
-// Create audio control element
-const audioControl = document.getElementById('audio-control');
-audioControl.innerHTML = `
-    <div class="play-icon"></div>
-    <div class="pause-icon"></div>
-`;
-
-// Function to update audio control icon
-const updateAudioIcon = (isPlaying) => {
-    audioControl.classList.toggle('playing', isPlaying);
-};
-
-// Handle audio toggle
-const toggleAudio = async (event) => {
-    if (event) event.preventDefault();
-    
-    if (audioSystem.isPlaying) {
-        audioSystem.stop();
-        updateAudioIcon(false);
-    } else {
-        await audioSystem.start();
-        updateAudioIcon(true);
-    }
-};
-
-// Add click handler for audio control
-audioControl.addEventListener('click', toggleAudio);
-
-// Initialize and start audio
-(async () => {
-    try {
-        await audioSystem.init();
-        await audioSystem.start();
-        updateAudioIcon(true);
-    } catch (error) {
-        // If auto-start fails (which is expected), wait for user interaction
-        const startAudio = async () => {
-            try {
-                await audioSystem.start();
-                updateAudioIcon(true);
-                // Remove all listeners after successful start
-                window.removeEventListener('click', startAudio);
-                window.removeEventListener('touchstart', startAudio);
-                window.removeEventListener('keydown', startAudio);
-            } catch (error) {
-                console.error('Failed to start audio:', error);
-            }
-        };
-
-        window.addEventListener('click', startAudio);
-        window.addEventListener('touchstart', startAudio);
-        window.addEventListener('keydown', startAudio);
-    }
-})();
-
-/**
  * Base
  */
 // Debug
+const DEV_MODE = document.body.getAttribute('data-dev-mode') === 'true';
 let gui = new dat.GUI();
 // Hide GUI if not in dev mode
 if (!DEV_MODE) {
@@ -742,13 +257,7 @@ beatInfo.style.pointerEvents = 'none';
 document.body.appendChild(beatInfo);
 
 const updateBeatInfo = () => {
-    if (!audioSystem.isInitialized) return;
-    
-    const bpm = audioSystem.config.bpm;
-    const currentBeat = audioSystem.currentBeat + 1;
-    const totalBeats = 16;
-    
-    beatInfo.textContent = `BPM: ${bpm} | Beat: ${currentBeat}/${totalBeats}`;
+    // No audio system, so no beat info update
 };
 
 /**
@@ -834,64 +343,29 @@ const initializeGUI = () => {
     galaxyFolder.add(parameters, 'count', 100, 1000000).step(100)
         .onFinishChange(() => {
             generateGalaxy();
-            audioSystem.updateParams(parameters);
         });
     galaxyFolder.add(parameters, 'size', 0.001, 0.1).step(0.001)
-        .onFinishChange(() => {
-            generateGalaxy();
-            audioSystem.updateParams(parameters);
-        });
+        .onFinishChange(generateGalaxy);
     galaxyFolder.add(parameters, 'radius', 0.01, 20).step(0.01)
-        .onChange(() => {
-            // Update audio immediately
-            audioSystem.updateParams(parameters);
-        })
-        .onFinishChange(() => {
-            // Only regenerate galaxy when finished to avoid performance issues
-            generateGalaxy();
-        });
+        .onFinishChange(generateGalaxy);
     galaxyFolder.add(parameters, 'branches', 2, 20).step(1)
-        .onChange(() => {
-            // Update audio immediately
-            audioSystem.updateParams(parameters);
-        })
-        .onFinishChange(() => {
-            // Only regenerate galaxy when finished
-            generateGalaxy();
-        });
+        .onFinishChange(generateGalaxy);
     galaxyFolder.add(parameters, 'spin', -5, 5).step(0.001)
-        .onChange(() => {
-            // Update audio immediately
-            audioSystem.updateParams(parameters);
-        })
-        .onFinishChange(() => {
-            // Only regenerate galaxy when finished
-            generateGalaxy();
-        });
+        .onFinishChange(generateGalaxy);
     galaxyFolder.add(parameters, 'randomness', 0, 2).step(0.001)
-        .onChange(() => {
-            // Update audio immediately
-            audioSystem.updateParams(parameters);
-        })
-        .onFinishChange(() => {
-            // Only regenerate galaxy when finished
-            generateGalaxy();
-        });
+        .onFinishChange(generateGalaxy);
     galaxyFolder.add(parameters, 'randomnessPower', 1, 10).step(0.001)
         .onFinishChange(() => {
             generateGalaxy();
-            audioSystem.updateParams(parameters);
         });
     galaxyFolder.addColor(parameters, 'insideColor')
         .onFinishChange(() => {
             generateGalaxy();
-            audioSystem.updateParams(parameters);
             updateUIColors(parameters.insideColor, parameters.outsideColor);
         });
     galaxyFolder.addColor(parameters, 'outsideColor')
         .onFinishChange(() => {
             generateGalaxy();
-            audioSystem.updateParams(parameters);
             updateUIColors(parameters.insideColor, parameters.outsideColor);
         });
 
@@ -1242,108 +716,63 @@ setInterval(updateTimer, 10);
 
 // Add keyboard controls for audio manipulation
 document.addEventListener('keydown', (event) => {
-    if (!audioSystem.isInitialized) return;
-    
-    switch(event.code) {
-        case 'Space':
-            event.preventDefault();
-            if (audioSystem.isPlaying) {
-                audioSystem.stop();
-                statusText.textContent = '🎵 Audio paused';
-                statusText.style.display = 'block';
-            } else {
-                audioSystem.start();
-                statusText.textContent = '🎵 Audio playing';
-                statusText.style.display = 'block';
-            }
-            setTimeout(() => {
-                statusText.style.display = 'none';
-            }, 3000);
-            break;
-            
-        case 'KeyM':
-            event.preventDefault();
-            if (audioSystem.masterGain) {
-                const currentVolume = audioSystem.config.volume;
-                audioSystem.config.volume = currentVolume > 0 ? 0 : 0.3;
-                audioSystem.masterGain.gain.setValueAtTime(
-                    audioSystem.config.volume, 
-                    audioSystem.audioContext.currentTime
-                );
-                statusText.textContent = audioSystem.config.volume > 0 ? '🔊 Unmuted' : '🔇 Muted';
-                statusText.style.display = 'block';
-                setTimeout(() => {
-                    statusText.style.display = 'none';
-                }, 3000);
-            }
-            break;
-        
-        // Manual sound triggers
-        case 'KeyZ':
-        case 'KeyA':
-            event.preventDefault();
-            if (audioSystem.isInitialized) {
-                const currentTime = audioSystem.audioContext.currentTime;
-                const bass = audioSystem.createBass();
-                bass.osc.frequency.setValueAtTime(audioSystem.config.bassFreq, currentTime);
-                bass.osc.start(currentTime);
-                bass.gain.gain.setValueAtTime(0.4, currentTime);
-                bass.gain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.5);
-                bass.osc.stop(currentTime + 0.5);
-            }
-            break;
-            
-        case 'KeyX':
-        case 'KeyS':
-            event.preventDefault();
-            if (audioSystem.isInitialized) {
-                const currentTime = audioSystem.audioContext.currentTime;
-                const lead = audioSystem.createLead();
-                lead.osc.frequency.setValueAtTime(audioSystem.config.leadFreq, currentTime);
-                lead.osc.start(currentTime);
-                lead.gain.gain.setValueAtTime(0.3, currentTime);
-                lead.gain.gain.exponentialRampToValueAtTime(0.001, currentTime + 1.5);
-                lead.osc.stop(currentTime + 1.5);
-            }
-            break;
-            
-        case 'KeyC':
-        case 'KeyD':
-            event.preventDefault();
-            if (audioSystem.isInitialized) {
-                const currentTime = audioSystem.audioContext.currentTime;
-                const pad = audioSystem.createPad();
-                pad.osc.frequency.setValueAtTime(audioSystem.config.padFreq, currentTime);
-                pad.osc.start(currentTime);
-                pad.gain.gain.setValueAtTime(0.15, currentTime);
-                pad.gain.gain.exponentialRampToValueAtTime(0.001, currentTime + 4.0);
-                pad.osc.stop(currentTime + 4.0);
-            }
-            break;
-            
-        case 'KeyV':
-        case 'KeyF':
-            event.preventDefault();
-            if (audioSystem.isInitialized) {
-                const currentTime = audioSystem.audioContext.currentTime;
-                const kick = audioSystem.createKick();
-                kick.osc.start(currentTime);
-                kick.gain.gain.setValueAtTime(0.6, currentTime);
-                kick.gain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.2);
-                kick.osc.stop(currentTime + 0.2);
-            }
-            break;
-            
-        case 'KeyB':
-        case 'KeyG':
-            event.preventDefault();
-            if (audioSystem.isInitialized) {
-                const currentTime = audioSystem.audioContext.currentTime;
-                const hihat = audioSystem.createHihat();
-                hihat.source.start(currentTime);
-                hihat.gain.gain.setValueAtTime(0.2, currentTime);
-                hihat.gain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.1);
-            }
-            break;
-    }
+    // No audio system, so no audio manipulation controls
 }); 
+
+// Audio Initialization
+let audioElement = null;
+
+const initializeAudio = () => {
+    audioElement = new Audio('Michau Wybraniec - Kepler 22b.mp3');
+    audioElement.loop = true;
+    audioElement.volume = 0.3; // Adjust volume as needed
+
+    const audioControl = document.getElementById('audio-control');
+    audioControl.innerHTML = `
+        <div class="play-icon"></div>
+        <div class="pause-icon"></div>
+    `;
+
+    const updateAudioIcon = (isPlaying) => {
+        audioControl.classList.toggle('playing', isPlaying);
+    };
+
+    const toggleAudio = (event) => {
+        if (event) event.preventDefault();
+        
+        if (audioElement.paused) {
+            audioElement.play();
+            updateAudioIcon(true);
+        } else {
+            audioElement.pause();
+            updateAudioIcon(false);
+        }
+    };
+
+    audioControl.addEventListener('click', toggleAudio);
+
+    // Autoplay with user interaction fallback
+    const startAudio = async () => {
+        try {
+            await audioElement.play();
+            updateAudioIcon(true);
+            
+            // Remove all listeners after successful start
+            window.removeEventListener('click', startAudio);
+            window.removeEventListener('touchstart', startAudio);
+            window.removeEventListener('keydown', startAudio);
+        } catch (error) {
+            console.log('Autoplay prevented, waiting for user interaction');
+            console.error(error);
+        }
+    };
+
+    // Try autoplay, fallback to user interaction
+    startAudio();
+    window.addEventListener('click', startAudio);
+    window.addEventListener('touchstart', startAudio);
+    window.addEventListener('keydown', startAudio);
+};
+
+// Call audio initialization after other initializations
+window.addEventListener('load', initializeAudio); 
