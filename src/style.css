@@ -83,8 +83,8 @@ body[data-dev-mode="false"] .dg {
     align-items: center;
     justify-content: center;
     padding: 2rem;
-    background: rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(85px);
+    background: rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(120px);
     border-radius: 100%;
     height: 650px;
     width: 650px;
@@ -307,7 +307,7 @@ body[data-dev-mode="false"] .dg {
     position: fixed;
     bottom: 3rem;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-50%) translateX(-22px);
     cursor: pointer;
     background: rgba(0, 0, 0, 0.5);
     border-radius: 50%;
@@ -321,7 +321,7 @@ body[data-dev-mode="false"] .dg {
 
 #audio-control:hover {
     background: rgba(0, 0, 0, 0.7);
-    transform: translateX(-50%) scale(1.1);
+    transform: translateX(-50%) translateX(-22px) scale(1.1);
 }
 
 #audio-control .play-icon {
@@ -364,6 +364,43 @@ body[data-dev-mode="false"] .dg {
 
 #audio-control.playing .pause-icon {
     display: block;
+}
+
+/* Color Mode Toggle Styles */
+.color-mode-toggle {
+    width: 32px;
+    height: 32px;
+    position: fixed;
+    bottom: 3rem;
+    left: 50%;
+    transform: translateX(-50%) translateX(22px);
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.5);
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+    z-index: 9999;
+    margin-bottom: 0.5rem;
+    color: #ffffff;
+}
+
+.color-mode-toggle:hover {
+    background: rgba(0, 0, 0, 0.7);
+    transform: translateX(-50%) translateX(22px) scale(1.1);
+}
+
+.color-mode-toggle svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* Bright Mode - Invert Everything */
+body.bright-mode {
+    filter: invert(1);
+    background: #000000; /* Start with black, becomes white when inverted */
 }
 
 @media (max-width: 900px) {
@@ -526,6 +563,34 @@ body[data-dev-mode="false"] .dg {
         background: rgba(0, 0, 0, 0.7) !important;
         border-radius: 50% !important;
         cursor: pointer !important;
+    }
+    .color-mode-toggle {
+        position: relative !important;
+        left: unset !important;
+        right: unset !important;
+        bottom: unset !important;
+        top: unset !important;
+        transform: none !important;
+        margin: 0 0 0 12px !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        width: 48px !important;
+        height: 48px !important;
+        background: rgba(0, 0, 0, 0.7) !important;
+        border: none !important;
+        border-radius: 50% !important;
+        cursor: pointer !important;
+        color: #ffffff !important;
+        transition: all 0.3s ease !important;
+    }
+    .color-mode-toggle:hover {
+        background: rgba(0, 0, 0, 0.9) !important;
+        transform: scale(1.1) !important;
+    }
+    .color-mode-toggle svg {
+        width: 22px !important;
+        height: 22px !important;
     }
     .corner-link {
         font-size: 0.8rem;

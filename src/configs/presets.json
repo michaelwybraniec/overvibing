@@ -779,6 +779,430 @@
           }
         }
       }
+    },
+    {
+      "name": "Sun Matter Field", 
+      "galaxy": {
+        "count": 500000,
+        "size": 5.22,
+        "radius": 30.0,
+        "branches": 3,
+        "spin": 1.0,
+        "randomness": 5.5,
+        "randomnessPower": 10.0,
+        "insideColor": "#A5A52F",
+        "outsideColor": "#0080FF"
+      },
+      "galaxyBackgroundColor": "#484C52",
+      "camera": {
+        "basic": {
+          "enableRotate": true,
+          "enableZoom": true,
+          "enablePan": true,
+          "smoothness": 0.1
+        },
+        "position": {
+          "x": 0,
+          "y": 50,
+          "z": 10
+        },
+        "movement": {
+          "autoRotate": true,
+          "rotationSpeed": 0.1,
+          "zoomSpeed": 0.3,
+          "minDistance": 0.1,
+          "maxDistance": 20,
+          "minAngle": 0.2,
+          "maxAngle": 2.0
+        },
+        "automation": {
+          "enabled": true,
+          "path": "none",
+          "pathSpeed": 0,
+          "oscillation": {
+            "enabled": false,
+            "amplitude": 0,
+            "frequency": 2
+          },
+          "zoom": {
+            "enabled": true,
+            "min": 3,
+            "max": 10,
+            "speed": 0.1
+          }
+        }
+      }
+    },
+    {
+      "name": "Shadow Streams",
+      "galaxy": {
+        "count": 900000,
+        "size": 0.03,
+        "radius": 18.0,
+        "branches": 4,
+        "spin": -3.0,
+        "randomness": 2.0,
+        "randomnessPower": 8.0,
+        "insideColor": "#FFFFFF",
+        "outsideColor": "#e6e6e6"
+      },
+      "galaxyBackgroundColor": "#000000",
+      "camera": {
+        "basic": {
+          "enableRotate": true,
+          "enableZoom": true,
+          "enablePan": true,
+          "smoothness": 0.08
+        },
+        "position": {
+          "x": -8,
+          "y": 3,
+          "z": 8
+        },
+        "movement": {
+          "autoRotate": false,
+          "rotationSpeed": 0.5,
+          "zoomSpeed": 1.2,
+          "minDistance": 3,
+          "maxDistance": 25,
+          "minAngle": 0.3,
+          "maxAngle": 2.5
+        },
+        "automation": {
+          "enabled": false,
+          "path": "none",
+          "pathSpeed": 0,
+          "oscillation": {
+            "enabled": false,
+            "amplitude": 0,
+            "frequency": 0
+          },
+          "zoom": {
+            "enabled": false,
+            "min": 0,
+            "max": 0,
+            "speed": 0
+          }
+        }
+      }
+    },
+    {
+      "name": "Shadow Void",
+      "galaxy": {
+        "count": 1500000,
+        "size": 0.02,
+        "radius": 20.0,
+        "branches": 3,
+        "spin": 0.5,
+        "randomness": 3.0,
+        "randomnessPower": 2.0,
+        "insideColor": "#cccccc",
+        "outsideColor": "#e6e6e6"
+      },
+      "galaxyBackgroundColor": "#000000",
+      "camera": {
+        "basic": {
+          "enableRotate": true,
+          "enableZoom": true,
+          "enablePan": true,
+          "smoothness": 0.09
+        },
+        "position": {
+          "x": 0,
+          "y": -3,
+          "z": 12
+        },
+        "movement": {
+          "autoRotate": false,
+          "rotationSpeed": 0,
+          "zoomSpeed": 1.5,
+          "minDistance": 4,
+          "maxDistance": 18,
+          "minAngle": 0.1,
+          "maxAngle": 2.2
+        },
+        "automation": {
+          "enabled": false,
+          "path": "none",
+          "pathSpeed": 0,
+          "oscillation": {
+            "enabled": false,
+            "amplitude": 0,
+            "frequency": 0
+          },
+          "zoom": {
+            "enabled": false,
+            "min": 0,
+            "max": 0,
+            "speed": 0
+          }
+        }
+      }
+    },
+    {
+      "name": "Crimson Forest",
+      "galaxy": {
+        "count": 1000000,
+        "size": 0.05,
+        "radius": 16.0,
+        "branches": 10,
+        "spin": 2.5,
+        "randomness": 0.8,
+        "randomnessPower": 4.0,
+        "insideColor": "#0032FC",
+        "outsideColor": "#A2FF00"
+      },
+      "galaxyBackgroundColor": "#132B13",
+      "camera": {
+        "basic": {
+          "enableRotate": true,
+          "enableZoom": true,
+          "enablePan": true,
+          "smoothness": 0.1
+        },
+        "position": {
+          "x": 5,
+          "y": 10,
+          "z": 8
+        },
+        "movement": {
+          "autoRotate": true,
+          "rotationSpeed": 0.4,
+          "zoomSpeed": 1.0,
+          "minDistance": 6,
+          "maxDistance": 25,
+          "minAngle": 0.2,
+          "maxAngle": 2.5
+        },
+        "automation": {
+          "enabled": false,
+          "path": "none",
+          "pathSpeed": 0,
+          "oscillation": {
+            "enabled": false,
+            "amplitude": 0,
+            "frequency": 0
+          },
+          "zoom": {
+            "enabled": false,
+            "min": 0,
+            "max": 0,
+            "speed": 0
+          }
+        }
+      }
+    },
+    {
+      "name": "Deep Forest Nebula",
+      "galaxy": {
+        "count": 800000,
+        "size": 0.06,
+        "radius": 13.0,
+        "branches": 6,
+        "spin": -1.8,
+        "randomness": 1.2,
+        "randomnessPower": 3.5,
+        "insideColor": "#DDA0DD",
+        "outsideColor": "#E6E6FA"
+      },
+      "galaxyBackgroundColor": "#4A3A4A",
+      "camera": {
+        "basic": {
+          "enableRotate": true,
+          "enableZoom": true,
+          "enablePan": true,
+          "smoothness": 0.08
+        },
+        "position": {
+          "x": -7,
+          "y": 5,
+          "z": 10
+        },
+        "movement": {
+          "autoRotate": false,
+          "rotationSpeed": 0.6,
+          "zoomSpeed": 1.2,
+          "minDistance": 4,
+          "maxDistance": 20,
+          "minAngle": 0.3,
+          "maxAngle": 2.2
+        },
+        "automation": {
+          "enabled": false,
+          "path": "none",
+          "pathSpeed": 0,
+          "oscillation": {
+            "enabled": false,
+            "amplitude": 0,
+            "frequency": 0
+          },
+          "zoom": {
+            "enabled": false,
+            "min": 0,
+            "max": 0,
+            "speed": 0
+          }
+        }
+      }
+    },
+    {
+      "name": "Sunset Sky",
+      "galaxy": {
+        "count": 1200000,
+        "size": 0.04,
+        "radius": 18.0,
+        "branches": 8,
+        "spin": 3.2,
+        "randomness": 0.6,
+        "randomnessPower": 5.0,
+        "insideColor": "#87CEEB",
+        "outsideColor": "#B0E0E6"
+      },
+      "galaxyBackgroundColor": "#1A3A4A",
+      "camera": {
+        "basic": {
+          "enableRotate": true,
+          "enableZoom": true,
+          "enablePan": true,
+          "smoothness": 0.12
+        },
+        "position": {
+          "x": 0,
+          "y": 12,
+          "z": 15
+        },
+        "movement": {
+          "autoRotate": true,
+          "rotationSpeed": 0.3,
+          "zoomSpeed": 0.8,
+          "minDistance": 8,
+          "maxDistance": 30,
+          "minAngle": 0.2,
+          "maxAngle": 2.8
+        },
+        "automation": {
+          "enabled": true,
+          "path": "circular",
+          "pathSpeed": 0.25,
+          "oscillation": {
+            "enabled": true,
+            "amplitude": 2.0,
+            "frequency": 0.3
+          },
+          "zoom": {
+            "enabled": false,
+            "min": 0,
+            "max": 0,
+            "speed": 0
+          }
+        }
+      }
+    },
+    {
+      "name": "Deep Sea Reef",
+      "galaxy": {
+        "count": 900000,
+        "size": 0.07,
+        "radius": 11.0,
+        "branches": 5,
+        "spin": -2.5,
+        "randomness": 1.5,
+        "randomnessPower": 2.8,
+        "insideColor": "#FFA07A",
+        "outsideColor": "#FFB6C1"
+      },
+      "galaxyBackgroundColor": "#4A2A2A",
+      "camera": {
+        "basic": {
+          "enableRotate": true,
+          "enableZoom": true,
+          "enablePan": true,
+          "smoothness": 0.09
+        },
+        "position": {
+          "x": 8,
+          "y": 6,
+          "z": 8
+        },
+        "movement": {
+          "autoRotate": false,
+          "rotationSpeed": 0,
+          "zoomSpeed": 1.5,
+          "minDistance": 5,
+          "maxDistance": 18,
+          "minAngle": 0.1,
+          "maxAngle": 2.0
+        },
+        "automation": {
+          "enabled": false,
+          "path": "none",
+          "pathSpeed": 0,
+          "oscillation": {
+            "enabled": false,
+            "amplitude": 0,
+            "frequency": 0
+          },
+          "zoom": {
+            "enabled": false,
+            "min": 0,
+            "max": 0,
+            "speed": 0
+          }
+        }
+      }
+    },
+    {
+      "name": "Midnight Ocean",
+      "galaxy": {
+        "count": 1100000,
+        "size": 0.055,
+        "radius": 14.5,
+        "branches": 12,
+        "spin": 1.8,
+        "randomness": 0.7,
+        "randomnessPower": 3.2,
+        "insideColor": "#FFA600",
+        "outsideColor": "#00FFB7"
+      },
+      "galaxyBackgroundColor": "#2A1A00",
+      "camera": {
+        "basic": {
+          "enableRotate": true,
+          "enableZoom": true,
+          "enablePan": true,
+          "smoothness": 0.11
+        },
+        "position": {
+          "x": -6,
+          "y": 8,
+          "z": 12
+        },
+        "movement": {
+          "autoRotate": true,
+          "rotationSpeed": 0.5,
+          "zoomSpeed": 1.1,
+          "minDistance": 7,
+          "maxDistance": 22,
+          "minAngle": 0.3,
+          "maxAngle": 2.4
+        },
+        "automation": {
+          "enabled": false,
+          "path": "none",
+          "pathSpeed": 0,
+          "oscillation": {
+            "enabled": false,
+            "amplitude": 0,
+            "frequency": 0
+          },
+          "zoom": {
+            "enabled": false,
+            "min": 0,
+            "max": 0,
+            "speed": 0
+          }
+        }
+      }
     }
   ]
 } 

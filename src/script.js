@@ -34,6 +34,37 @@ let currentConfig = JSON.parse(JSON.stringify(cameraConfigs[0]));
 // Update parameters from config
 const parameters = { ...currentConfig.galaxy };
 
+// Color Mode Toggle Variables
+let isBrightMode = false;
+const brightModePresets = [
+    "Midnight Ocean",
+    "Sun Matter Field",
+    "Shadow Streams", 
+    "Shadow Void",
+    "Crimson Forest",
+    "Deep Forest Nebula",
+    "Sunset Sky",
+    "Deep Sea Reef"
+];
+
+const darkModePresets = [
+    "Binary System",
+    "Aqua Dream",
+    "Purple Haze", 
+    "Amber Spiral",
+    "Cinematic",
+    "Neon Pulse",
+    "Maximum",
+    "Acid Waves",
+    "Ultra Blast",
+    "Black Hole",
+    "Frozen Ring",
+    "Quantum State",
+    "Dark Matter",
+    "Neutron Dance",
+    "White Vortex"
+];
+
 // Animation state
 let animationState = {
     time: 0,
@@ -567,14 +598,49 @@ let currentPresetIndex = 0;
 const updatePresetDisplay = () => {
     const presetName = cameraConfigs[currentPresetIndex].name;
     document.getElementById('currentPreset').textContent = presetName;
+    
+    // Update color mode button color to match the new preset
+    const colorModeToggle = document.getElementById('color-mode-toggle');
+    if (colorModeToggle) {
+        const galaxyColor = getComputedStyle(document.documentElement).getPropertyValue('--galaxy-outside-color').trim();
+        colorModeToggle.style.color = galaxyColor;
+    }
 };
 
 const switchPreset = (direction) => {
-    const totalPresets = cameraConfigs.length;
-    currentPresetIndex = (currentPresetIndex + direction + totalPresets) % totalPresets;
-    const newPreset = cameraConfigs[currentPresetIndex];
-    applyConfiguration(newPreset);
-    updatePresetDisplay();
+    // Get current mode presets
+    const currentModePresets = isBrightMode ? brightModePresets : darkModePresets;
+    
+    // Find current preset index within the current mode
+    const currentPresetName = currentConfig.name;
+    let currentModeIndex = currentModePresets.findIndex(name => name === currentPresetName);
+    
+    // If current preset is not in the current mode, start from beginning
+    if (currentModeIndex === -1) {
+        currentModeIndex = 0;
+    } else {
+        // Switch within current mode
+        currentModeIndex = (currentModeIndex + direction + currentModePresets.length) % currentModePresets.length;
+    }
+    
+    // Get the new preset name
+    const newPresetName = currentModePresets[currentModeIndex];
+    const newPreset = cameraConfigs.find(config => config.name === newPresetName);
+    
+    if (newPreset) {
+        applyConfiguration(newPreset);
+        
+        // Set background color for bright mode presets
+        if (isBrightMode && newPreset.galaxyBackgroundColor) {
+            scene.background = new THREE.Color(newPreset.galaxyBackgroundColor);
+        } else if (!isBrightMode) {
+            scene.background = new THREE.Color(0x000000); // Black for dark mode
+        }
+        
+        // Update the global preset index to match the new preset
+        currentPresetIndex = cameraConfigs.findIndex(config => config.name === newPresetName);
+        updatePresetDisplay();
+    }
 };
 
 // Add to the end of the file, just before the last closing brace
@@ -775,4 +841,74 @@ const initializeAudio = () => {
 };
 
 // Call audio initialization after other initializations
-window.addEventListener('load', initializeAudio); 
+window.addEventListener('load', initializeAudio);
+
+// Color Mode Toggle Functionality
+const switchColorMode = () => {
+    isBrightMode = !isBrightMode;
+    
+    // Toggle bright-mode class on body for background only
+    document.body.classList.toggle('bright-mode', isBrightMode);
+    
+    // Get current preset name
+    const currentPresetName = currentConfig.name;
+    let targetPresetList = isBrightMode ? brightModePresets : darkModePresets;
+    let newPresetName;
+    
+    if (isBrightMode) {
+        // Switch to bright mode - find equivalent or default to first bright preset
+        newPresetName = targetPresetList[0]; // Default to first bright preset
+    } else {
+        // Switch to dark mode - find equivalent or default to first dark preset  
+        newPresetName = targetPresetList[0]; // Default to first dark preset
+    }
+    
+    // Find and apply the new preset
+    const newPreset = cameraConfigs.find(config => config.name === newPresetName);
+    if (newPreset) {
+        applyConfiguration(newPreset);
+        
+        // Set scene background color based on mode and preset
+        if (isBrightMode && newPreset.galaxyBackgroundColor) {
+            // Use the galaxyBackgroundColor from the preset configuration
+            scene.background = new THREE.Color(newPreset.galaxyBackgroundColor);
+        } else {
+            scene.background = new THREE.Color(0x000000); // Black background for dark mode or default
+        }
+        
+        // Update the preset index to match the new preset
+        currentPresetIndex = cameraConfigs.findIndex(config => config.name === newPresetName);
+        updatePresetDisplay();
+    }
+    
+    // Update the color mode icon appearance
+    const colorModeToggle = document.getElementById('color-mode-toggle');
+    const moonIcon = document.getElementById('moon-icon');
+    const sunIcon = document.getElementById('sun-icon');
+    
+    if (colorModeToggle && moonIcon && sunIcon) {
+        // Use the same color as the play button (galaxy outside color)
+        const galaxyColor = getComputedStyle(document.documentElement).getPropertyValue('--galaxy-outside-color').trim();
+        colorModeToggle.style.color = galaxyColor;
+        
+        if (isBrightMode) {
+            // Show moon icon in bright mode (to switch to dark)
+            sunIcon.style.display = 'none';
+            moonIcon.style.display = 'block';
+            colorModeToggle.setAttribute('aria-label', 'Switch to dark mode');
+        } else {
+            // Show sun icon in dark mode (to switch to bright)
+            moonIcon.style.display = 'none';
+            sunIcon.style.display = 'block';
+            colorModeToggle.setAttribute('aria-label', 'Switch to bright mode');
+        }
+    }
+};
+
+// Initialize color mode toggle
+document.addEventListener('DOMContentLoaded', () => {
+    const colorModeToggle = document.getElementById('color-mode-toggle');
+    if (colorModeToggle) {
+        colorModeToggle.addEventListener('click', switchColorMode);
+    }
+}); 

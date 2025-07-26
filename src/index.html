@@ -128,6 +128,32 @@
         </div>
         <div class="footer-section audio-control-section">
             <div id="audio-control"></div>
+                         <button id="color-mode-toggle" class="color-mode-toggle" aria-label="Switch to bright mode">
+                 <!-- Perfect Sun icon for dark mode (default) -->
+                 <svg id="sun-icon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                     <circle cx="12" cy="12" r="5" fill="currentColor"/>
+                     <g fill="currentColor">
+                         <circle cx="12" cy="2" r="1"/>
+                         <circle cx="12" cy="22" r="1"/>
+                         <circle cx="5.64" cy="5.64" r="1"/>
+                         <circle cx="18.36" cy="18.36" r="1"/>
+                         <circle cx="2" cy="12" r="1"/>
+                         <circle cx="22" cy="12" r="1"/>
+                         <circle cx="5.64" cy="18.36" r="1"/>
+                         <circle cx="18.36" cy="5.64" r="1"/>
+                     </g>
+                 </svg>
+                 <!-- Perfect Moon icon for bright mode -->
+                 <svg id="moon-icon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" style="display: none;">
+                     <defs>
+                         <mask id="moon-mask">
+                             <rect width="24" height="24" fill="white"/>
+                             <circle cx="16" cy="12" r="8" fill="black"/>
+                         </mask>
+                     </defs>
+                     <circle cx="12" cy="12" r="9" fill="currentColor" mask="url(#moon-mask)"/>
+                 </svg>
+             </button>
         </div>
         <div class="footer-section corner-link-section">
             <a href="https://www.one-front.com" 
