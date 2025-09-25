@@ -1,6 +1,9 @@
 :root {
-    --galaxy-inside-color: #ffffff;
-    --galaxy-outside-color: #00fff0;
+    --galaxy-inside-color: #00ffff;
+    --galaxy-outside-color: #ff00ff;
+    --galaxy-primary: var(--galaxy-outside-color);
+    --galaxy-secondary: var(--galaxy-inside-color);
+    --galaxy-accent: var(--galaxy-outside-color);
 }
 
 *
@@ -14,7 +17,8 @@ body
 {
     overflow: hidden;
     width: 100%;
-    height: 100%;
+    /* Use dynamic viewport height to avoid mobile URL bar jumps */
+    min-height: 100dvh;
 }
 
 #container {
@@ -67,6 +71,14 @@ body[data-dev-mode="false"] .dg {
     outline: none;
 }
 
+/* Respect notches and home-indicator on mobile */
+.page,
+body,
+html {
+    padding-top: max(0px, env(safe-area-inset-top));
+    padding-bottom: max(0px, env(safe-area-inset-bottom));
+}
+
 /* Galaxy text overlay */
 .galaxy-title {
     position: absolute;
@@ -82,12 +94,13 @@ body[data-dev-mode="false"] .dg {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 2rem;
+    padding: 2.5rem 1.5rem;
     background: rgba(0, 0, 0, 0.15);
+    width: 750px;
+    height: 750px;
+    max-width: 90vw;
     backdrop-filter: blur(120px);
     border-radius: 100%;
-    height: 650px;
-    width: 650px;
     box-sizing: border-box;
     /* margin: 10px; */
 }
@@ -97,72 +110,174 @@ body[data-dev-mode="false"] .dg {
     font-size: 4rem;
     font-weight: 900;
     letter-spacing: 0.3em;
-    border-radius: 100px;
-    /* -webkit-text-stroke: 3px var(--galaxy-outside-color); */
+    margin: 0;
+    text-align: center;
+    line-height: 1.1;
+    white-space: nowrap;
 }
 
 .galaxy-title__subtitle {
     display: block;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     max-width: 600px;
     opacity: 0.95;
-    font-weight: 900;
+    font-weight: 500;
     text-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
-    border-radius: 100px;
+    margin: 0 auto;
+    text-align: center;
+    line-height: 1.4;
+    white-space: nowrap;
 }
 
 .galaxy-title__meeting {
     display: block;
-    font-size: 0.8rem;
-    /* color: var(--galaxy-outside-color); */
-    font-weight: 500;
-    border-radius: 100px;
-    margin-top: 1rem;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 400;
+    margin: 0;
+    text-align: center;
+    line-height: 1.3;
+    max-width: 400px;
+    white-space: nowrap;
 }
 
 .modern-button {
-    display: inline-block;
-    padding: 1.8em 4em;
-    margin-top: 2rem;
-    background: color-mix(in srgb, var(--galaxy-outside-color) 5%, transparent);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.2rem 5px;
+    padding-left: 5px;
+    padding-right: 5px;
+    margin: 0;
+    background: none;
     color: var(--galaxy-outside-color);
     text-decoration: none;
-    border-radius: 100px;
-    font-size: 1rem;
-    font-weight: 500;
-    letter-spacing: 0.05em;
+    border: none;
+    border-radius: 50px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 400;
+    letter-spacing: 0.1em;
     transition: all 0.3s ease;
-    backdrop-filter: blur(15px);
+    backdrop-filter: none;
+    text-transform: uppercase;
+    line-height: 1;
+    height: 38px;
+    min-height: 38px;
+    max-height: 38px;
+    min-width: auto;
+    width: auto;
 }
 
 .modern-button:hover {
-    background: color-mix(in srgb, var(--galaxy-outside-color) 20%, transparent);
+    background: color-mix(in srgb, var(--galaxy-outside-color) 20%, transparent) !important;
 }
 
+/* Glossy iPhone-Style Calendar Button */
+.modern-button[href*="calendar.google.com"] {
+    background: 
+        linear-gradient(135deg, 
+            color-mix(in srgb, var(--galaxy-inside-color) 30%, transparent) 0%,
+            color-mix(in srgb, var(--galaxy-outside-color) 30%, transparent) 100%
+        );
+    backdrop-filter: blur(10px) saturate(120%);
+    border: none;
+    border-radius: 25px;
+    color: #ffffff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.5rem 1.5rem;
+    height: 50px;
+    min-height: 50px;
+    max-height: 50px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    position: relative;
+    overflow: hidden;
+    text-shadow: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    box-shadow: none;
+    animation: gradientFlow 4s ease-in-out infinite;
+    flex-shrink: 0;
+    outline: none;
+    min-width: auto;
+    width: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.2rem;
+    z-index: 10001;
+}
+
+.modern-button[href*="calendar.google.com"]:hover {
+    animation-duration: 1s !important;
+    background: 
+        linear-gradient(45deg, 
+            var(--galaxy-outside-color) 0%,
+            var(--galaxy-inside-color) 100%
+        ) !important;
+    background-size: 200% 200% !important;
+}
+
+@keyframes gradientFlow {
+    0%, 100% { 
+        background-position: 0% 50%; 
+    }
+    50% { 
+        background-position: 100% 50%; 
+    }
+}
+
+@keyframes gradientFlowReverse {
+    0%, 100% { 
+        background-position: 100% 50%; 
+    }
+    50% { 
+        background-position: 0% 50%; 
+    }
+}
+
+
+
+
+
+
+
+
 .corner-link {
-    position: fixed;
-    bottom: 4rem;
-    right: 4rem;
     color: var(--galaxy-outside-color);
     text-decoration: none;
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.7rem;
     transition: all 0.3s ease;
-    z-index: 1000;
+    padding: 0.2rem 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-radius: 50px;
+    height: 38px;
+    min-height: 38px;
+    max-height: 38px;
+    min-width: auto;
+    width: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
 }
 
 .corner-link:hover {
-    background: color-mix(in srgb, var(--galaxy-outside-color) 8%, transparent);
+    background: color-mix(in srgb, var(--galaxy-outside-color) 20%, transparent) !important;
 }
 
 .preset-switcher {
-    position: fixed;
-    bottom: 3rem;
-    left: 3rem;
     display: flex;
     align-items: center;
-    padding: 0.75rem 1.5rem;
-    z-index: 1000;
+    justify-content: center;
+    gap: 1rem;
+    padding: 0;
+    height: 100%;
 }
 
 .preset-arrow {
@@ -173,25 +288,112 @@ body[data-dev-mode="false"] .dg {
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    min-height: 38px;
+    max-width: 38px;
+    max-height: 38px;
     transition: all 0.3s ease;
     border-radius: 50%;
+    margin: 0;
 }
 
 .preset-arrow:hover {
-    /* background:  var(--galaxy-outside-color)  */
+    background: color-mix(in srgb, var(--galaxy-outside-color) 20%, transparent) !important;
 }
 
 .preset-arrow:active {
-    /* transform: scale(0.95); */
+    transform: scale(0.95);
+}
+
+/* Hover Effect Switcher */
+.hover-effect-switcher {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 0;
+    height: 100%;
+}
+
+.hover-effect-arrow {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.hover-effect-arrow:hover {
+    background: color-mix(in srgb, var(--galaxy-outside-color) 20%, transparent);
+    color: #ffffff;
+    transform: scale(1.1);
+    border-color: var(--galaxy-outside-color);
+}
+
+.hover-effect-arrow:active {
+    transform: scale(0.95);
+}
+
+.hover-effect-name {
+    color: var(--galaxy-outside-color);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    min-width: 100px;
+    text-align: center;
+    padding: 0.4em 0.8em;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.2s ease;
 }
 
 .preset-name {
     color: var(--galaxy-outside-color);
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.7rem;
-    min-width: 180px;
+    width: 100px;
     text-align: center;
-    border-radius: 100px;
+    margin: 0;
+    padding: 0;
+    cursor: default;
+    user-select: none;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    position: relative;
+}
+
+/* Preset loading indicator */
+.preset-loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    pointer-events: none;
+}
+
+.loading-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-top: 2px solid var(--galaxy-outside-color);
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    opacity: 0.8;
 }
 
 .code-pill {
@@ -203,6 +405,8 @@ body[data-dev-mode="false"] .dg {
     font-family: 'JetBrains Mono', monospace;
     font-size: 1em;
     backdrop-filter: blur(85px);
+    margin: 0;
+    display: inline;
     /* text-shadow: 0 0 20px var(--galaxy-outside-color); */
 }
 
@@ -223,25 +427,51 @@ body[data-dev-mode="false"] .dg {
     margin-right: 0.5em;
 }
 
+/* legacy ms styling replaced by .ms above */
+
 .calendar-link {
-    color: var(--galaxy-outside-color);
+    color: #ffffff;
     text-decoration: none;
     font-size: 0.7em;
-    padding: 0.3em 0.8em;
-    border-radius: 100px;
-    background: color-mix(in srgb, var(--galaxy-outside-color) 8%, transparent);
+    padding: 0.3em 5px;
+    padding-left: 5px;
+    padding-right: 5px;
+    border-radius: 19px;
+    background: 
+        linear-gradient(135deg, 
+            color-mix(in srgb, var(--galaxy-inside-color) 30%, transparent) 0%,
+            color-mix(in srgb, var(--galaxy-outside-color) 30%, transparent) 100%
+        );
+    backdrop-filter: blur(10px) saturate(120%);
     transition: all 0.3s ease;
     letter-spacing: 0.1em;
-    font-weight: bold;
+    font-weight: 600;
+    text-transform: uppercase;
+    height: 38px;
+    min-height: 38px;
+    max-height: 38px;
+    min-width: auto;
+    width: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    box-shadow: none;
 }
 
 .calendar-link:hover {
-    background: color-mix(in srgb, var(--galaxy-outside-color) 15%, transparent);
+    animation-duration: 1s !important;
+    background: 
+        linear-gradient(45deg, 
+            var(--galaxy-outside-color) 0%,
+            var(--galaxy-inside-color) 100%
+        ) !important;
+    background-size: 200% 200% !important;
 }
 
 .audio-control {
-    width: 40px;
-    height: 40px;
+    width: 38px;
+    height: 38px;
     position: fixed;
     bottom: 20px;
     right: 20px;
@@ -255,7 +485,7 @@ body[data-dev-mode="false"] .dg {
 }
 
 .audio-control:hover {
-    background: rgba(0, 0, 0, 0.5);
+    background: color-mix(in srgb, var(--galaxy-outside-color) 20%, transparent);
 }
 
 .play-icon {
@@ -302,26 +532,29 @@ body[data-dev-mode="false"] .dg {
 
 /* Audio Control Styles */
 #audio-control {
-    width: 32px;
-    height: 32px;
-    position: fixed;
-    bottom: 3rem;
-    left: 50%;
-    transform: translateX(-50%) translateX(-22px);
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    min-height: 38px;
+    max-width: 38px;
+    max-height: 38px;
     cursor: pointer;
-    background: rgba(0, 0, 0, 0.5);
+    background: none;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
     transition: all 0.3s ease;
-    z-index: 9999;
-    margin-bottom: 0.5rem;
 }
 
 #audio-control:hover {
-    background: rgba(0, 0, 0, 0.7);
-    transform: translateX(-50%) translateX(-22px) scale(1.1);
+    background: color-mix(in srgb, var(--galaxy-outside-color) 20%, transparent);
+}
+
+/* Spin play button like a vinyl while playing */
+#audio-control.playing {
+    animation: spin 2s linear infinite;
+    will-change: transform;
 }
 
 #audio-control .play-icon {
@@ -329,7 +562,7 @@ body[data-dev-mode="false"] .dg {
     height: 0;
     border-style: solid;
     border-width: 7px 0 7px 11px;
-    border-color: transparent transparent transparent var(--galaxy-outside-color);
+    border-color: transparent transparent transparent #ffffff;
     margin-left: 2px;
 }
 
@@ -346,7 +579,7 @@ body[data-dev-mode="false"] .dg {
     position: absolute;
     width: 3px;
     height: 12px;
-    background-color: var(--galaxy-outside-color);
+    background-color: #ffffff;
     top: 0;
 }
 
@@ -366,63 +599,176 @@ body[data-dev-mode="false"] .dg {
     display: block;
 }
 
-/* Color Mode Toggle Styles */
-.color-mode-toggle {
-    width: 32px;
-    height: 32px;
-    position: fixed;
-    bottom: 3rem;
-    left: 50%;
-    transform: translateX(-50%) translateX(22px);
+/* Vinyl Stop Button Styles */
+.vinyl-stop-button {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    min-height: 38px;
+    max-width: 38px;
+    max-height: 38px;
     cursor: pointer;
-    background: rgba(0, 0, 0, 0.5);
+    background: none;
     border: none;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
     transition: all 0.3s ease;
-    z-index: 9999;
-    margin-bottom: 0.5rem;
+    color: #ff4444;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.vinyl-stop-button:hover {
+    background: color-mix(in srgb, #ff4444 20%, transparent);
+    transform: scale(1.1);
+}
+
+/* Color Mode Toggle Styles */
+.color-mode-toggle {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    min-height: 38px;
+    max-width: 38px;
+    max-height: 38px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
     color: #ffffff;
 }
 
 .color-mode-toggle:hover {
-    background: rgba(0, 0, 0, 0.7);
-    transform: translateX(-50%) translateX(22px) scale(1.1);
+    background: color-mix(in srgb, var(--galaxy-outside-color) 20%, transparent) !important;
 }
 
 .color-mode-toggle svg {
-    width: 18px;
-    height: 18px;
+    width: 14px;
+    height: 14px;
 }
 
-/* Bright Mode - Invert Everything */
+
+/* Light Mode - Same CSS as dark mode, just inverted colors */
 body.bright-mode {
-    filter: invert(1);
-    background: #000000; /* Start with black, becomes white when inverted */
+    background: #ffffff;
+    color: #000000;
 }
 
-@media (max-width: 900px) {
+/* Light mode galaxy colors - same as dark mode but inverted */
+body.bright-mode {
+    --galaxy-inside-color: #3b82f6;
+    --galaxy-outside-color: #1d4ed8;
+    --galaxy-primary: #1d4ed8;
+    --galaxy-secondary: #3b82f6;
+    --galaxy-accent: #1d4ed8;
+}
+
+/* Light mode form elements - same as dark mode but with light colors */
+body.bright-mode .email-input,
+body.bright-mode .project-input,
+body.bright-mode .source-input {
+    color: #000000;
+    background: transparent;
+    border-bottom: none !important;
+}
+
+body.bright-mode .email-input:focus,
+body.bright-mode .project-input:focus,
+body.bright-mode .source-input:focus {
+    border-bottom: none !important;
+}
+
+/* Light mode autofill override */
+body.bright-mode .email-input:-webkit-autofill,
+body.bright-mode .project-input:-webkit-autofill,
+body.bright-mode .source-input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+    -webkit-text-fill-color: #000000 !important;
+    background: transparent !important;
+}
+
+/* Audio control icons for bright mode */
+body.bright-mode #audio-control .play-icon {
+    border-color: transparent transparent transparent #000000;
+}
+
+body.bright-mode #audio-control .pause-icon::before,
+body.bright-mode #audio-control .pause-icon::after {
+    background-color: #000000;
+}
+
+/* Light mode buttons - same as dark mode but with light colors */
+body.bright-mode .subscribe-button,
+body.bright-mode .modern-button,
+body.bright-mode .calendar-link {
+    color: #ffffff;
+}
+
+body.bright-mode .preset-name {
+    color: var(--galaxy-outside-color);
+    background: rgba(0, 0, 0, 0.05);
+}
+
+body.bright-mode .preset-arrow,
+body.bright-mode #audio-control,
+body.bright-mode .color-mode-toggle {
+    color: #000000;
+}
+
+body.bright-mode .preset-arrow:hover,
+body.bright-mode #audio-control:hover,
+body.bright-mode .color-mode-toggle:hover {
+    background: rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Light mode footer and header - same as dark mode but with light background */
+body.bright-mode .footer-bar,
+body.bright-mode .app-header {
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(50px);
+}
+
+/* Light mode loading spinner */
+body.bright-mode .loading-spinner {
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    border-top: 2px solid var(--galaxy-outside-color);
+}
+
+/* Light mode toast notifications */
+body.bright-mode .toast-content {
+    background: rgba(255, 255, 255, 0.9);
+}
+
+body.bright-mode .toast-message {
+    color: #000000;
+}
+
+/* Tablet and Small Desktop (601px - 900px) */
+@media (min-width: 601px) and (max-width: 900px) {
     .galaxy-title {
-        /* width: 90vw; */
-        /* height: 90vw; */
-        min-width: 220px;
-        min-height: 220px;
-        max-width: 95vw;
-        max-height: 95vw;
+        min-width: 380px;
+        min-height: 380px;
+        max-width: 90vw;
+        max-height: 90vw;
         top: 45%;
-        padding: 1.2rem;
+        padding: 1.5rem;
         border-radius: 50%;
     }
     .galaxy-title__main {
-        font-size: 2.2rem;
+        font-size: 2.5rem;
         font-weight: 900;
+        white-space: normal;
     }
     .galaxy-title__subtitle,
     .galaxy-title__meeting {
-        font-size: 1.1rem;
-        max-width: 90vw;
+        font-size: 1rem;
+        max-width: 85vw;
+        white-space: normal;
     }
     .modern-button {
         font-size: 1rem;
@@ -432,171 +778,1124 @@ body.bright-mode {
     }
 }
 
-@media (max-width: 600px) {
-    .galaxy-title {
-        width: 90vw;
-        /* padding: 20px; */
-        height: 90vw;
-        min-width: 120px;
-        min-height: 120px;
-        max-width: 99vw;
-        max-height: 99vw;
-        padding: 2.7rem;
-        border-radius: 50%;
-        font-size: 0.95rem;
-        /* background: radial-gradient(circle at 10% 10%, rgba(170, 170, 170, 0.15), rgba(0, 0, 0, 0.9)); */
+/* Medium screens (601px - 900px) */
+@media (min-width: 601px) and (max-width: 900px) {
+    .app-header {
+        padding: 1rem 1.5rem;
+        height: 60px;
+        min-height: 60px;
+        background: rgba(0, 0, 0, 0.02);
+        backdrop-filter: blur(60px);
+    }
     
-        backdrop-filter: blur(80px);
-        /* box-shadow: 
-            inset -1px -1px -1px rgba(0, 0, 0, 0.9),
-            inset 1px 1px 1px rgba(7, 7, 7, 0.1),
-            inset 1px 0.5px 0px rgba(188, 188, 188, 0.9); */
-        /* border: 1px solid rgba(255, 255, 255, 0.1); */
-        /* background: rgba(0, 0, 0, 0.1); */
+    .header-content {
+        flex-direction: row;
+        gap: 1rem;
+        align-items: center;
     }
-    .galaxy-title__main {
-        font-size: 2rem;
-        font-weight: 900;
+    
+    .subscription-title {
+        font-size: 1rem;
+        flex-shrink: 0;
     }
-    .galaxy-title__subtitle,
-    .galaxy-title__meeting {
-        font-size: 0.95rem;
-        max-width: 95vw;
+    
+    .app-header .subscription-form {
+        max-width: 60%;
+        flex: 1;
     }
-    .galaxy-title__meeting {
-        display: none !important;
+    
+    .app-header .form-fields {
+        flex-direction: row;
+        gap: 0.6rem;
+        flex-wrap: wrap;
     }
-    .code-pill {
-        margin-top: 1rem;
-        padding-top: 1rem;
+    
+    .app-header .email-input,
+    .app-header .project-input,
+    .app-header .source-input {
+        min-width: 150px;
+        max-width: 200px;
+        font-size: 0.75rem;
+        padding: 0.6em 0.8em;
+        border-radius: 0;
+        background: transparent;
+        border: none;
     }
-    .modern-button {
-        font-size: 0.95rem;
-        padding: 0.7em;
-        margin: 0px;
-        width: 58%;
-        margin: 1rem auto 0 auto;
+    
+    .app-header .subscribe-button {
+        font-size: 0.7rem;
+        padding: 0.2rem 5px;
+        padding-left: 5px;
+        padding-right: 5px;
+        font-weight: 400;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        border-radius: 0;
     }
+    
     .footer-bar {
-        position: fixed !important;
-        left: 0 !important;
-        bottom: 0 !important;
-        width: 100vw !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        justify-content: flex-end !important;
-        gap: 4rem !important;
-        padding: 2.5rem 0 2.5rem 0 !important;
-        background: none !important;
-        box-shadow: none !important;
-        z-index: 10000 !important;
-        font-size: 0.8rem !important;
+        padding: 1rem 1.5rem;
+        height: 50px;
+        min-height: 50px;
+        background: rgba(0, 0, 0, 0.06);
+        backdrop-filter: blur(60px);
     }
-    .footer-bar .footer-section {
-        width: 100% !important;
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
-        margin: 0 !important;
+    
+    .footer-section {
+        flex: 1;
     }
-    .audio-control-section {
-        position: fixed !important;
-        top: 20% !important;
-        left: 50% !important;
-        transform: translateX(-50%) !important;
-        z-index: 10001 !important;
-        width: auto !important;
-        order: unset !important;
-    }
-    .footer-bar .audio-control-section {
-        display: none !important;
-    }
-    .preset-switcher-section {
-        order: 2 !important;
-    }
-    .corner-link-section {
-        order: 3 !important;
-    }
-    .footer-bar .preset-switcher,
-    .footer-bar .corner-link {
-        position: static !important;
-        left: unset !important;
-        right: unset !important;
-        bottom: unset !important;
-        top: unset !important;
-        margin: 0 !important;
-    }
-    .footer-bar .preset-switcher {
-        flex-direction: row !important;
-        gap: 0.5rem !important;
-        width: auto !important;
-    }
+    
     .preset-switcher {
-        flex-direction: row !important;
-        gap: 0.5rem !important;
-        width: auto !important;
+        flex-direction: row;
+        gap: 0.8rem;
+        align-items: center;
     }
-    .preset-arrow {
-        flex: 0 0 auto;
-    }
+    
     .preset-name {
-        flex: 1 1 auto;
-        min-width: 0;
-        width: auto;
-        font-size: 0.8rem;
-        padding: 0.2em 0;
+        font-size: 0.75rem;
+        min-width: 120px;
+        padding: 0.4em 0.8em;
+        background: rgba(255, 255, 255, 0.08);
+        border: none;
+        border-radius: 0;
+    }
+    
+    .preset-arrow {
+        padding: 0;
+        background: none;
+        border: none;
+        border-radius: 50%;
+        width: 38px;
+        height: 38px;
+        min-width: 38px;
+        min-height: 38px;
+    }
+    
+    .audio-control-section {
+        flex-direction: row;
+        gap: 0.8rem;
+    }
+    
+    #audio-control,
+    .vinyl-stop-button,
+    .color-mode-toggle {
+        padding: 0;
+        background: none;
+        border: none;
+        border-radius: 50%;
+        width: 38px;
+        height: 38px;
+        min-width: 38px;
+        min-height: 38px;
+    }
+}
+
+/* Small screens (401px - 600px) */
+@media (min-width: 401px) and (max-width: 600px) {
+    .galaxy-title {
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        min-width: 100vw;
+        min-height: 100vh;
+        max-width: 100vw;
+        max-height: 100vh;
+        padding: 2rem 1.5rem;
+        border-radius: 0;
+        transform: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
         text-align: center;
     }
-    #audio-control {
-        position: relative !important;
-        left: unset !important;
-        right: unset !important;
-        bottom: unset !important;
-        top: unset !important;
-        transform: none !important;
-        margin: 0 auto !important;
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
-        width: 48px !important;
-        height: 48px !important;
-        background: rgba(0, 0, 0, 0.7) !important;
-        border-radius: 50% !important;
-        cursor: pointer !important;
+    
+    .app-header {
+        display: none;
     }
+    
+    .mobile-subscription-form {
+        display: block !important;
+        margin-top: 1.5rem;
+        width: 100%;
+        max-width: 380px;
+        padding: 1.2rem;
+        background: transparent;
+        border-radius: 0;
+        border: none;
+        backdrop-filter: none;
+    }
+    
+    .mobile-form-title {
+        color: var(--galaxy-outside-color);
+        font-size: 1.1rem;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 1.2rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+    }
+    
+    .mobile-subscription-form .form-fields {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+        width: 100%;
+    }
+    
+    .mobile-subscription-form .email-input,
+    .mobile-subscription-form .project-input,
+    .mobile-subscription-form .source-input {
+        width: 100%;
+        font-size: 0.85rem;
+        padding: 0.9em 1.1em;
+        border-radius: 0;
+        background: transparent;
+        border: none;
+        border-bottom: none;
+        color: white;
+        transition: all 0.3s ease;
+        box-shadow: none;
+    }
+    
+    .mobile-subscription-form .email-input:focus,
+    .mobile-subscription-form .project-input:focus,
+    .mobile-subscription-form .source-input:focus {
+        background: transparent;
+        border-bottom: none;
+        transform: none;
+        box-shadow: none;
+    }
+    
+    .mobile-subscription-form .email-input::placeholder,
+    .mobile-subscription-form .project-input::placeholder,
+    .mobile-subscription-form .source-input::placeholder {
+        color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .mobile-subscription-form .subscribe-button {
+        width: 100%;
+        font-size: 0.85rem;
+        padding: 0.9em 1.1em;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        border-radius: 0;
+        background: color-mix(in srgb, var(--galaxy-outside-color) 15%, transparent);
+        border: none;
+        transition: all 0.3s ease;
+        box-shadow: none;
+    }
+    
+    /* Hover effect removed */
+    
+    .footer-bar {
+        flex-direction: column;
+        gap: 1.5rem;
+        padding: 1.5rem 1.2rem;
+        height: 50px;
+        min-height: 50px;
+        background: rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(80px);
+        border-top: none;
+    }
+    
+    .footer-section {
+        width: 100%;
+        justify-content: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .preset-switcher {
+        flex-direction: row;
+        gap: 1rem;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        max-width: 380px;
+    }
+    
+    .preset-name {
+        font-size: 0.85rem;
+        min-width: auto;
+        flex: 1;
+        text-align: center;
+        padding: 0.8em 1.2em;
+        background: rgba(255, 255, 255, 0.08);
+        border: none;
+        border-radius: 0;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(20px);
+    }
+    
+    /* Hover effect removed */
+    
+    .preset-arrow {
+        padding: 0;
+        background: none;
+        border: none;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+        backdrop-filter: none;
+        width: 38px;
+        height: 38px;
+        min-width: 38px;
+        min-height: 38px;
+    }
+    
+    /* Hover effect removed */
+    
+    .audio-control-section {
+        flex-direction: row;
+        justify-content: center;
+        gap: 1.5rem;
+        width: 100%;
+        max-width: 200px;
+    }
+    
+    #audio-control,
     .color-mode-toggle {
-        position: relative !important;
-        left: unset !important;
-        right: unset !important;
-        bottom: unset !important;
-        top: unset !important;
-        transform: none !important;
-        margin: 0 0 0 12px !important;
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
-        width: 48px !important;
-        height: 48px !important;
-        background: rgba(0, 0, 0, 0.7) !important;
-        border: none !important;
-        border-radius: 50% !important;
-        cursor: pointer !important;
-        color: #ffffff !important;
-        transition: all 0.3s ease !important;
+        padding: 0;
+        background: none;
+        border: none;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+        backdrop-filter: none;
+        width: 38px;
+        height: 38px;
+        min-width: 38px;
+        min-height: 38px;
     }
-    .color-mode-toggle:hover {
-        background: rgba(0, 0, 0, 0.9) !important;
-        transform: scale(1.1) !important;
+    
+    /* Hover effect removed */
+}
+
+/* Mobile (380px - 400px) */
+/* Mobile-First Design - Small Mobile (up to 480px) */
+@media (max-width: 480px) {
+    .galaxy-title {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        padding: 1rem;
+        border-radius: 0;
+        transform: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        text-align: center;
+        background: rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(80px);
     }
-    .color-mode-toggle svg {
-        width: 22px !important;
-        height: 22px !important;
+    
+    /* Mobile Content Layout - Top Section */
+    .header-section {
+        flex: 0 0 auto;
+        margin-bottom: 1rem;
     }
-    .corner-link {
+    
+    .galaxy-title__main {
+        font-size: 1.4rem;
+        line-height: 1.2;
+        margin-bottom: 0.5rem;
+        text-align: center;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        color: white;
+    }
+    
+    .galaxy-title__subtitle {
+        font-size: 0.65rem;
+        line-height: 1.3;
+        margin-bottom: 0;
+        text-align: center;
+        color: rgba(255, 255, 255, 0.7);
+        font-weight: 400;
+    }
+    
+    /* Mobile Content Layout - Middle Section */
+    .meeting-section {
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 0.8rem;
+    }
+    
+    .galaxy-title__meeting {
+        font-size: 0.6rem;
+        margin: 0;
+        text-align: center;
+        line-height: 1.2;
+        color: rgba(255, 255, 255, 0.8);
+        font-weight: 500;
+    }
+    
+    .countdown-timer {
+        font-size: 0.55rem;
+        margin: 0;
+        text-align: center;
+        padding: 0.4em 0.6em;
+        background: transparent;
+        border-radius: 0;
+        color: rgba(255, 255, 255, 0.6);
+        font-weight: 500;
+    }
+    
+    .modern-button {
+        font-size: 0.65rem;
+        padding: 0.6em 1em;
+        margin: 0;
+        min-width: 120px;
+        text-align: center;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+    }
+    
+    .galaxy-title__main {
+        font-size: 1.8rem;
+        line-height: 1.1;
+        margin-bottom: 0.8rem;
+        text-align: center;
+        font-weight: 900;
+        letter-spacing: 0.15em;
+        color: white;
+    }
+    
+    .galaxy-title__subtitle {
         font-size: 0.8rem;
-        padding: 0.7em 0;
+        line-height: 1.3;
+        max-width: 95%;
+        margin-bottom: 1.2rem;
+        text-align: center;
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 400;
+    }
+    
+    .galaxy-title__meeting {
+        font-size: 0.75rem;
+        max-width: 95%;
+        margin-bottom: 1.2rem;
+        text-align: center;
+        line-height: 1.3;
+        color: rgba(255, 255, 255, 0.8);
+        font-weight: 400;
+    }
+    
+    .modern-button {
+        font-size: 0.8rem;
+        padding: 0.9em 1.8em;
         width: auto;
-        display: block;
+        min-width: 200px;
+        text-align: center;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+    }
+    
+    .countdown-timer {
+        font-size: 0.7rem;
+        margin-bottom: 1.2rem;
+        max-width: 95%;
+        text-align: center;
+        padding: 0.7em 1em;
+        background: rgba(255, 255, 255, 0.1);
+        border: none;
+        border-radius: 0;
+        backdrop-filter: blur(20px);
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 500;
+    }
+    
+    .app-header {
+        display: none;
+    }
+    
+    .mobile-subscription-form {
+        display: block !important;
+        margin-top: 1.5rem;
+        width: 100%;
+        max-width: 380px;
+        padding: 1.2rem;
+        background: transparent;
+        border-radius: 0;
+        border: none;
+        backdrop-filter: none;
+    }
+    
+    .mobile-form-title {
+        color: var(--galaxy-outside-color);
+        font-size: 1.1rem;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 1.2rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+    }
+    
+    .mobile-subscription-form .form-fields {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+        width: 100%;
+    }
+    
+    .mobile-subscription-form .email-input,
+    .mobile-subscription-form .project-input,
+    .mobile-subscription-form .source-input {
+        width: 100%;
+        font-size: 0.85rem;
+        padding: 0.9em 1.1em;
+        border-radius: 0;
+        background: transparent;
+        border: none;
+        border-bottom: none;
+        color: white;
+        transition: all 0.3s ease;
+        box-shadow: none;
+    }
+    
+    .mobile-subscription-form .email-input:focus,
+    .mobile-subscription-form .project-input:focus,
+    .mobile-subscription-form .source-input:focus {
+        background: transparent;
+        border-bottom: none;
+        transform: none;
+        box-shadow: none;
+    }
+    
+    .mobile-subscription-form .email-input::placeholder,
+    .mobile-subscription-form .project-input::placeholder,
+    .mobile-subscription-form .source-input::placeholder {
+        color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .mobile-subscription-form .subscribe-button {
+        width: 100%;
+        font-size: 0.85rem;
+        padding: 0.9em 1.1em;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        border-radius: 0;
+        background: color-mix(in srgb, var(--galaxy-outside-color) 15%, transparent);
+        border: none;
+        transition: all 0.3s ease;
+        box-shadow: none;
+    }
+    
+    /* Hover effect removed */
+    
+    .footer-bar {
+        flex-direction: column;
+        gap: 1.2rem;
+        padding: 1.2rem 1rem;
+        height: 50px;
+        min-height: 50px;
+        background: rgba(0, 0, 0, 0.15);
+        backdrop-filter: blur(100px);
+        border-top: none;
+        border-radius: 0;
+    }
+    
+    /* Functions section - above ONE-FRONT */
+    .footer-section:not(.corner-link-section) {
+        width: 100%;
+        justify-content: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    /* Preset switcher - consistent button sizes */
+    .preset-switcher {
+        flex-direction: row;
+        gap: 0.8rem;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        max-width: 380px;
+    }
+    
+    .preset-name {
+        font-size: 0.75rem;
+        min-width: auto;
+        flex: 1;
+        text-align: center;
+        padding: 0.8em 1em;
+        background: rgba(255, 255, 255, 0.1);
+        border: none;
+        border-radius: 0;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(20px);
+        height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .preset-name:hover {
+        background: color-mix(in srgb, var(--galaxy-outside-color) 20%, transparent);
+    }
+    
+    .preset-arrow {
+        padding: 0;
+        background: none;
+        border: none;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+        backdrop-filter: none;
+        width: 38px;
+        height: 38px;
+        min-width: 38px;
+        min-height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .preset-arrow:hover {
+        background: color-mix(in srgb, var(--galaxy-outside-color) 20%, transparent);
+    }
+    
+    /* Audio controls - consistent button sizes */
+    .audio-control-section {
+        flex-direction: row;
+        justify-content: center;
+        gap: 1rem;
+        width: 100%;
+        max-width: 120px;
+    }
+    
+    #audio-control,
+    .color-mode-toggle {
+        padding: 0;
+        background: none;
+        border: none;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+        backdrop-filter: none;
+        width: 38px;
+        height: 38px;
+        min-width: 38px;
+        min-height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    #audio-control:hover,
+    .color-mode-toggle:hover {
+        background: color-mix(in srgb, var(--galaxy-outside-color) 20%, transparent);
+    }
+    
+    /* ONE-FRONT link - at the bottom */
+    .corner-link-section {
+        width: 100%;
+        justify-content: center;
+        display: flex;
+        align-items: center;
+        margin-top: 0.5rem;
+        padding-top: 1rem;
+        border-top: none;
+    }
+    
+    .corner-link {
+        font-size: 0.75rem;
+        color: rgba(255, 255, 255, 0.7);
+        text-decoration: none;
+        padding: 0.2rem 5px;
+        padding-left: 10px;
+        padding-right: 10px;
+        border-radius: 0;
+        transition: all 0.3s ease;
+        text-align: center;
+    }
+    
+    /* Hover effect removed */
+    
+    /* Enhanced touch targets for mobile accessibility */
+    .preset-name,
+    .preset-arrow,
+    #audio-control,
+    .color-mode-toggle {
+        min-height: 38px;
+        max-height: 38px;
+        min-width: 38px;
+        max-width: 38px;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: rgba(255, 255, 255, 0.1);
+        user-select: none;
+        -webkit-user-select: none;
+        cursor: pointer;
+    }
+    
+    .subscribe-button,
+    .modern-button,
+    .calendar-link {
+        min-height: 38px;
+        max-height: 38px;
+        min-width: auto;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: rgba(255, 255, 255, 0.1);
+        user-select: none;
+        -webkit-user-select: none;
+        cursor: pointer;
+    }
+}
+
+/* Simplified Mobile Layout (final overrides) */
+@media (max-width: 600px) {
+    .app-header,
+    .footer-bar { display: none !important; }
+
+    .galaxy-title {
+        /* mobile layout tokens */
+        --m-gap: 12px;
+        --m-pad: 16px;
+        --m-title-fs: clamp(2.4rem, 13vw, 4.5rem);
+        --m-sub-fs: 0.9rem;
+        --m-meet-fs: 0.8rem;
+        --m-count-fs: 0.75rem;
+        --m-letter: 0.04em;
+        --m-cta-h: 44px;
+
+        position: fixed;
+        inset: 0;
+        padding: var(--m-pad);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: var(--m-gap);
+        border-radius: 0;
+        width: 100vw;
+        height: 100svh;
+        /* Safe-area padding to avoid notches/home indicators */
+        padding: max(var(--m-pad), env(safe-area-inset-top)) max(var(--m-pad), env(safe-area-inset-right)) max(var(--m-pad), env(safe-area-inset-bottom)) max(var(--m-pad), env(safe-area-inset-left));
+        backdrop-filter: blur(24px);
+        overscroll-behavior: contain;
+    }
+    .galaxy-title::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        background: radial-gradient(120% 120% at 50% 40%, rgba(0,0,0,.35), rgba(0,0,0,.6));
+    }
+    .header-section,
+    .meeting-section { margin: 0 !important; gap: 8px !important; }
+    .header-section,
+    .meeting-section,
+    .mobile-subscription-form { flex: 0 0 auto !important; align-items: center !important; text-align: center !important; width: 100% !important; padding: 0 !important; }
+    /* Fill mobile width: tuned for monospace glyph width (~0.6em) and 10 letters */
+    .galaxy-title__main { font-size: clamp(28px, 14.6vw, 14rem) !important; letter-spacing: var(--m-letter) !important; margin: 0 !important; white-space: nowrap !important; width: 100% !important; max-width: none !important; height: auto !important; }
+    .galaxy-title__subtitle { font-size: var(--m-sub-fs) !important; margin: 0 !important; max-width: 32ch !important; white-space: normal !important; }
+    .galaxy-title__meeting { font-size: var(--m-meet-fs) !important; margin: 0 !important; max-width: 32ch !important; white-space: normal !important; }
+    .countdown-timer { font-size: var(--m-count-fs) !important; padding: 0.5em 0.8em !important; margin: 0 !important; background: rgba(255,255,255,0.08) !important; }
+    .modern-button { width: 100% !important; min-width: 0 !important; height: var(--m-cta-h) !important; min-height: var(--m-cta-h) !important; max-height: var(--m-cta-h) !important; line-height: var(--m-cta-h) !important; padding: 0 12px !important; font-size: 1rem !important; border-radius: 12px !important; margin: 0 !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; }
+    .mobile-subscription-form { display: block !important; width: 100% !important; max-width: 360px !important; margin: 0 auto !important; padding: 0 !important; box-sizing: border-box !important; }
+    .mobile-form-title { margin: 0 !important; }
+    .mobile-subscription-form .form-fields { gap: var(--m-gap) !important; margin: 0 !important; }
+    .mobile-subscription-form .email-input,
+    .mobile-subscription-form .project-input,
+    .mobile-subscription-form .source-input { font-size: 1rem !important; padding: 12px 14px !important; height: var(--m-cta-h) !important; min-height: var(--m-cta-h) !important; border-radius: 10px !important; background: rgba(0,0,0,.28) !important; }
+    .mobile-subscription-form .subscribe-button { width: 100% !important; height: var(--m-cta-h) !important; min-height: var(--m-cta-h) !important; max-height: var(--m-cta-h) !important; padding: 0 12px !important; font-size: 1rem !important; border-radius: 12px !important; margin: 0 !important; }
+}
+
+/* Improve text rendering/zoom behavior on mobile */
+@media (max-width: 600px) {
+    html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+}
+
+/* Global touch target enhancements for all screen sizes */
+    .preset-name,
+    .preset-arrow,
+    #audio-control,
+    .color-mode-toggle {
+        min-height: 38px;
+        max-height: 38px;
+        min-width: 38px;
+        max-width: 38px;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: rgba(255, 255, 255, 0.1);
+        user-select: none;
+        -webkit-user-select: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+.subscribe-button,
+.modern-button,
+.calendar-link {
+    min-height: 38px;
+    max-height: 38px;
+    min-width: auto;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: rgba(255, 255, 255, 0.1);
+    user-select: none;
+    -webkit-user-select: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* Form input touch targets for all screen sizes */
+.email-input,
+.project-input,
+.source-input {
+    min-height: 38px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: rgba(255, 255, 255, 0.1);
+    border: none;
+    box-shadow: none;
+    background: transparent;
+}
+
+/* Enhanced focus states for better accessibility */
+.preset-name:focus,
+.preset-arrow:focus,
+#audio-control:focus,
+.color-mode-toggle:focus,
+.subscribe-button:focus,
+.modern-button:focus,
+.calendar-link:focus {
+    outline: none;
+}
+
+.email-input:focus,
+.project-input:focus,
+.source-input:focus {
+    outline: none;
+}
+
+/* Loading and Animation Keyframes */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+@keyframes ripple {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0;
+    }
+}
+
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInScale {
+    0% {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Enhanced button loading states */
+.subscribe-button .button-text,
+.subscribe-button .button-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.subscribe-button .button-loading {
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Smooth transitions for all interactive elements */
+.modern-button,
+.subscribe-button,
+.calendar-link,
+.preset-name,
+.preset-arrow,
+#audio-control,
+.color-mode-toggle {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+    border: none;
+    box-shadow: none;
+}
+
+/* Hover animations removed */
+
+/* Click animations */
+.modern-button:active,
+.subscribe-button:active,
+.calendar-link:active,
+.preset-name:active,
+.preset-arrow:active,
+#audio-control:active,
+.color-mode-toggle:active {
+    transform: none;
+    transition: all 0.1s ease;
+}
+
+/* Form input animations */
+.email-input,
+.project-input,
+.source-input {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.email-input:focus,
+.project-input:focus,
+.source-input:focus {
+    transform: none;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Preset switching animations */
+.preset-name,
+    .preset-arrow {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Remove loading and transition animations for instant display */
+
+/* Mobile-First Footer Design - Small Mobile (up to 480px) */
+@media (max-width: 480px) {
+    .footer-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        padding: 1rem;
+        height: auto;
+        min-height: 50px;
+        background: rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(80px);
+        border: none;
+        border-radius: 0;
+        z-index: 10000;
+        padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+    }
+    
+    .footer-section {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    
+    /* Preset Switcher - Centered */
+    .preset-switcher {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        width: 100%;
+        max-width: 260px;
+    }
+    
+    .preset-name {
+        font-size: 0.7rem;
+        padding: 0.6em 0.8em;
+        background: rgba(255, 255, 255, 0.1);
+        border: none;
+        border-radius: 0;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(20px);
+        width: 140px;
+        min-width: 140px;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Prevent content from being hidden behind fixed footer */
+    body {
+        padding-bottom: 84px;
+        box-sizing: border-box;
+    }
+    
+    .preset-arrow {
+        padding: 0.6em;
+        background: rgba(255, 255, 255, 0.1);
+        border: none;
+        border-radius: 0;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(20px);
+        width: auto;
+        height: auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Audio Controls - Centered */
+    .audio-control-section {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 0.8rem;
+        width: auto;
+    }
+    
+    #audio-control,
+    .color-mode-toggle {
+        padding: 0.6em;
+        background: rgba(255, 255, 255, 0.1);
+        border: none;
+        border-radius: 0;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(20px);
+        width: auto;
+        height: auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* ONE-FRONT Link - Centered */
+    .corner-link-section {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 0.5rem;
+        padding-top: 0.8rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .corner-link {
+        font-size: 0.7rem;
+        color: rgba(255, 255, 255, 0.7);
+        text-decoration: none;
+        padding: 0.2rem 5px;
+        padding-left: 5px;
+        padding-right: 5px;
+        border-radius: 0;
+        transition: all 0.3s ease;
+        text-align: center;
+    }
+    
+    /* Hover effect removed */
+    
+    /* Mobile Form - Centered and Organized */
+    .mobile-subscription-form {
+        display: block !important;
+        margin-top: 1rem;
+        width: 100%;
+        max-width: 380px;
+        padding: 0;
+        background: transparent;
+        border-radius: 0;
+        border: none;
+        backdrop-filter: none;
+    }
+    
+    .mobile-form-title {
+        color: var(--galaxy-outside-color);
+        font-size: 0.9rem;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 0.8rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+    }
+    
+    .mobile-subscription-form .form-fields {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+        width: 100%;
+    }
+    
+    .mobile-subscription-form .email-input,
+    .mobile-subscription-form .project-input,
+    .mobile-subscription-form .source-input {
+        width: 100%;
+        font-size: 0.75rem;
+        padding: 0.7em 0.8em;
+        border-radius: 0;
+        background: transparent;
+        border: none;
+        border-bottom: none;
+        color: white;
+        transition: all 0.3s ease;
+        box-shadow: none;
+    }
+    
+    .mobile-subscription-form .email-input:focus,
+    .mobile-subscription-form .project-input:focus,
+    .mobile-subscription-form .source-input:focus {
+        background: transparent;
+        border-bottom: none;
+        transform: none;
+        box-shadow: none;
+    }
+    
+    .mobile-subscription-form .email-input::placeholder,
+    .mobile-subscription-form .project-input::placeholder,
+    .mobile-subscription-form .source-input::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .mobile-subscription-form .subscribe-button {
+        width: 100%;
+        font-size: 0.75rem;
+        padding: 0.7em 0.8em;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        border-radius: 0;
+        background: color-mix(in srgb, var(--galaxy-outside-color) 15%, transparent);
+        border: none;
+        transition: all 0.3s ease;
+        box-shadow: none;
+    }
+    
+    /* Hover effect removed */
+
+    /* Prevent content from being hidden behind fixed footer */
+    body {
+        padding-bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+        box-sizing: border-box;
     }
 }
 
@@ -622,19 +1921,1175 @@ body.bright-mode {
 }
 
 .footer-bar {
-    /* display: flex; */
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: center;
-    gap: 2.5rem;
-    width: 100vw;
+    justify-content: space-between;
+    padding: 0 2rem;
+    margin: 0;
+    background: rgba(0, 0, 0, 0.02);
+    -webkit-backdrop-filter: blur(50px);
+    backdrop-filter: blur(50px);
+    z-index: 10000;
     box-sizing: border-box;
+    height: 60px;
+    min-height: 60px;
+    isolation: isolate;
 }
 
 .footer-section {
     display: flex;
     align-items: center;
     justify-content: center;
+    flex: 1;
+    padding: 0;
+    margin: 0;
+    height: 100%;
+}
+
+.footer-section:first-child {
+    justify-content: flex-start;
+}
+
+.footer-section:last-child {
+    justify-content: flex-end;
+}
+
+.audio-control-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0;
+    margin: 0;
+    height: 100%;
+}
+
+/* App Header */
+.app-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.02) !important;
+    -webkit-backdrop-filter: blur(50px);
+    backdrop-filter: blur(50px);
+    z-index: 10000;
+    padding: 0 clamp(0.8rem, 2vw, 2rem);
+    margin: 0;
+    box-sizing: border-box;
+    height: 60px;
+    min-height: 60px;
+    isolation: isolate;
+    overflow: visible;
+}
+
+.header-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: clamp(0.5rem, 1.5vw, 1rem);
+    flex-direction: row;
+        min-width: 0;
+    overflow: hidden;
+}
+
+/* Modern Content Organization - Inside Circular Bubble */
+/* Circle: 650px diameter, 385px radius */
+/* Maximum content width at center: ~580px (with padding) */
+/* Content width decreases as we move from center */
+
+.header-section {
+    margin-bottom: 2rem;
+    flex-shrink: 0;
+    max-width: 600px;
+    width: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.meeting-section {
+    margin-bottom: 0;
+    text-align: center;
+    flex-shrink: 0;
+    max-width: 580px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.email-subscription {
+    margin-top: 1rem;
+    text-align: center;
+    width: 100%;
+    flex-shrink: 1;
+    min-height: 0;
+    max-width: 580px;
+}
+
+.subscription-header {
+    margin-bottom: 0;
+    text-align: left;
+}
+
+.app-header .subscription-header {
+    flex-shrink: 0;
+    min-width: 200px;
+}
+
+.subscription-title {
+    font-size: clamp(0.75rem, 1.6vw, 0.9rem);
+    font-weight: 700;
+    color: var(--galaxy-outside-color);
+    margin: 0;
+    letter-spacing: 0.1em;
+    flex-shrink: 0;
+    white-space: nowrap;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.app-header .subscription-title {
+    font-size: 1rem;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.subscription-description {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 1rem;
+    font-weight: 400;
+}
+
+.subscription-form {
+    width: 100%;
+}
+
+.app-header .subscription-form {
+    flex: 0 1 auto;
+    width: auto;
+    max-width: none;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.05) !important;
+}
+
+.form-fields {
+        display: flex;
+    flex-direction: row;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+    width: 100%;
+    max-width: 580px;
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
+    align-items: flex-end;
+}
+
+.app-header .form-fields {
+    margin-bottom: 0;
+    max-width: none;
+    margin-left: 0;
+    margin-right: 0;
+    width: auto;
+    gap: clamp(0.3rem, 1vw, 0.6rem);
+    align-items: center;
+    min-width: 0;
+    flex: 1;
+    background: rgba(0, 0, 0, 0.05) !important;
+    overflow: visible;
+    flex-wrap: wrap;
+}
+
+.email-input,
+.project-input,
+.source-input {
+    flex: 1;
+    padding: 0.7em 0;
+    margin: 0;
+    background: transparent;
+    border: none;
+    border-bottom: none !important;
+    border-radius: 0;
+    color: white;
+    font-family: 'JetBrains Mono', monospace;
+    /* Prevent iOS zoom on focus */
+    font-size: 16px;
+    transition: all 0.3s ease;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.app-header .email-input,
+.app-header .project-input,
+.app-header .source-input {
+    margin: 0;
+    font-size: clamp(0.6rem, 1.4vw, 0.7rem);
+    padding: 0.4em clamp(0.4em, 1vw, 0.6em);
+    flex: 1 1 clamp(12ch, 22vw, 28ch);
+    width: auto;
+    min-width: clamp(12ch, 22vw, 28ch);
+    max-width: none;
+    text-align: left;
+    overflow: hidden;
+    border: none !important;
+    border-bottom: none !important;
+}
+
+.email-input::placeholder,
+.project-input::placeholder,
+.source-input::placeholder {
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* Source input styling - now a regular text input, inherits from .email-input, .project-input, .source-input */
+
+.email-input:focus,
+.project-input:focus,
+.source-input:focus {
+    border-bottom: none !important;
+}
+
+/* Override browser autofill styling - NO YELLOW BACKGROUND EVER */
+.email-input:-webkit-autofill,
+.email-input:-webkit-autofill:hover,
+.email-input:-webkit-autofill:focus,
+.email-input:-webkit-autofill:active,
+.project-input:-webkit-autofill,
+.project-input:-webkit-autofill:hover,
+.project-input:-webkit-autofill:focus,
+.project-input:-webkit-autofill:active,
+.source-input:-webkit-autofill,
+.source-input:-webkit-autofill:hover,
+.source-input:-webkit-autofill:focus,
+.source-input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+    -webkit-text-fill-color: white !important;
+    background-color: transparent !important;
+    background: transparent !important;
+    background-image: none !important;
+    transition: background-color 5000s ease-in-out 0s !important;
+    border-bottom: none !important;
+}
+
+/* Additional aggressive override for email inputs specifically */
+.email-input {
+    background-color: transparent !important;
+    background: transparent !important;
+    background-image: none !important;
+    color: white !important;
+}
+
+.email-input:not(:placeholder-shown) {
+    background-color: transparent !important;
+    background: transparent !important;
+    background-image: none !important;
+    color: white !important;
+}
+
+.email-input[value]:not([value=""]) {
+    background-color: transparent !important;
+    background: transparent !important;
+    background-image: none !important;
+    color: white !important;
+}
+
+.subscribe-button {
+    background: 
+        linear-gradient(135deg, 
+            color-mix(in srgb, var(--galaxy-inside-color) 30%, transparent) 0%,
+            color-mix(in srgb, var(--galaxy-outside-color) 30%, transparent) 100%
+        );
+    backdrop-filter: blur(10px) saturate(120%);
+    border: none;
+    border-radius: 19px;
+    color: #ffffff;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.2rem 1rem;
+    height: 38px;
+    min-height: 38px;
+    max-height: 38px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    position: relative;
+    overflow: hidden;
+    text-shadow: none;
+    transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    cursor: pointer;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    box-shadow: none;
+    animation: gradientFlow 4s ease-in-out infinite;
+    flex-shrink: 0;
+    outline: none;
+    min-width: auto;
+    width: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.2rem;
+    z-index: 10001;
+}
+
+
+.subscribe-button:hover {
+    background: 
+        linear-gradient(315deg, 
+            var(--galaxy-outside-color) 0%,
+            var(--galaxy-inside-color) 100%
+        ) !important;
+    background-size: 200% 200% !important;
+    border: none !important;
+    box-shadow: none !important;
+    animation: gradientFlowReverse 2s ease-in-out infinite !important;
+}
+
+    .app-header .subscribe-button {
+        margin: 0;
+        font-size: 0.7rem;
+        padding: 0.2rem 1rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        font-weight: 800;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+}
+
+.subscribe-button:hover {
+    animation-duration: 1s !important;
+    background: 
+        linear-gradient(45deg, 
+            var(--galaxy-outside-color) 0%,
+            var(--galaxy-inside-color) 100%
+        ) !important;
+    background-size: 200% 200% !important;
+}
+
+
+
+.subscription-message {
+    margin: 10px;
+    font-size: 0.65rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+    min-height: 1em;
+    transition: all 0.3s ease;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
+}
+
+.app-header .subscription-message {
+    margin: 5px 0 0 0;
+    font-size: 0.6rem;
+    max-width: none;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.subscription-message.success {
+    color: #4ade80;
+}
+
+.subscription-message.error {
+    color: #f87171;
+}
+
+.subscription-message.info {
+    color: var(--galaxy-outside-color);
+}
+
+/* Galaxy Toast Notification */
+.galaxy-toast {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    z-index: 10001;
+    max-width: 400px;
+    min-width: 300px;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+.galaxy-toast.show {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+}
+
+.toast-content {
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    font-family: 'JetBrains Mono', monospace;
+    position: relative;
+}
+
+/* Light mode toast */
+body.bright-mode .toast-content {
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.toast-icon {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--galaxy-outside-color);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--galaxy-outside-color) 20%, transparent);
+}
+
+.toast-message {
+    flex: 1;
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 500;
+    line-height: 1.4;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    text-align: justify;
+    text-justify: inter-word;
+}
+
+/* Light mode toast text */
+body.bright-mode .toast-message {
+    color: black;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
+}
+
+.toast-close {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.toast-close:hover {
+    color: white;
+    background: color-mix(in srgb, rgba(255, 255, 255, 0.1) 50%, transparent);
+    transform: scale(1.1);
+}
+
+/* Mobile responsive toast */
+@media (max-width: 600px) {
+    .galaxy-toast {
+        top: 70px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+        min-width: auto;
+    }
+    
+    .toast-content {
+        padding: 0.8rem 1rem;
+        gap: 0.6rem;
+    }
+    
+    .toast-message {
+        font-size: 0.8rem;
+    }
+    
+    .toast-icon {
+        font-size: 1rem;
+        width: 20px;
+        height: 20px;
+    }
+}
+
+/* Mobile Subscription Form - Hidden by default */
+.mobile-subscription-form {
+    display: none;
+}
+
+/* Mobile Typography Improvements - Mobile Only */
+@media (max-width: 600px) {
+    /* Ensure all text is centered and properly sized for mobile */
+    .galaxy-title {
+        text-align: center;
+        min-height: 100svh; /* ensure full viewport height on mobile */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 16px;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .galaxy-title__main,
+    .galaxy-title__subtitle,
+    .galaxy-title__meeting,
+    .countdown-timer {
+        text-align: center;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    /* Improve readability on mobile */
+    .galaxy-title__main {
+        font-weight: 900;
+        letter-spacing: 0.15em;
+    }
+    
+    .galaxy-title__subtitle {
+        font-weight: 400;
+        line-height: 1.4;
+    }
+    
+    .galaxy-title__meeting {
+        font-weight: 400;
+        line-height: 1.3;
+    }
+    
+    .countdown-timer {
+        font-weight: 500;
+    }
+    
+    /* Mobile form typography */
+    .mobile-form-title {
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+    }
+    
+    .mobile-subscription-form .email-input,
+    .mobile-subscription-form .project-input,
+    .mobile-subscription-form .source-input {
+        font-weight: 400;
+        text-align: left;
+    }
+    
+    .mobile-subscription-form .subscribe-button {
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+    }
+
+    /* Mobile: hide top header and footer; keep hero content visible */
+    .app-header,
+    .footer-bar {
+        display: none !important;
+    }
+
+    .mobile-subscription-form {
+        display: block !important;
+        width: 100%;
+        max-width: 520px;
+        margin: 0 auto;
+    }
+}
+
+/* Mobile Responsive - Mobile First Approach */
+
+/* Extra Small Mobile (380px - 480px) */
+@media (max-width: 480px) {
+    .galaxy-title {
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        min-width: 100vw;
+        min-height: 100vh;
+        max-width: 100vw;
+        max-height: 100vh;
+        padding: 2rem 1.5rem;
+        border-radius: 0;
+        transform: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .app-header {
+        display: none;
+    }
+    
+    .mobile-subscription-form {
+        display: block !important;
+        margin-top: 1.5rem;
+        width: 100%;
+        max-width: 380px;
+        padding: 1.2rem;
+        background: transparent;
+        border-radius: 0;
+        border: none;
+        backdrop-filter: none;
+    }
+    
+    .mobile-form-title {
+        color: var(--galaxy-outside-color);
+        font-size: 1.1rem;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 1.2rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+    }
+    
+    .mobile-subscription-form .form-fields {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+        width: 100%;
+    }
+    
+    .mobile-subscription-form .email-input,
+    .mobile-subscription-form .project-input,
+    .mobile-subscription-form .source-input {
+        width: 100%;
+        font-size: 0.85rem;
+        padding: 0.9em 1.1em;
+        border-radius: 0;
+        background: transparent;
+        border: none;
+        border-bottom: none;
+        color: white;
+        transition: all 0.3s ease;
+        box-shadow: none;
+    }
+    
+    .mobile-subscription-form .email-input:focus,
+    .mobile-subscription-form .project-input:focus,
+    .mobile-subscription-form .source-input:focus {
+        background: transparent;
+        border-bottom: none;
+        transform: none;
+        box-shadow: none;
+    }
+    
+    .mobile-subscription-form .email-input::placeholder,
+    .mobile-subscription-form .project-input::placeholder,
+    .mobile-subscription-form .source-input::placeholder {
+        color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .mobile-subscription-form .subscribe-button {
+        width: 100%;
+        font-size: 0.85rem;
+        padding: 0.9em 1.1em;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        border-radius: 0;
+        background: color-mix(in srgb, var(--galaxy-outside-color) 15%, transparent);
+        border: none;
+        transition: all 0.3s ease;
+        box-shadow: none;
+    }
+    
+    /* Hover effect removed */
+    
+    .galaxy-title__main {
+        font-size: 2.2rem;
+        white-space: normal;
+        line-height: 1.1;
+        margin-bottom: 1rem;
+        text-align: center;
+        font-weight: 900;
+        letter-spacing: 0.2em;
+        color: white;
+    }
+    
+    .galaxy-title__subtitle {
+        font-size: 0.9rem;
+        white-space: normal;
+        line-height: 1.4;
+        max-width: 95%;
+        margin-bottom: 1.5rem;
+        text-align: center;
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 400;
+    }
+    
+    .galaxy-title__meeting {
+        font-size: 0.85rem;
+        white-space: normal;
+        max-width: 95%;
+        margin-bottom: 1.5rem;
+        text-align: center;
+        line-height: 1.3;
+        color: rgba(255, 255, 255, 0.8);
+        font-weight: 400;
+    }
+    
+    .modern-button {
+        font-size: 0.85rem;
+        padding: 1em 2em;
+        width: auto;
+        min-width: 220px;
+        text-align: center;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+    }
+    
+    .header-section {
+        margin-bottom: 2rem;
+        gap: 1.2rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        width: 100%;
+    }
+    
+    .meeting-section {
+        margin-bottom: 0;
+        gap: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        width: 100%;
+    }
+    
+    .countdown-timer {
+        font-size: 0.8rem;
+        margin-bottom: 1.5rem;
+        max-width: 95%;
+        text-align: center;
+        padding: 0.8em 1.2em;
+        background: rgba(255, 255, 255, 0.1);
+        border: none;
+        border-radius: 0;
+        backdrop-filter: blur(20px);
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 500;
+    }
+    
+    .code-pill {
+        margin: 0;
+        display: inline;
+        color: var(--galaxy-outside-color);
+        font-weight: 600;
+    }
+    
+    .email-subscription {
+        margin-top: 1rem;
+    }
+    
+    .form-fields {
+        max-width: 380px;
+        gap: 0.5rem;
+        flex-direction: column;
+    }
+    
+    .subscription-title {
+        font-size: 0.75rem;
+        margin-bottom: 0.4rem;
+    }
+    
+    .subscription-description {
+        font-size: 0.6rem;
+        margin-bottom: 0.7rem;
+        line-height: 1.3;
+    }
+    
+    .form-fields {
+        gap: 0.5rem;
+        margin-bottom: 0.7rem;
+    }
+    
+    .email-input,
+    .project-input,
+    .source-input {
+        padding: 0.6em 0.8em;
+        font-size: 0.7rem;
+    }
+    
+    
+    .subscribe-button {
+        width: 100%;
+        padding: 0.2rem 5px;
+        padding-left: 5px;
+        padding-right: 5px;
+        font-size: 0.7rem;
+    }
+    
+    .subscription-message {
+        font-size: 0.6rem;
+        margin-top: 0.5rem;
+    }
+}
+
+/* ———————————————————————————————————————————————————————————————
+   Final sizing normalization (enforce across all breakpoints)
+   - Icon buttons: fixed square 38x38
+   - Text buttons: fixed height 38px, auto width
+   This block is placed at the end to win the cascade.
+   ——————————————————————————————————————————————————————————————— */
+
+/* Icon buttons (fixed square) */
+.preset-arrow,
+#audio-control,
+.color-mode-toggle {
+    box-sizing: border-box;
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    min-height: 38px;
+    max-width: 38px;
+    max-height: 38px;
+    padding: 0; /* ensure exact square */
+}
+
+/* Text buttons (auto width, fixed height) */
+.modern-button,
+.corner-link,
+.subscribe-button,
+.calendar-link {
+    box-sizing: border-box; /* include padding in height */
+    height: 38px;
+    min-height: 38px;
+    max-height: 38px;
+}
+
+/* Explicitly ensure header/footer text buttons use auto width */
+.footer-bar .modern-button,
+.footer-bar .corner-link,
+.footer-bar .subscribe-button,
+.footer-bar .calendar-link,
+.app-header .subscribe-button {
+    width: auto;
+    min-width: 0;
+}
+
+/* Galaxy selector placeholder (fixed width, no shift, readable) */
+.preset-name {
+    box-sizing: border-box;
+    height: 38px;
+    min-height: 38px;
+    max-height: 38px;
+    width: 120px;
+    min-width: 120px;
+    flex-shrink: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Small Mobile (481px - 600px) */
+@media (min-width: 481px) and (max-width: 600px) {
+    .header-section {
+        margin-bottom: 1.2rem;
+    }
+    
+    .meeting-section {
+        margin-bottom: 1.2rem;
+    }
+    
+    .email-subscription {
+        margin-top: 1.2rem;
+    }
+    
+    .form-fields {
+        max-width: 360px;
+        flex-direction: column;
+    }
+    
+    .subscription-title {
+        font-size: 0.8rem;
+    }
+    
+    .subscription-description {
+        font-size: 0.65rem;
+        margin-bottom: 0.8rem;
+    }
+    
+    .form-fields {
+        gap: 0.6rem;
+        margin-bottom: 0.8rem;
+    }
+    
+    .email-input,
+    .project-input,
+    .source-input {
+        padding: 0.7em 1em;
+        font-size: 0.75rem;
+    }
+    
+    
+    .subscribe-button {
+        width: 100%;
+        padding: 0.2rem 5px;
+        padding-left: 5px;
+        padding-right: 5px;
+        font-size: 0.75rem;
+    }
+    
+    .subscription-message {
+        font-size: 0.65rem;
+        margin-top: 0.6rem;
+    }
+}
+
+/* Tablet (601px - 768px) */
+@media (min-width: 601px) and (max-width: 768px) {
+    .email-subscription {
+        top: calc(50% + 400px);
+        max-width: 85%;
+        padding: 0 1.5rem;
+    }
+    
+    .subscription-title {
+        font-size: 0.85rem;
+    }
+    
+    .subscription-description {
+        font-size: 0.7rem;
+    }
+}
+
+/* Desktop (769px+) */
+@media (min-width: 769px) {
+    .email-subscription {
+        top: calc(50% + 420px);
+        max-width: 400px;
+        padding: 0 2rem;
+    }
+    
+    .subscription-title {
+        font-size: 0.9rem;
+    }
+    
+    .subscription-description {
+        font-size: 0.7rem;
+    }
+}
+
+/* Large Desktop (1200px+) */
+@media (min-width: 1200px) {
+    .email-subscription {
+        top: calc(50% + 450px);
+        max-width: 450px;
+    }
+    
+    .subscription-title {
+        font-size: 1rem;
+    }
+    
+    .subscription-description {
+        font-size: 0.75rem;
+    }
+}
+
+/* Short screens (height < 700px) - Ensure everything fits */
+@media (max-height: 700px) {
+    .galaxy-title {
+        top: 30% !important;
+        width: 80vw !important;
+        height: 80vw !important;
+        min-width: 150px !important;
+        min-height: 150px !important;
+        padding: 1rem !important;
+    }
+    
+    .galaxy-title__main {
+        font-size: 1.4rem !important;
+        white-space: normal !important;
+    }
+    
+    .galaxy-title__subtitle {
+        font-size: 0.7rem !important;
+        white-space: normal !important;
+    }
+    
+    .modern-button {
+        font-size: 0.7rem !important;
+        padding: 0.4em 0.6em !important;
+        margin: 0.5rem auto 0 auto !important;
+    }
+    
+    .header-section {
+        margin-bottom: 0.8rem !important;
+    }
+    
+    .meeting-section {
+        margin-bottom: 0.8rem !important;
+    }
+    
+    .email-subscription {
+        margin-top: 0.8rem !important;
+    }
+    
+    .form-fields {
+        max-width: 300px !important;
+        gap: 0.4rem !important;
+        flex-direction: column !important;
+    }
+    
+    .subscription-title {
+        font-size: 0.7rem !important;
+        margin-bottom: 0.3rem !important;
+    }
+    
+    .subscription-description {
+        font-size: 0.6rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
+    .form-fields {
+        gap: 0.4rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
+    .email-input,
+    .project-input,
+    .source-input {
+        padding: 0.5em 0.7em !important;
+        font-size: 0.65rem !important;
+    }
+    
+    .subscribe-button {
+        padding: 0.2rem 5px !important;
+        padding-left: 5px !important;
+        padding-right: 5px !important;
+        font-size: 0.65rem !important;
+    }
+    
+    .subscription-message {
+        font-size: 0.6rem !important;
+        margin-top: 0.4rem !important;
+    }
 } 
+
+/* Final mobile enforcement: center hero + form and fit viewport */
+@media (max-width: 600px) {
+    .app-header, .footer-bar { display: none !important; }
+    .galaxy-title {
+        /* mobile layout tokens */
+        --m-gap: 8px;
+        --m-pad: 12px;
+        --m-title-fs: 1.6rem;
+        --m-sub-fs: 0.8rem;
+        --m-meet-fs: 0.75rem;
+        --m-count-fs: 0.65rem;
+        --m-letter: 0.12em;
+        --m-cta-h: 36px;
+
+        position: fixed;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: var(--m-pad);
+        gap: var(--m-gap);
+        border-radius: 0;
+        width: 100vw;
+        height: 100vh;
+    }
+    .header-section,
+    .meeting-section,
+    .mobile-subscription-form {
+        flex: 0 0 auto;
+        margin: 0 !important;
+        text-align: center !important;
+        align-items: center !important;
+        gap: var(--m-gap) !important;
+    }
+    .galaxy-title__main {
+        font-size: var(--m-title-fs) !important;
+        letter-spacing: var(--m-letter) !important;
+        margin: 0 0 calc(var(--m-gap) - 2px) 0 !important;
+        white-space: normal !important;
+    }
+    .galaxy-title__subtitle {
+        font-size: var(--m-sub-fs) !important;
+        margin: 0 0 var(--m-gap) 0 !important;
+        max-width: 95% !important;
+        white-space: normal !important;
+    }
+    .galaxy-title__meeting {
+        font-size: var(--m-meet-fs) !important;
+        margin: 0 0 var(--m-gap) 0 !important;
+        max-width: 95% !important;
+        white-space: normal !important;
+    }
+    .countdown-timer {
+        font-size: var(--m-count-fs) !important;
+        padding: 0.5em 0.8em !important;
+        margin: 0 !important;
+        background: rgba(255,255,255,0.08) !important;
+    }
+    .modern-button {
+        width: 100% !important;
+        min-width: 0 !important;
+        height: var(--m-cta-h) !important;
+        min-height: var(--m-cta-h) !important;
+        max-height: var(--m-cta-h) !important;
+        padding: 0 12px !important;
+        font-size: 0.8rem !important;
+    }
+    .mobile-subscription-form {
+        width: 100% !important;
+        max-width: 360px !important;
+        margin: 0 auto !important;
+        align-self: center !important;
+        text-align: center !important;
+    }
+    .mobile-subscription-form .form-fields {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: var(--m-gap) !important;
+        align-items: stretch !important;
+        width: 100% !important;
+    }
+    .mobile-subscription-form .email-input,
+    .mobile-subscription-form .project-input,
+    .mobile-subscription-form .source-input {
+        width: 100% !important;
+        font-size: 0.8rem !important;
+        padding: 0.6em 0.8em !important;
+        margin: 0 !important;
+    }
+    .mobile-subscription-form .subscribe-button {
+        width: 100% !important;
+        height: var(--m-cta-h) !important;
+        min-height: var(--m-cta-h) !important;
+        max-height: var(--m-cta-h) !important;
+        padding: 0 12px !important;
+        font-size: 0.8rem !important;
+    }
+    .subscription-message { margin: var(--m-gap) 0 0 0 !important; font-size: 0.75rem; }
+}
 
 /*# sourceMappingURL=main.css.map*/
