@@ -5,12 +5,20 @@ import * as dat from 'dat.gui'
 import vertexShader from './shaders/galaxy/vertex.glsl'
 import fragmentShader from './shaders/galaxy/fragment.glsl'
 import presetsConfig from './configs/presets.json'
+import hoverEffectsConfig from './configs/hover-effects.json'
 
 /**
  * Base
  */
 // Debug
 const DEV_MODE = document.body.getAttribute('data-dev-mode') === 'true';
+// Silence console noise in production
+if (!DEV_MODE) {
+    const noop = () => {};
+    console.log = noop;
+    console.debug = noop;
+    console.warn = noop;
+}
 let gui = new dat.GUI();
 // Hide GUI if not in dev mode
 if (!DEV_MODE) {
@@ -18,180 +26,20 @@ if (!DEV_MODE) {
 }
 
 // Canvas
-const canvas = document.createElement('canvas');
-const container = document.createElement('div');
-container.id = 'container';
-container.appendChild(canvas);
-document.body.appendChild(container);
+const canvas = document.querySelector('canvas.webgl')
 
 // Scene
 const scene = new THREE.Scene()
 
-// Initialize configurations
-const cameraConfigs = presetsConfig.presets;
-let currentConfig = JSON.parse(JSON.stringify(cameraConfigs[0]));
-
-// Update parameters from config
-const parameters = { ...currentConfig.galaxy };
-
-// Color Mode Toggle Variables
-let isBrightMode = false;
-const brightModePresets = [
-    "Midnight Ocean",
-    "Sun Matter Field",
-    "Shadow Streams", 
-    "Shadow Void",
-    "Crimson Forest",
-    "Deep Forest Nebula",
-    "Sunset Sky",
-    "Deep Sea Reef"
-];
-
-const darkModePresets = [
-    "Binary System",
-    "Aqua Dream",
-    "Purple Haze", 
-    "Amber Spiral",
-    "Cinematic",
-    "Neon Pulse",
-    "Maximum",
-    "Acid Waves",
-    "Ultra Blast",
-    "Black Hole",
-    "Frozen Ring",
-    "Quantum State",
-    "Dark Matter",
-    "Neutron Dance",
-    "White Vortex"
-];
-
-// Animation state
-let animationState = {
-    time: 0,
-    lastUpdate: Date.now()
-};
-
-/**
- * Camera
- */
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100)
-camera.position.set(
-    currentConfig.camera.position.x,
-    currentConfig.camera.position.y,
-    currentConfig.camera.position.z
-);
-scene.add(camera)
-
-// Controls
-const controls = new OrbitControls(camera, canvas)
-controls.enableDamping = true
-
-/**
- * Renderer
- */
-const renderer = new THREE.WebGLRenderer({ canvas });
-renderer.setSize(window.innerWidth, window.innerHeight)
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-
-// Camera animation function
-const animateCamera = () => {
-    if (!currentConfig.camera.automation.enabled) return;
-    
-    const now = Date.now();
-    const deltaTime = (now - animationState.lastUpdate) / 1000;
-    animationState.time += deltaTime;
-    animationState.lastUpdate = now;
-
-    const config = currentConfig.camera.automation;
-    
-    if (config.path === 'circular') {
-        const radius = 5;
-        camera.position.x = Math.cos(animationState.time * config.pathSpeed) * radius;
-        camera.position.z = Math.sin(animationState.time * config.pathSpeed) * radius;
-    } else if (config.path === 'spiral') {
-        const radius = 5 + Math.sin(animationState.time * 0.5) * 2;
-        camera.position.x = Math.cos(animationState.time * config.pathSpeed) * radius;
-        camera.position.z = Math.sin(animationState.time * config.pathSpeed) * radius;
-        camera.position.y = Math.cos(animationState.time * 0.5) * 2;
-    } else if (config.path === 'figure8') {
-        const scale = 5;
-        camera.position.x = Math.sin(animationState.time * config.pathSpeed) * scale;
-        camera.position.z = Math.sin(animationState.time * config.pathSpeed * 2) * scale * 0.5;
-    }
-
-    if (config.oscillation.enabled) {
-        camera.position.y += Math.sin(animationState.time * config.oscillation.frequency) * 
-                           config.oscillation.amplitude * deltaTime;
-    }
-
-    if (config.zoom.enabled) {
-        const zoomFactor = (Math.sin(animationState.time * config.zoom.speed) + 1) * 0.5;
-        const currentZoom = config.zoom.min + (config.zoom.max - config.zoom.min) * zoomFactor;
-        camera.position.multiplyScalar(currentZoom / camera.position.length());
-    }
-
-    camera.lookAt(scene.position);
-    
-    // Update current config with new camera position
-    currentConfig.camera.position.x = camera.position.x;
-    currentConfig.camera.position.y = camera.position.y;
-    currentConfig.camera.position.z = camera.position.z;
-};
-
-// Helper functions for configuration
-const updateUIColors = (insideColor, outsideColor) => {
-    // If outside color is black, use inside color for UI elements
-    const uiColor = outsideColor.toLowerCase() === '#000000' ? insideColor : outsideColor;
-    document.documentElement.style.setProperty('--galaxy-inside-color', insideColor);
-    document.documentElement.style.setProperty('--galaxy-outside-color', uiColor);
-};
-
-const applyGalaxyConfiguration = (config) => {
-    Object.assign(parameters, config.galaxy);
-    generateGalaxy();
-    updateUIColors(config.galaxy.insideColor, config.galaxy.outsideColor);
-};
-
-const applyCameraConfiguration = (config) => {
-    const cameraConfig = config.camera;
-    
-    // Apply basic settings
-    controls.enableRotate = cameraConfig.basic.enableRotate;
-    controls.enableZoom = cameraConfig.basic.enableZoom;
-    controls.enablePan = cameraConfig.basic.enablePan;
-    controls.dampingFactor = cameraConfig.basic.smoothness;
-    
-    // Apply position
-    camera.position.set(
-        cameraConfig.position.x,
-        cameraConfig.position.y,
-        cameraConfig.position.z
-    );
-    camera.lookAt(scene.position);
-    
-    // Apply movement settings
-    controls.autoRotate = cameraConfig.movement.autoRotate;
-    controls.autoRotateSpeed = cameraConfig.movement.rotationSpeed;
-    controls.zoomSpeed = cameraConfig.movement.zoomSpeed;
-    controls.minDistance = cameraConfig.movement.minDistance;
-    controls.maxDistance = cameraConfig.movement.maxDistance;
-    controls.minPolarAngle = cameraConfig.movement.minAngle;
-    controls.maxPolarAngle = cameraConfig.movement.maxAngle;
-};
-
-const applyConfiguration = (config) => {
-    currentConfig = JSON.parse(JSON.stringify(config));
-    applyGalaxyConfiguration(config);
-    applyCameraConfiguration(config);
-    gui.updateDisplay();
-};
-
+// Galaxy
 let geometry = null
 let material = null
 let points = null
 
 const generateGalaxy = () =>
 {
+    // Remove loading state for instant display
+    
     if(points !== null)
     {
         geometry.dispose()
@@ -205,51 +53,62 @@ const generateGalaxy = () =>
     geometry = new THREE.BufferGeometry()
 
     const positions = new Float32Array(parameters.count * 3)
-    const randomness = new Float32Array(parameters.count * 3)
     const colors = new Float32Array(parameters.count * 3)
-    const scales = new Float32Array(parameters.count * 1)
+    const scales = new Float32Array(parameters.count)
+    const randomness = new Float32Array(parameters.count * 3)
 
-    const insideColor = new THREE.Color(parameters.insideColor)
-    const outsideColor = new THREE.Color(parameters.outsideColor)
+    const colorInside = new THREE.Color(parameters.insideColor)
+    const colorOutside = new THREE.Color(parameters.outsideColor)
+
+    // Simple seeded RNG to stabilize visuals across runs
+    let seed = typeof parameters.seed === 'number' ? parameters.seed >>> 0 : 1337;
+    const rand = () => {
+        // xorshift32
+        seed ^= seed << 13; seed >>>= 0;
+        seed ^= seed >> 17; seed >>>= 0;
+        seed ^= seed << 5;  seed >>>= 0;
+        return (seed >>> 0) / 0xFFFFFFFF;
+    };
 
     for(let i = 0; i < parameters.count; i++)
     {
         const i3 = i * 3
 
         // Position
-        const radius = Math.random() * parameters.radius
+        const radius = rand() * parameters.radius
 
         const spinAngle = radius * parameters.spin
         const branchAngle = (i % parameters.branches) / parameters.branches * Math.PI * 2
 
-        const randomX = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : - 1) * parameters.randomness * radius
-        const randomY = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : - 1) * parameters.randomness * radius
-        const randomZ = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : - 1) * parameters.randomness * radius
+        const randomX = Math.pow(rand(), parameters.randomnessPower) * (rand() < 0.5 ? 1 : - 1) * parameters.randomness * radius
+        const randomY = Math.pow(rand(), parameters.randomnessPower) * (rand() < 0.5 ? 1 : - 1) * parameters.randomness * radius
+        const randomZ = Math.pow(rand(), parameters.randomnessPower) * (rand() < 0.5 ? 1 : - 1) * parameters.randomness * radius
 
-        positions[i3 + 0] = Math.cos(branchAngle + spinAngle) * radius
+        positions[i3    ] = Math.cos(branchAngle + spinAngle) * radius
         positions[i3 + 1] = 0
         positions[i3 + 2] = Math.sin(branchAngle + spinAngle) * radius
 
-        randomness[i3 + 0] = randomX
-        randomness[i3 + 1] = randomY
-        randomness[i3 + 2] = randomZ
-
         // Color
-        const mixedColor = insideColor.clone()
-        mixedColor.lerp(outsideColor, radius / parameters.radius)
+        const mixedColor = colorInside.clone()
+        mixedColor.lerp(colorOutside, radius / parameters.radius)
 
-        colors[i3 + 0] = mixedColor.r
+        colors[i3    ] = mixedColor.r
         colors[i3 + 1] = mixedColor.g
         colors[i3 + 2] = mixedColor.b
 
         // Scale
-        scales[i] = Math.random()
+        scales[i] = rand()
+
+        // Randomness
+        randomness[i3    ] = randomX
+        randomness[i3 + 1] = randomY
+        randomness[i3 + 2] = randomZ
     }
 
     geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
-    geometry.setAttribute('aRandomness', new THREE.BufferAttribute(randomness, 3))
     geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3))
     geometry.setAttribute('aScale', new THREE.BufferAttribute(scales, 1))
+    geometry.setAttribute('aRandomness', new THREE.BufferAttribute(randomness, 3))
 
     /**
      * Material
@@ -263,7 +122,14 @@ const generateGalaxy = () =>
         uniforms:
         {
             uTime: { value: 0 },
-            uSize: { value: 30 * renderer.getPixelRatio() }
+            uSize: { value: 30 * renderer.getPixelRatio() },
+            uHoverIntensity: { value: 0 },
+            uHoverSizeMultiplier: { value: 1.0 },
+            uHoverSpinMultiplier: { value: 1.0 },
+            uHoverBrightnessMultiplier: { value: 1.0 },
+            uSpinDirection: { value: 1.0 },
+            uNormalRotationSpeed: { value: 0.05 },
+            uRotationOffset: { value: 0.0 }
         }
     })
 
@@ -272,410 +138,945 @@ const generateGalaxy = () =>
      */
     points = new THREE.Points(geometry, material)
     scene.add(points)
+    
+    // Remove loading state for instant display
 }
 
 /**
  * Beat Info Display
  */
-const beatInfo = document.createElement('div');
-beatInfo.style.position = 'fixed';
-beatInfo.style.bottom = '20px';
-beatInfo.style.left = '20px';
-beatInfo.style.color = 'white';
-beatInfo.style.fontFamily = 'monospace';
-beatInfo.style.fontSize = '12px';
-beatInfo.style.pointerEvents = 'none';
-document.body.appendChild(beatInfo);
-
 const updateBeatInfo = () => {
-    // No audio system, so no beat info update
+    const beatInfo = document.getElementById('beat-info');
+    if (beatInfo && audioContext && audioContext.state === 'running') {
+        const currentTime = audioContext.currentTime;
+        const bpm = 120; // Default BPM
+        const beatInterval = 60 / bpm;
+        const currentBeat = Math.floor(currentTime / beatInterval) + 1;
+        
+        beatInfo.textContent = `Beat: ${currentBeat}`;
+    }
 };
 
-/**
- * Animation Setup
- */
-let clock = new THREE.Clock();
+// Audio context and analysis
+let audioContext = null;
+let analyser = null;
+let audioBuffer = null;
+let source = null;
+let isPlaying = false;
+let audioArrayBuffer = null; // cache raw bytes for faster first play
+let audioLoadPromise = null; // prevent duplicate loads
 
-/**
- * Animation Loop
- */
-function tick() {
-    const elapsedTime = clock.getElapsedTime();
-
-    // Update material
-    if(material) {
-        material.uniforms.uTime.value = elapsedTime;
+const initAudio = () => {
+    if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioContext.createAnalyser();
+        analyser.fftSize = 256;
     }
+};
 
-    // Animate camera if automation is enabled
-    if (currentConfig && currentConfig.camera) {
-        animateCamera();
+const fetchAudioArrayBuffer = async () => {
+    const filename = 'Michau Wybraniec - Kepler 22b.mp3';
+    const candidates = [
+        `/${filename}`,                 // root
+        `/static/${filename}`,          // /static
+        `${filename}`                   // relative
+    ].map((u) => encodeURI(u));
+
+    let lastError = null;
+    for (const url of candidates) {
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                lastError = new Error(`HTTP ${response.status} for ${url}`);
+                continue;
+            }
+            const ab = await response.arrayBuffer();
+            if (!ab || ab.byteLength === 0) {
+                lastError = new Error(`Empty response for ${url}`);
+                continue;
+            }
+            console.log(`Fetched audio bytes from ${url}`);
+            return ab;
+        } catch (err) {
+            lastError = err;
+        }
     }
+    throw lastError || new Error('Unable to fetch audio');
+};
 
-    // Update beat info
-    if (typeof updateBeatInfo === 'function') {
-        updateBeatInfo();
-    }
+const loadAudio = async () => {
+    if (audioBuffer) return;
+    if (audioLoadPromise) return audioLoadPromise;
+    audioLoadPromise = (async () => {
+        try {
+            if (!audioArrayBuffer) {
+                audioArrayBuffer = await fetchAudioArrayBuffer();
+            }
+            const decoded = await audioContext.decodeAudioData(audioArrayBuffer.slice(0));
+            audioBuffer = decoded;
+            console.log('Audio decoded successfully');
+        } catch (err) {
+            console.error('Error loading audio:', err);
+            throw err;
+        } finally {
+            audioLoadPromise = null;
+        }
+    })();
+    return audioLoadPromise;
+};
 
-    // Update controls
-    if (controls) {
-        controls.update();
-    }
-
-    // Render
-    renderer.render(scene, camera);
-
-    // Call tick again on the next frame
-    window.requestAnimationFrame(tick);
+// Prefetch audio bytes on page load for instant first play
+if (typeof window !== 'undefined') {
+    window.addEventListener('DOMContentLoaded', () => {
+        // Start fetching bytes early; try pre-decoding via OfflineAudioContext for instant first play
+        (async () => {
+            try {
+                const ab = await fetchAudioArrayBuffer();
+                audioArrayBuffer = ab;
+                // Try pre-decode without creating real AudioContext
+                const OfflineCtx = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+                if (OfflineCtx) {
+                    const offline = new OfflineCtx(2, 44100, 44100);
+                    const decoded = await offline.decodeAudioData(ab.slice(0));
+                    if (decoded) {
+                        audioBuffer = decoded;
+                        console.log('Audio pre-decoded successfully');
+                    }
+                }
+            } catch (e) {
+                // Silent failure: we will decode on first click
+            }
+        })();
+    });
 }
 
-/**
- * Settings Management
- */
-const saveCurrentSettings = () => {
-    return {
-        name: `Custom-${Date.now()}`,
-        galaxy: { ...parameters },
-        camera: { ...currentConfig.camera }
-    };
-};
-
-const copySettingsToClipboard = () => {
-    const settings = saveCurrentSettings();
-    const settingsString = JSON.stringify(settings, null, 2);
-    navigator.clipboard.writeText(settingsString)
-        .then(() => {
-            console.log('Settings copied to clipboard');
-            // Show feedback in status text
-            statusText.textContent = '✅ Settings copied to clipboard';
-            statusText.style.display = 'block';
-            setTimeout(() => {
-                statusText.style.display = 'none';
-            }, 2000);
-        })
-        .catch(err => {
-            console.error('Failed to copy settings:', err);
-            statusText.textContent = '❌ Failed to copy settings';
-            statusText.style.display = 'block';
-            setTimeout(() => {
-                statusText.style.display = 'none';
-            }, 2000);
-        });
-};
-
-// Initialize GUI controls
-const initializeGUI = () => {
-    // Clear existing GUI
-    gui.destroy();
-    const newGui = new dat.GUI();
-
-    // Galaxy controls
-    const galaxyFolder = newGui.addFolder('Galaxy');
-    galaxyFolder.add(parameters, 'count', 100, 1000000).step(100)
-        .onFinishChange(() => {
-            generateGalaxy();
-        });
-    galaxyFolder.add(parameters, 'size', 0.001, 0.1).step(0.001)
-        .onFinishChange(generateGalaxy);
-    galaxyFolder.add(parameters, 'radius', 0.01, 20).step(0.01)
-        .onFinishChange(generateGalaxy);
-    galaxyFolder.add(parameters, 'branches', 2, 20).step(1)
-        .onFinishChange(generateGalaxy);
-    galaxyFolder.add(parameters, 'spin', -5, 5).step(0.001)
-        .onFinishChange(generateGalaxy);
-    galaxyFolder.add(parameters, 'randomness', 0, 2).step(0.001)
-        .onFinishChange(generateGalaxy);
-    galaxyFolder.add(parameters, 'randomnessPower', 1, 10).step(0.001)
-        .onFinishChange(() => {
-            generateGalaxy();
-        });
-    galaxyFolder.addColor(parameters, 'insideColor')
-        .onFinishChange(() => {
-            generateGalaxy();
-            updateUIColors(parameters.insideColor, parameters.outsideColor);
-        });
-    galaxyFolder.addColor(parameters, 'outsideColor')
-        .onFinishChange(() => {
-            generateGalaxy();
-            updateUIColors(parameters.insideColor, parameters.outsideColor);
-        });
-
-    // Camera controls
-    const cameraControls = newGui.addFolder('Camera Controls');
-
-    // Presets and Settings Management
-    const presetsFolder = cameraControls.addFolder('Presets & Settings');
-    const presetController = {
-        currentPreset: currentConfig.name,
-        copySettings: copySettingsToClipboard,
-        saveToFile: () => {
-            const settings = saveCurrentSettings();
-            const blob = new Blob([JSON.stringify(settings, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `galaxy-preset-${Date.now()}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
-    };
-
-    presetsFolder.add(presetController, 'currentPreset', cameraConfigs.map(config => config.name))
-        .name('📋 Load Preset')
-        .onChange((presetName) => {
-            const config = cameraConfigs.find(c => c.name === presetName);
-            if (config) {
-                applyConfiguration(config);
-            }
-        });
-
-    presetsFolder.add(presetController, 'copySettings').name('📝 Copy Settings');
-    presetsFolder.add(presetController, 'saveToFile').name('💾 Save to File');
-
-    // Basic controls
-    const basicControls = cameraControls.addFolder('Basic Controls');
-    basicControls.add(currentConfig.camera.basic, 'enableRotate').name('🖱️ Enable Rotation').onChange(value => {
-        controls.enableRotate = value;
-    });
-    basicControls.add(currentConfig.camera.basic, 'enableZoom').name('🔍 Enable Zoom').onChange(value => {
-        controls.enableZoom = value;
-    });
-    basicControls.add(currentConfig.camera.basic, 'enablePan').name('✋ Enable Panning').onChange(value => {
-        controls.enablePan = value;
-    });
-    basicControls.add(currentConfig.camera.basic, 'smoothness', 0.01, 0.2).name('Smoothness').onChange(value => {
-        controls.dampingFactor = value;
-    });
-
-    // Position controls
-    const positionControls = cameraControls.addFolder('Position');
-    positionControls.add(camera.position, 'x', -10, 10).name('X Position').onChange(() => {
-        currentConfig.camera.position.x = camera.position.x;
-        camera.lookAt(scene.position);
-    });
-    positionControls.add(camera.position, 'y', -10, 10).name('Y Position').onChange(() => {
-        currentConfig.camera.position.y = camera.position.y;
-        camera.lookAt(scene.position);
-    });
-    positionControls.add(camera.position, 'z', -10, 10).name('Z Position').onChange(() => {
-        currentConfig.camera.position.z = camera.position.z;
-        camera.lookAt(scene.position);
-    });
-
-    // Movement settings
-    const movementSettings = cameraControls.addFolder('Movement Settings');
-    movementSettings.add(currentConfig.camera.movement, 'autoRotate').name('🔄 Auto Rotate').onChange((value) => {
-        controls.autoRotate = value;
-    });
-    movementSettings.add(currentConfig.camera.movement, 'rotationSpeed', 0.1, 10).name('Rotation Speed').onChange((value) => {
-        controls.autoRotateSpeed = value;
-    });
-    movementSettings.add(currentConfig.camera.movement, 'zoomSpeed', 0.1, 3).name('Zoom Speed').onChange((value) => {
-        controls.zoomSpeed = value;
-    });
-    movementSettings.add(currentConfig.camera.movement, 'minDistance', 1, 10).name('Min Distance').onChange((value) => {
-        controls.minDistance = value;
-    });
-    movementSettings.add(currentConfig.camera.movement, 'maxDistance', 10, 50).name('Max Distance').onChange((value) => {
-        controls.maxDistance = value;
-    });
-    movementSettings.add(currentConfig.camera.movement, 'minAngle', 0, Math.PI).name('Min Angle').onChange((value) => {
-        controls.minPolarAngle = value;
-    });
-    movementSettings.add(currentConfig.camera.movement, 'maxAngle', 0, Math.PI).name('Max Angle').onChange((value) => {
-        controls.maxPolarAngle = value;
-    });
-
-    // Automation controls
-    const automationControls = cameraControls.addFolder('Auto Movement');
-    automationControls.add(currentConfig.camera.automation, 'enabled')
-        .name('🤖 Enable Auto Movement')
-        .onChange(() => {
-            // Reset animation state when enabling
-            if (currentConfig.camera.automation.enabled) {
-                animationState.time = 0;
-                animationState.lastUpdate = Date.now();
-            }
-        });
+const playAudio = () => {
+    if (audioBuffer && audioContext.state === 'suspended') {
+        audioContext.resume();
+    }
     
-    automationControls.add(currentConfig.camera.automation, 'path', ['circular', 'spiral', 'figure8'])
-        .name('Movement Pattern')
-        .onChange(() => {
-            // Reset position when changing pattern
-            camera.position.set(
-                currentConfig.camera.position.x,
-                currentConfig.camera.position.y,
-                currentConfig.camera.position.z
-            );
-        });
-    
-    automationControls.add(currentConfig.camera.automation, 'pathSpeed', 0.1, 5)
-        .name('Pattern Speed');
+    if (audioBuffer && !isPlaying) {
+        source = audioContext.createBufferSource();
+        source.buffer = audioBuffer;
+        source.connect(analyser);
+        analyser.connect(audioContext.destination);
+        
+        source.start();
+        isPlaying = true;
+        console.log('Audio started');
 
-    const oscillationControls = automationControls.addFolder('Oscillation');
-    oscillationControls.add(currentConfig.camera.automation.oscillation, 'enabled')
-        .name('Enable Oscillation')
-        .onChange(() => {
-            if (!currentConfig.camera.automation.oscillation.enabled) {
-                // Reset Y position when disabling oscillation
-                camera.position.y = currentConfig.camera.position.y;
-            }
-        });
-    oscillationControls.add(currentConfig.camera.automation.oscillation, 'amplitude', 0.1, 5)
-        .name('Amplitude');
-    oscillationControls.add(currentConfig.camera.automation.oscillation, 'frequency', 0.1, 2)
-        .name('Frequency');
-
-    const zoomControls = automationControls.addFolder('Auto Zoom');
-    zoomControls.add(currentConfig.camera.automation.zoom, 'enabled')
-        .name('Enable Auto Zoom')
-        .onChange(() => {
-            if (!currentConfig.camera.automation.zoom.enabled) {
-                // Reset camera distance when disabling zoom
-                const direction = camera.position.clone().normalize();
-                const distance = (currentConfig.camera.movement.minDistance + currentConfig.camera.movement.maxDistance) * 0.5;
-                camera.position.copy(direction.multiplyScalar(distance));
-            }
-        });
-    zoomControls.add(currentConfig.camera.automation.zoom, 'min', 1, 10)
-        .name('Min Zoom')
-        .onChange(value => {
-            if (value >= currentConfig.camera.automation.zoom.max) {
-                currentConfig.camera.automation.zoom.min = currentConfig.camera.automation.zoom.max - 1;
-                gui.updateDisplay();
-            }
-        });
-    zoomControls.add(currentConfig.camera.automation.zoom, 'max', 11, 30)
-        .name('Max Zoom')
-        .onChange(value => {
-            if (value <= currentConfig.camera.automation.zoom.min) {
-                currentConfig.camera.automation.zoom.max = currentConfig.camera.automation.zoom.min + 1;
-                gui.updateDisplay();
-            }
-        });
-    zoomControls.add(currentConfig.camera.automation.zoom, 'speed', 0.1, 2)
-        .name('Zoom Speed');
-
-    // Reset button
-    cameraControls.add({
-        reset: () => {
-            applyConfiguration(cameraConfigs[0]); // Reset to default configuration
-            presetController.currentPreset = "Default";
-            initializeGUI(); // Reinitialize GUI with default values
-        }
-    }, 'reset').name('🔄 Reset Camera');
-
-    return newGui;
+        // Reset UI when playback ends
+        source.onended = () => {
+            isPlaying = false;
+            try {
+                source.disconnect();
+            } catch (e) {}
+            const ctrl = document.getElementById('audio-control');
+            if (ctrl) ctrl.classList.remove('playing');
+        };
+    }
 };
 
-// Initialize with default configuration and GUI
-applyConfiguration(cameraConfigs[0]);
-gui = initializeGUI();
+const stopAudio = () => {
+    if (source && isPlaying) {
+        source.stop();
+        source.disconnect();
+        isPlaying = false;
+        console.log('Audio stopped');
+    }
+};
 
-// Start animation loop
-tick();
+// Audio control button
+const audioControl = document.getElementById('audio-control');
+if (audioControl) {
+    // Add play icon initially
+    audioControl.innerHTML = `
+        <div class="play-icon"></div>
+        <div class="pause-icon"></div>
+    `;
+    
+    audioControl.addEventListener('click', async () => {
+        if (!audioContext) {
+            initAudio();
+        }
 
-// Handle window resize
-window.addEventListener('resize', () => {
-    // Update sizes
-    const width = window.innerWidth;
-    const height = window.innerHeight;
+        // Ensure audio is loaded before attempting playback
+        if (!audioBuffer) {
+            try {
+                await loadAudio();
+            } catch (e) {
+                console.error('Failed to load audio:', e);
+                return;
+            }
+        }
+        
+        if (isPlaying) {
+            stopAudio();
+            audioControl.classList.remove('playing');
+        } else {
+            playAudio();
+            audioControl.classList.add('playing');
+        }
+    });
+}
 
-    // Update camera
-    camera.aspect = width / height;
-    camera.updateProjectionMatrix();
+// Sizes
+const sizes = {
+    width: window.innerWidth,
+    height: window.innerHeight
+}
 
-    // Update renderer
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-});
+// Camera
+const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 1000)
+camera.position.x = 3
+camera.position.z = 3
+camera.position.y = 3
 
-// Add after the existing updateUIColors function
+// Controls
+const controls = new OrbitControls(camera, canvas)
+controls.enableDamping = true
+controls.enabled = true // Enable OrbitControls for mouse interaction
+
+// Renderer
+const renderer = new THREE.WebGLRenderer({
+    canvas: canvas
+})
+renderer.setSize(sizes.width, sizes.height)
+// Cap pixel ratio on mobile to save battery/heat
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5))
+
+// Galaxy parameters
+const parameters = {}
+parameters.count = 100000
+parameters.size = 0.01
+parameters.radius = 5
+parameters.branches = 3
+parameters.spin = 1
+parameters.randomness = 0.2
+parameters.randomnessPower = 3
+parameters.insideColor = '#ff6030'
+parameters.outsideColor = '#1b3984'
+
+// Hover effect parameters - loaded from config
+const hoverParameters = {
+    isHovered: false,
+    hoverIntensity: 0,
+    targetHoverIntensity: 0,
+    transitionSpeed: hoverEffectsConfig.transitionSpeed,
+    // Hover effect multipliers (default values for normal buttons)
+    sizeMultiplier: hoverEffectsConfig.hoverEffects[0].normalButtons.sizeMultiplier,
+    spinMultiplier: hoverEffectsConfig.hoverEffects[0].normalButtons.spinMultiplier,
+    brightnessMultiplier: hoverEffectsConfig.hoverEffects[0].normalButtons.brightnessMultiplier,
+    // Smooth brightness easing
+    currentBrightnessMultiplier: 1.0,
+    targetBrightnessMultiplier: 1.0,
+    brightnessTransitionSpeed: 0.08, // Slower transition for smoother color easing
+    colorShift: 0.3
+}
+
+// Load presets
+const presets = presetsConfig.presets;
 let currentPresetIndex = 0;
 
-const updatePresetDisplay = () => {
-    const presetName = cameraConfigs[currentPresetIndex].name;
-    document.getElementById('currentPreset').textContent = presetName;
-    
-    // Update color mode button color to match the new preset
-    const colorModeToggle = document.getElementById('color-mode-toggle');
-    if (colorModeToggle) {
-        const galaxyColor = getComputedStyle(document.documentElement).getPropertyValue('--galaxy-outside-color').trim();
-        colorModeToggle.style.color = galaxyColor;
+// Function to get current hover effect
+const getCurrentHoverEffect = () => {
+    return hoverEffectsConfig.hoverEffects[hoverEffectsConfig.currentEffectIndex];
+};
+
+// Function to change hover effect
+const setHoverEffect = (index) => {
+    if (index >= 0 && index < hoverEffectsConfig.hoverEffects.length) {
+        hoverEffectsConfig.currentEffectIndex = index;
+        const effect = getCurrentHoverEffect();
+        console.log(`Hover effect set to: ${effect.name} - ${effect.description}`);
+        
+        // Update UI
+        updateHoverEffectDisplay();
+    } else {
+        console.warn(`Hover effect index ${index} not found. Available effects: 0-${hoverEffectsConfig.hoverEffects.length - 1}`);
     }
 };
 
-const switchPreset = (direction) => {
-    // Get current mode presets
-    const currentModePresets = isBrightMode ? brightModePresets : darkModePresets;
-    
-    // Find current preset index within the current mode
-    const currentPresetName = currentConfig.name;
-    let currentModeIndex = currentModePresets.findIndex(name => name === currentPresetName);
-    
-    // If current preset is not in the current mode, start from beginning
-    if (currentModeIndex === -1) {
-        currentModeIndex = 0;
+// Function to update hover effect display
+const updateHoverEffectDisplay = () => {
+    const effectNameElement = document.getElementById('currentHoverEffect');
+    if (effectNameElement) {
+        const effect = getCurrentHoverEffect();
+        const currentIndex = hoverEffectsConfig.currentEffectIndex;
+        effectNameElement.textContent = `${effect.name} (${currentIndex})`;
+    }
+};
+
+// Camera movement system for different hover effects
+const applyCameraMovement = (movementType, zoomFactor, angleFactor, heightMultiplier, cameraOffset) => {
+    // Use CURRENT camera position as base, not original preset position
+    // Add safety check in case camera is not yet initialized
+    let baseX, baseY, baseZ;
+    if (!camera) {
+        console.warn('Camera not initialized yet, using fallback position');
+        baseX = 3; baseY = 3; baseZ = 3;
     } else {
-        // Switch within current mode
-        currentModeIndex = (currentModeIndex + direction + currentModePresets.length) % currentModePresets.length;
+        baseX = camera.position.x;
+        baseY = camera.position.y;
+        baseZ = camera.position.z;
     }
     
-    // Get the new preset name
-    const newPresetName = currentModePresets[currentModeIndex];
-    const newPreset = cameraConfigs.find(config => config.name === newPresetName);
+    switch (movementType) {
+        case 'gentle_orbit':
+            targetCameraPosition.x = baseX * zoomFactor * angleFactor + cameraOffset.x;
+            targetCameraPosition.y = baseY * zoomFactor * heightMultiplier + cameraOffset.y;
+            targetCameraPosition.z = baseZ * zoomFactor * angleFactor + cameraOffset.z;
+            break;
+            
+        case 'extreme_close':
+            targetCameraPosition.x = baseX * zoomFactor * 0.3;
+            targetCameraPosition.y = baseY * zoomFactor * heightMultiplier;
+            targetCameraPosition.z = baseZ * zoomFactor * 0.3;
+            break;
+            
+        case 'flowing_orbit':
+            targetCameraPosition.x = baseX * zoomFactor * angleFactor + cameraOffset.x;
+            targetCameraPosition.y = baseY * zoomFactor * heightMultiplier + cameraOffset.y;
+            targetCameraPosition.z = baseZ * zoomFactor * angleFactor + cameraOffset.z;
+            break;
+            
+        case 'quantum_teleport':
+            targetCameraPosition.x = baseX * zoomFactor + cameraOffset.x;
+            targetCameraPosition.y = baseY * zoomFactor * heightMultiplier + cameraOffset.y;
+            targetCameraPosition.z = baseZ * zoomFactor + cameraOffset.z;
+            break;
+            
+        case 'cosmic_perspective':
+            targetCameraPosition.x = baseX * zoomFactor + cameraOffset.x;
+            targetCameraPosition.y = baseY * zoomFactor * heightMultiplier + cameraOffset.y;
+            targetCameraPosition.z = baseZ * zoomFactor + cameraOffset.z;
+            break;
+            
+        case 'neon_flash':
+            targetCameraPosition.x = baseX * zoomFactor + cameraOffset.x;
+            targetCameraPosition.y = baseY * zoomFactor * heightMultiplier + cameraOffset.y;
+            targetCameraPosition.z = baseZ * zoomFactor + cameraOffset.z;
+            break;
+            
+        case 'ethereal_whirl':
+            targetCameraPosition.x = baseX * zoomFactor * angleFactor + cameraOffset.x;
+            targetCameraPosition.y = baseY * zoomFactor * heightMultiplier + cameraOffset.y;
+            targetCameraPosition.z = baseZ * zoomFactor * angleFactor + cameraOffset.z;
+            break;
+            
+        case 'deep_space':
+            targetCameraPosition.x = baseX * zoomFactor + cameraOffset.x;
+            targetCameraPosition.y = baseY * zoomFactor * heightMultiplier + cameraOffset.y;
+            targetCameraPosition.z = baseZ * zoomFactor + cameraOffset.z;
+            break;
+            
+        case 'radiant_explosion':
+            targetCameraPosition.x = baseX * zoomFactor * angleFactor;
+            targetCameraPosition.y = baseY * zoomFactor * heightMultiplier;
+            targetCameraPosition.z = baseZ * zoomFactor * angleFactor;
+            break;
+            
+        case 'delicate_glow':
+            targetCameraPosition.x = baseX * zoomFactor + cameraOffset.x;
+            targetCameraPosition.y = baseY * zoomFactor * heightMultiplier + cameraOffset.y;
+            targetCameraPosition.z = baseZ * zoomFactor + cameraOffset.z;
+            break;
+            
+        case 'dramatic_shift':
+            targetCameraPosition.x = baseX * zoomFactor + cameraOffset.x;
+            targetCameraPosition.y = baseY * zoomFactor * heightMultiplier + cameraOffset.y;
+            targetCameraPosition.z = baseZ * zoomFactor + cameraOffset.z;
+            break;
+            
+        case 'extreme_zoom_out':
+            targetCameraPosition.x = baseX * zoomFactor;
+            targetCameraPosition.y = baseY * zoomFactor * heightMultiplier;
+            targetCameraPosition.z = baseZ * zoomFactor;
+            break;
+            
+        case 'deep_spiral':
+            targetCameraPosition.x = baseX * zoomFactor + cameraOffset.x;
+            targetCameraPosition.y = baseY * zoomFactor * heightMultiplier + cameraOffset.y;
+            targetCameraPosition.z = baseZ * zoomFactor + cameraOffset.z;
+            break;
+            
+        case 'circular_orbit':
+            targetCameraPosition.x = baseX * zoomFactor + cameraOffset.x;
+            targetCameraPosition.y = baseY * zoomFactor * heightMultiplier + cameraOffset.y;
+            targetCameraPosition.z = baseZ * zoomFactor + cameraOffset.z;
+            break;
+            
+        case 'event_horizon':
+            targetCameraPosition.x = baseX * zoomFactor;
+            targetCameraPosition.y = baseY * zoomFactor * heightMultiplier;
+            targetCameraPosition.z = baseZ * zoomFactor;
+            break;
+            
+        case 'dramatic_tilt':
+            targetCameraPosition.x = baseX * zoomFactor + cameraOffset.x;
+            targetCameraPosition.y = baseY * zoomFactor * heightMultiplier + cameraOffset.y;
+            targetCameraPosition.z = baseZ * zoomFactor + cameraOffset.z;
+            break;
+            
+        case 'temporal_distortion':
+            targetCameraPosition.x = baseX * zoomFactor + cameraOffset.x;
+            targetCameraPosition.y = baseY * zoomFactor * heightMultiplier + cameraOffset.y;
+            targetCameraPosition.z = baseZ * zoomFactor + cameraOffset.z;
+            break;
+            
+        case 'edge_perspective':
+            targetCameraPosition.x = baseX * zoomFactor + cameraOffset.x;
+            targetCameraPosition.y = baseY * zoomFactor * heightMultiplier + cameraOffset.y;
+            targetCameraPosition.z = baseZ * zoomFactor + cameraOffset.z;
+            break;
+            
+                   case 'universe_view':
+                       targetCameraPosition.x = baseX * zoomFactor + cameraOffset.x;
+                       targetCameraPosition.y = baseY * zoomFactor * heightMultiplier + cameraOffset.y;
+                       targetCameraPosition.z = baseZ * zoomFactor + cameraOffset.z;
+                       break;
+
+                   // NEW EPIC EFFECTS - THE SPICIEST GALAXY MOVES!
+                   case 'tornado_spiral':
+                       targetCameraPosition.x = baseX * zoomFactor * 0.5 + cameraOffset.x;
+                       targetCameraPosition.y = baseY * zoomFactor * heightMultiplier + cameraOffset.y;
+                       targetCameraPosition.z = baseZ * zoomFactor * 0.5 + cameraOffset.z;
+                       break;
+
+                   case 'extreme_tornado':
+                       targetCameraPosition.x = baseX * zoomFactor * 0.2 + cameraOffset.x;
+                       targetCameraPosition.y = baseY * zoomFactor * heightMultiplier + cameraOffset.y;
+                       targetCameraPosition.z = baseZ * zoomFactor * 0.2 + cameraOffset.z;
+                       break;
+
+                   case 'explosion_outward':
+                       targetCameraPosition.x = baseX * zoomFactor + cameraOffset.x;
+                       targetCameraPosition.y = baseY * zoomFactor * heightMultiplier + cameraOffset.y;
+                       targetCameraPosition.z = baseZ * zoomFactor + cameraOffset.z;
+                       break;
+
+                   case 'supernova_burst':
+                       targetCameraPosition.x = baseX * zoomFactor + cameraOffset.x;
+                       targetCameraPosition.y = baseY * zoomFactor * heightMultiplier + cameraOffset.y;
+                       targetCameraPosition.z = baseZ * zoomFactor + cameraOffset.z;
+                       break;
+
+                   case 'dimensional_warp':
+                       targetCameraPosition.x = baseX * zoomFactor * 0.3 + cameraOffset.x;
+                       targetCameraPosition.y = baseY * zoomFactor * heightMultiplier + cameraOffset.y;
+                       targetCameraPosition.z = baseZ * zoomFactor * 0.3 + cameraOffset.z;
+                       break;
+
+                   case 'extreme_rift':
+                       targetCameraPosition.x = baseX * zoomFactor * 0.1 + cameraOffset.x;
+                       targetCameraPosition.y = baseY * zoomFactor * heightMultiplier + cameraOffset.y;
+                       targetCameraPosition.z = baseZ * zoomFactor * 0.1 + cameraOffset.z;
+                       break;
+
+                   case 'dance_moves':
+                       targetCameraPosition.x = baseX * zoomFactor + cameraOffset.x;
+                       targetCameraPosition.y = baseY * zoomFactor * heightMultiplier + cameraOffset.y;
+                       targetCameraPosition.z = baseZ * zoomFactor + cameraOffset.z;
+                       break;
+
+                   case 'epic_dance':
+                       targetCameraPosition.x = baseX * zoomFactor * 0.4 + cameraOffset.x;
+                       targetCameraPosition.y = baseY * zoomFactor * heightMultiplier + cameraOffset.y;
+                       targetCameraPosition.z = baseZ * zoomFactor * 0.4 + cameraOffset.z;
+                       break;
+
+                   case 'flip_tumble':
+                       targetCameraPosition.x = baseX * zoomFactor + cameraOffset.x;
+                       targetCameraPosition.y = baseY * zoomFactor * heightMultiplier + cameraOffset.y;
+                       targetCameraPosition.z = baseZ * zoomFactor + cameraOffset.z;
+                       break;
+
+                   case 'extreme_flip':
+                       targetCameraPosition.x = baseX * zoomFactor * 0.3 + cameraOffset.x;
+                       targetCameraPosition.y = baseY * zoomFactor * heightMultiplier + cameraOffset.y;
+                       targetCameraPosition.z = baseZ * zoomFactor * 0.3 + cameraOffset.z;
+                       break;
+
+                   case 'quantum_split':
+                       targetCameraPosition.x = baseX * zoomFactor + cameraOffset.x;
+                       targetCameraPosition.y = baseY * zoomFactor * heightMultiplier + cameraOffset.y;
+                       targetCameraPosition.z = baseZ * zoomFactor + cameraOffset.z;
+                       break;
+
+                   case 'extreme_quantum':
+                       targetCameraPosition.x = baseX * zoomFactor * 0.5 + cameraOffset.x;
+                       targetCameraPosition.y = baseY * zoomFactor * heightMultiplier + cameraOffset.y;
+                       targetCameraPosition.z = baseZ * zoomFactor * 0.5 + cameraOffset.z;
+                       break;
+
+                   case 'tsunami_wave':
+                       targetCameraPosition.x = baseX * zoomFactor + cameraOffset.x;
+                       targetCameraPosition.y = baseY * zoomFactor * heightMultiplier + cameraOffset.y;
+                       targetCameraPosition.z = baseZ * zoomFactor + cameraOffset.z;
+                       break;
+
+                   case 'extreme_tsunami':
+                       targetCameraPosition.x = baseX * zoomFactor + cameraOffset.x;
+                       targetCameraPosition.y = baseY * zoomFactor * heightMultiplier + cameraOffset.y;
+                       targetCameraPosition.z = baseZ * zoomFactor + cameraOffset.z;
+                       break;
+
+                   case 'singularity_pull':
+                       targetCameraPosition.x = baseX * zoomFactor * 0.4 + cameraOffset.x;
+                       targetCameraPosition.y = baseY * zoomFactor * heightMultiplier + cameraOffset.y;
+                       targetCameraPosition.z = baseZ * zoomFactor * 0.4 + cameraOffset.z;
+                       break;
+
+                   case 'extreme_singularity':
+                       targetCameraPosition.x = baseX * zoomFactor * 0.02 + cameraOffset.x;
+                       targetCameraPosition.y = baseY * zoomFactor * heightMultiplier + cameraOffset.y;
+                       targetCameraPosition.z = baseZ * zoomFactor * 0.02 + cameraOffset.z;
+                       break;
+
+                   case 'rave_strobe':
+                       targetCameraPosition.x = baseX * zoomFactor + cameraOffset.x;
+                       targetCameraPosition.y = baseY * zoomFactor * heightMultiplier + cameraOffset.y;
+                       targetCameraPosition.z = baseZ * zoomFactor + cameraOffset.z;
+                       break;
+
+                   case 'extreme_rave':
+                       targetCameraPosition.x = baseX * zoomFactor * 0.6 + cameraOffset.x;
+                       targetCameraPosition.y = baseY * zoomFactor * heightMultiplier + cameraOffset.y;
+                       targetCameraPosition.z = baseZ * zoomFactor * 0.6 + cameraOffset.z;
+                       break;
+
+                   case 'whirlpool_spiral':
+                       targetCameraPosition.x = baseX * zoomFactor + cameraOffset.x;
+                       targetCameraPosition.y = baseY * zoomFactor * heightMultiplier + cameraOffset.y;
+                       targetCameraPosition.z = baseZ * zoomFactor + cameraOffset.z;
+                       break;
+
+                   case 'extreme_whirlpool':
+                       targetCameraPosition.x = baseX * zoomFactor * 0.15 + cameraOffset.x;
+                       targetCameraPosition.y = baseY * zoomFactor * heightMultiplier + cameraOffset.y;
+                       targetCameraPosition.z = baseZ * zoomFactor * 0.15 + cameraOffset.z;
+                       break;
+
+                   default:
+                       // Default camera movement
+                       targetCameraPosition.x = baseX * zoomFactor * angleFactor;
+                       targetCameraPosition.y = baseY * zoomFactor * heightMultiplier;
+                       targetCameraPosition.z = baseZ * zoomFactor * angleFactor;
+                       break;
+    }
+};
+
+// Make it available globally for easy testing
+window.setHoverEffect = setHoverEffect;
+window.getCurrentHoverEffect = getCurrentHoverEffect;
+window.applyCameraMovement = applyCameraMovement;
+
+// Initialize hover effect switcher
+const initHoverEffectSwitcher = () => {
+    const prevButton = document.getElementById('prevHoverEffect');
+    const nextButton = document.getElementById('nextHoverEffect');
     
-    if (newPreset) {
-        applyConfiguration(newPreset);
+    if (prevButton) {
+        prevButton.addEventListener('click', () => {
+            const newIndex = (hoverEffectsConfig.currentEffectIndex - 1 + hoverEffectsConfig.hoverEffects.length) % hoverEffectsConfig.hoverEffects.length;
+            setHoverEffect(newIndex);
+        });
+    }
+    
+    if (nextButton) {
+        nextButton.addEventListener('click', () => {
+            const newIndex = (hoverEffectsConfig.currentEffectIndex + 1) % hoverEffectsConfig.hoverEffects.length;
+            setHoverEffect(newIndex);
+        });
+    }
+    
+    // Set initial display
+    updateHoverEffectDisplay();
+};
+
+// Function to update CSS custom properties with galaxy colors
+const updateGalaxyColors = (insideColor, outsideColor) => {
+    const root = document.documentElement;
+    root.style.setProperty('--galaxy-inside-color', insideColor);
+    root.style.setProperty('--galaxy-outside-color', outsideColor);
+    root.style.setProperty('--galaxy-primary', outsideColor);
+    root.style.setProperty('--galaxy-secondary', insideColor);
+    root.style.setProperty('--galaxy-accent', outsideColor);
+};
+
+const applyPreset = (preset) => {
+    // Apply galaxy parameters
+    if (preset.galaxy) {
+        Object.keys(preset.galaxy).forEach(key => {
+            if (parameters.hasOwnProperty(key)) {
+                parameters[key] = preset.galaxy[key];
+            }
+        });
         
-        // Set background color for bright mode presets
-        if (isBrightMode && newPreset.galaxyBackgroundColor) {
-            scene.background = new THREE.Color(newPreset.galaxyBackgroundColor);
-        } else if (!isBrightMode) {
-            scene.background = new THREE.Color(0x000000); // Black for dark mode
+        // Update CSS custom properties with galaxy colors
+        if (preset.galaxy.insideColor && preset.galaxy.outsideColor) {
+            updateGalaxyColors(preset.galaxy.insideColor, preset.galaxy.outsideColor);
+        }
+    }
+    
+    // Apply camera settings
+    if (preset.camera) {
+        if (preset.camera.position) {
+            // Set camera position and update the original position for smooth animations
+            camera.position.set(
+                preset.camera.position.x,
+                preset.camera.position.y,
+                preset.camera.position.z
+            );
+            
+            // Update the original camera position for button hover effects
+            originalCameraPosition = {
+                x: preset.camera.position.x,
+                y: preset.camera.position.y,
+                z: preset.camera.position.z
+            };
+            targetCameraPosition = { ...originalCameraPosition };
         }
         
-        // Update the global preset index to match the new preset
-        currentPresetIndex = cameraConfigs.findIndex(config => config.name === newPresetName);
-        updatePresetDisplay();
+        if (preset.camera.basic) {
+            controls.enableRotate = preset.camera.basic.enableRotate;
+            controls.enableZoom = preset.camera.basic.enableZoom;
+            controls.enablePan = preset.camera.basic.enablePan;
+            // Make camera changes immediate for preset switching
+            controls.dampingFactor = 0.01; // Much faster response
+        }
+        
+        if (preset.camera.movement) {
+            controls.autoRotate = preset.camera.movement.autoRotate || false;
+            controls.autoRotateSpeed = preset.camera.movement.rotationSpeed || 0;
+            controls.minDistance = preset.camera.movement.minDistance || 1;
+            controls.maxDistance = preset.camera.movement.maxDistance || 20;
+            controls.minPolarAngle = preset.camera.movement.minAngle || 0.1;
+            controls.maxPolarAngle = preset.camera.movement.maxAngle || 2.0;
+        }
+    }
+    
+    generateGalaxy();
+    
+    // Force immediate camera update for instant preset switching
+    controls.update();
+    
+    // Update spin direction for vinyl effect based on preset
+    if (material && material.uniforms.uSpinDirection) {
+        // Use the sign of the spin parameter to determine vinyl spin direction
+        material.uniforms.uSpinDirection.value = Math.sign(preset.galaxy.spin || 1);
+    }
+    
+    // Ensure normal rotation speed is consistent
+    if (material && material.uniforms.uNormalRotationSpeed) {
+        material.uniforms.uNormalRotationSpeed.value = 0.05; // Always keep original speed
+    }
+    
+    // Apply preset's assigned hover effect
+    if (preset.hoverEffect) {
+        const effectIndex = preset.hoverEffect.index;
+        if (effectIndex >= 0 && effectIndex < hoverEffectsConfig.hoverEffects.length) {
+            hoverEffectsConfig.currentEffectIndex = effectIndex;
+            updateHoverEffectDisplay();
+            console.log(`Applied hover effect "${preset.hoverEffect.name}" to preset "${preset.name}"`);
+        }
+    }
+    
+    // Original camera position is now updated above in the camera settings section
+};
+
+// Initialize with first preset
+applyPreset(presets[0]);
+
+// Preset controls
+const presetName = document.getElementById('currentPreset');
+const prevPresetButton = document.getElementById('prevPreset');
+const nextPresetButton = document.getElementById('nextPreset');
+
+// Update preset display
+const updatePresetDisplay = () => {
+    if (presetName) {
+        presetName.textContent = presets[currentPresetIndex].name;
     }
 };
 
-// Add to the end of the file, just before the last closing brace
-// Initialize preset switcher controls
-document.getElementById('prevPreset').addEventListener('click', () => switchPreset(-1));
-document.getElementById('nextPreset').addEventListener('click', () => switchPreset(1));
-
-// Add keyboard controls for preset switching
-document.addEventListener('keydown', (event) => {
-    if (event.key === 'ArrowLeft') {
-        switchPreset(-1);
-    } else if (event.key === 'ArrowRight') {
-        switchPreset(1);
+// Show/hide loading indicator
+const showPresetLoading = () => {
+    const loadingElement = document.getElementById('presetLoading');
+    if (loadingElement) {
+        loadingElement.style.display = 'block';
     }
-});
+};
 
-// Initialize the preset display
+const hidePresetLoading = () => {
+    const loadingElement = document.getElementById('presetLoading');
+    if (loadingElement) {
+        loadingElement.style.display = 'none';
+    }
+};
+
+// Initialize preset display
 updatePresetDisplay();
 
-// Timer functionality
+// Preset switching - only arrow buttons are clickable, preset name is just display
+
+if (prevPresetButton) {
+    prevPresetButton.addEventListener('click', () => {
+        showPresetLoading();
+        currentPresetIndex = (currentPresetIndex - 1 + presets.length) % presets.length;
+        applyPreset(presets[currentPresetIndex]);
+        updatePresetDisplay();
+        // Hide loading after a short delay to show the transition
+        setTimeout(hidePresetLoading, 200);
+    });
+}
+
+if (nextPresetButton) {
+    nextPresetButton.addEventListener('click', () => {
+        showPresetLoading();
+        currentPresetIndex = (currentPresetIndex + 1) % presets.length;
+        applyPreset(presets[currentPresetIndex]);
+        updatePresetDisplay();
+        // Hide loading after a short delay to show the transition
+        setTimeout(hidePresetLoading, 200);
+    });
+}
+
+// Preset functionality is now complete
+
+// Color mode toggle
+const colorModeToggle = document.querySelector('.color-mode-toggle');
+const sunIcon = document.getElementById('sun-icon');
+const moonIcon = document.getElementById('moon-icon');
+
+if (colorModeToggle) {
+    colorModeToggle.addEventListener('click', () => {
+        const isBrightMode = document.body.classList.toggle('bright-mode');
+        
+        // Switch icons
+        if (sunIcon && moonIcon) {
+            if (isBrightMode) {
+                sunIcon.style.display = 'none';
+                moonIcon.style.display = 'block';
+                colorModeToggle.setAttribute('aria-label', 'Switch to dark mode');
+            } else {
+                sunIcon.style.display = 'block';
+                moonIcon.style.display = 'none';
+                colorModeToggle.setAttribute('aria-label', 'Switch to bright mode');
+            }
+        }
+        
+        console.log(`Switched to ${isBrightMode ? 'bright' : 'dark'} mode`);
+    });
+}
+
+// Email subscription
+const initializeEmailSubscription = () => {
+    const emailForm = document.getElementById('emailForm');
+    const mobileEmailForm = document.getElementById('mobileEmailForm');
+    
+    // Google Forms field mapping (from your live form)
+    // Use emailAddress for collected email (system email question)
+    const GOOGLE_FORM_FIELDS = {
+        emailAddress: 'emailAddress',
+        project: 'entry.251321992',
+        source: 'entry.958441726',
+        // Optional custom note field if you decide to send it later:
+        // note: 'entry.1315217004'
+    };
+
+    const showToast = (message, isSuccess = true) => {
+        // Remove any existing toast
+        const existingToast = document.querySelector('.galaxy-toast');
+        if (existingToast) {
+            existingToast.remove();
+        }
+        
+        // Create toast element
+        const toast = document.createElement('div');
+        toast.className = 'galaxy-toast';
+        toast.innerHTML = `
+            <div class="toast-content">
+                <div class="toast-icon">${isSuccess ? '✓' : '⚠'}</div>
+                <div class="toast-message">${message}</div>
+                <button class="toast-close" aria-label="Close notification">×</button>
+            </div>
+        `;
+        
+        // Add to body
+        document.body.appendChild(toast);
+        
+        // Show toast with animation
+        setTimeout(() => {
+            toast.classList.add('show');
+        }, 100);
+        
+        // Auto-hide after 5 seconds
+        const hideToast = () => {
+            toast.classList.remove('show');
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.remove();
+                }
+            }, 300);
+        };
+        
+        setTimeout(hideToast, 5000);
+        
+        // Close button functionality
+        const closeBtn = toast.querySelector('.toast-close');
+        closeBtn.addEventListener('click', hideToast);
+    };
+
+    const showMessage = (form, message, isSuccess = true) => {
+        // Clear any existing inline message
+        const messageElement = form.querySelector('.subscription-message');
+        if (messageElement) {
+                messageElement.style.display = 'none';
+        }
+        
+        // Show toast instead
+        showToast(message, isSuccess);
+    };
+
+    let isFormSubmitting = false;
+
+    const setLoadingState = (form, isLoading) => {
+        const button = form.querySelector('.subscribe-button');
+        
+        if (isLoading) {
+            isFormSubmitting = true;
+            button.style.opacity = '0.6';
+            button.style.cursor = 'not-allowed';
+        } else {
+            isFormSubmitting = false;
+            button.style.opacity = '1';
+            button.style.cursor = 'pointer';
+        }
+    };
+
+    const isValidEmail = (value) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(value);
+    };
+
+    const updateButtonState = (form) => {
+        const button = form.querySelector('.subscribe-button');
+        const emailInput = form.querySelector('.email-input');
+        const email = (emailInput?.value || '').trim();
+        const valid = isValidEmail(email);
+        if (button) {
+            button.disabled = !valid || isFormSubmitting;
+        }
+    };
+
+    const attachValidation = (form) => {
+        const emailInput = form.querySelector('.email-input');
+        if (emailInput) {
+            emailInput.addEventListener('input', () => updateButtonState(form));
+            // Initialize
+            updateButtonState(form);
+        }
+    };
+
+    const submitForm = async (form) => {
+        // Prevent multiple submissions
+        if (isFormSubmitting) {
+            return;
+        }
+        
+        const emailInput = form.querySelector('.email-input');
+        const projectInput = form.querySelector('.project-input');
+        const sourceInput = form.querySelector('.source-input');
+        
+        const email = emailInput.value.trim();
+        const project = projectInput.value.trim();
+        const source = sourceInput.value.trim();
+        
+        if (!email) {
+            showMessage(form, 'Please enter your email address.', false);
+            updateButtonState(form);
+            return;
+        }
+
+        if (!isValidEmail(email)) {
+            showMessage(form, 'Please enter a valid email address.', false);
+            updateButtonState(form);
+            return;
+        }
+        
+        // Vinyl spin already started on button click
+        console.log('Form submitting - vinyl spin should already be active');
+        
+        setLoadingState(form, true);
+        
+        try {
+            // Use URL-encoded payload with only the necessary fields
+            const payload = new URLSearchParams();
+            payload.append(GOOGLE_FORM_FIELDS.emailAddress, email);
+            if (project) payload.append(GOOGLE_FORM_FIELDS.project, project);
+            if (source) payload.append(GOOGLE_FORM_FIELDS.source, source);
+            
+            // Debug: print what keys are being sent
+            try {
+                console.log('Submitting to Google Forms keys:', Array.from(payload.keys()));
+            } catch (_) {}
+            
+            const GOOGLE_FORM_ENDPOINT = 'https://docs.google.com/forms/d/e/1FAIpQLSfD2YLLpw_FlMAbi1-q9gSEu2Hw8GQzmUh3uSabsT4f7xl45g/formResponse';
+            await fetch(GOOGLE_FORM_ENDPOINT, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                },
+                body: payload.toString()
+            });
+            
+            showMessage(form, 'You\'re in! You\'ve joined the Overvibing community list. By subscribing, you consent to receive emails about updates and event invites. Unsubscribe anytime.');
+            form.reset();
+            
+        } catch (error) {
+            console.error('Form submission error:', error);
+            showMessage(form, 'You\'re in! You\'ve joined the Overvibing community list. By subscribing, you consent to receive emails about updates and event invites. Unsubscribe anytime.');
+            form.reset();
+        } finally {
+            setLoadingState(form, false);
+            updateButtonState(form);
+        }
+    };
+
+    if (emailForm) {
+        emailForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            submitForm(emailForm);
+        });
+        attachValidation(emailForm);
+    }
+
+    if (mobileEmailForm) {
+        mobileEmailForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            submitForm(mobileEmailForm);
+        });
+        attachValidation(mobileEmailForm);
+    }
+};
+
+// Initialize email subscription
+initializeEmailSubscription();
+
+// Restore yesterday's NEXT MEETING timer behavior
 function updateTimer() {
     const now = new Date();
     const dayOfWeek = now.getUTCDay();
     const hours = now.getUTCHours();
     const minutes = now.getUTCMinutes();
     
-    // Calculate next Tuesday 17:00 UTC+2
+    // Calculate next Tuesday 17:00 UTC+2 (15:00 UTC)
     let nextMeeting = new Date(now);
-    nextMeeting.setUTCHours(15, 0, 0, 0); // 17:00 UTC+2 = 15:00 UTC
-    
-    // Adjust to next Tuesday
+    nextMeeting.setUTCHours(15, 0, 0, 0);
     const daysUntilTuesday = (2 - dayOfWeek + 7) % 7;
     nextMeeting.setUTCDate(nextMeeting.getUTCDate() + daysUntilTuesday);
-    
-    // If it's Tuesday after 17:00 UTC+2, move to next week
     if (dayOfWeek === 2 && hours >= 15) {
         nextMeeting.setUTCDate(nextMeeting.getUTCDate() + 7);
     }
@@ -683,14 +1084,12 @@ function updateTimer() {
     const diff = nextMeeting - now;
     const diffMinutes = diff / (1000 * 60);
     const meetingInProgress = dayOfWeek === 2 && hours >= 15 && hours < 17;
-    
+
     const timerElement = document.querySelector('.countdown-timer');
     const meetButton = document.querySelector('.modern-button');
     const meetLink = 'https://meet.google.com/svb-xcme-opq';
 
-    // Keep all existing countdown-timer logic
     if (meetingInProgress) {
-        // Count up during the meeting
         const meetingStart = new Date(now);
         meetingStart.setUTCHours(15, 0, 0, 0);
         const elapsed = now - meetingStart;
@@ -698,33 +1097,20 @@ function updateTimer() {
         const elapsedMinutes = Math.floor((elapsed % 3600000) / 60000);
         const elapsedSeconds = Math.floor((elapsed % 60000) / 1000);
         const elapsedMs = elapsed % 1000;
-        
         const timeStr = `${String(elapsedHours).padStart(2, '0')}:${String(elapsedMinutes).padStart(2, '0')}:${String(elapsedSeconds).padStart(2, '0')}`;
         timerElement.innerHTML = `<b>LIVE</b> ${timeStr}<span class="milliseconds">.${String(elapsedMs).padStart(3, '0')}</span>`;
-        
-        // Update button during meeting
         meetButton.textContent = 'JOIN NOW!';
         meetButton.href = meetLink;
     } else {
-        // Countdown to next meeting
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        const hoursLeft = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutesLeft = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const secondsLeft = Math.floor((diff % (1000 * 60)) / 1000);
         const ms = diff % 1000;
 
-        let timeStr = '';
-        if (days > 0) {
-            timeStr = `${days}d ${String(hours).padStart(2, '0')}h ${String(minutes).padStart(2, '0')}m`;
-        } else if (hours > 0) {
-            timeStr = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-        } else {
-            timeStr = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-        }
+        const timeStr = `${days}d ${String(hoursLeft).padStart(2, '0')}h ${String(minutesLeft).padStart(2, '0')}m ${String(secondsLeft).padStart(2, '0')}s ${String(ms).padStart(3, '0')}ms`;
+        timerElement.innerHTML = `<b>NEXT MEETING:</b> <span style="color: rgba(255, 255, 255, 0.7);">${timeStr}</span>`;
 
-        timerElement.innerHTML = `<b>NEXT MEETING:</b> ${timeStr}<span class="milliseconds">.${String(ms).padStart(3, '0')}</span>`;
-
-        // Update button based on time until meeting
         if (diffMinutes <= 60 && diffMinutes > 15) {
             const mins = Math.floor(diffMinutes);
             const secs = Math.floor((diff % (1000 * 60)) / 1000);
@@ -736,12 +1122,9 @@ function updateTimer() {
             meetButton.textContent = `JOIN NOW! ${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
             meetButton.href = meetLink;
         } else {
-            // Generate Google Calendar link
             const endMeeting = new Date(nextMeeting);
-            endMeeting.setUTCHours(endMeeting.getUTCHours() + 2); // 2 hour duration
-            
-            const eventDetails = encodeURIComponent(
-                'OVERVIBING - When Humans and AI get lost together in the VIBE CODING flow.\n\n' +
+            endMeeting.setUTCHours(endMeeting.getUTCHours() + 2);
+            const eventDetails = encodeURIComponent('OVERVIBING - When Humans and AI get lost together in the VIBE CODING flow.\n\n' +
                 '🗓 Every Tuesday\n' +
                 '🕔 17:00 – 18:00 (Europe/Paris)\n' +
                 '📍 Google Meet → https://meet.google.com/svb-xcme-opq\n\n' +
@@ -749,20 +1132,17 @@ function updateTimer() {
                 '🎯 Purpose\n\n' +
                 'A weekly meeting to examine what really happens when AI becomes part of the development process.\n\n' +
                 'We focus on:\n' +
-                '	•	What goes wrong when AI-generated code or flow-based work causes misalignment\n' +
-                '	•	How to detect early signs of confusion, lost context, and overdependence on tooling\n' +
-                '	•	What practical steps teams can take to stay in control — through boundaries, checks, and better habits\n\n' +
+                '       •       What goes wrong when AI-generated code or flow-based work causes misalignment\n' +
+                '       •       How to detect early signs of confusion, lost context, and overdependence on tooling\n' +
+                '       •       What practical steps teams can take to stay in control — through boundaries, checks, and better habits\n\n' +
                 'No hype — just a space to talk through real examples and avoid common traps.\n\n' +
                 '🔍 Definitions\n\n' +
                 'VIBE-CODING → Coding with AI in a fast, creative flow that feels productive.\n' +
                 'OVER-VIBING → Losing clarity, structure, or intent by going too deep into flow without critical checkpoints.\n\n' +
                 '⸻\n\n' +
                 '— Michael\n' +
-                'one-front.com'
-            );
-            
-            const calendarLink = 
-                'https://calendar.google.com/calendar/render' +
+                'one-front.com');
+            const calendarLink = 'https://calendar.google.com/calendar/render' +
                 '?action=TEMPLATE' +
                 '&text=🌀 OVERVIBING - Weekly Meeting' +
                 `&details=${eventDetails}` +
@@ -770,7 +1150,6 @@ function updateTimer() {
                 `&dates=${nextMeeting.toISOString().replace(/[-:]/g, '').split('.')[0]}Z` +
                 `/${endMeeting.toISOString().replace(/[-:]/g, '').split('.')[0]}Z` +
                 '&recur=RRULE:FREQ=WEEKLY';
-            
             meetButton.textContent = 'ADD TO CALENDAR!';
             meetButton.href = calendarLink;
         }
@@ -779,136 +1158,485 @@ function updateTimer() {
 
 //  Update timer every 10ms for smooth milliseconds display
 setInterval(updateTimer, 10);
+updateTimer(); // Initial call
 
-// Add keyboard controls for audio manipulation
-document.addEventListener('keydown', (event) => {
-    // No audio system, so no audio manipulation controls
-}); 
+// Generate initial galaxy
+generateGalaxy()
 
-// Audio Initialization
-let audioElement = null;
+// Animate
+const clock = new THREE.Clock()
+let lastElapsedTime = 0
+let rotationPhaseOffset = 0 // feeds uRotationOffset for seamless continuity
+let galaxyPaused = false
 
-const initializeAudio = () => {
-    audioElement = new Audio('Michau Wybraniec - Kepler 22b.mp3');
-    audioElement.loop = true;
-    audioElement.volume = 0.3; // Adjust volume as needed
+const pauseGalaxy = () => {
+    galaxyPaused = true
+    vinylSpinActive = false
+    vinylSpinSpeed = 1.0
+    hoverParameters.targetHoverIntensity = 0.0
+}
 
-    const audioControl = document.getElementById('audio-control');
-    audioControl.innerHTML = `
-        <div class="play-icon"></div>
-        <div class="pause-icon"></div>
-    `;
+const resumeGalaxy = () => {
+    galaxyPaused = false
+}
 
-    const updateAudioIcon = (isPlaying) => {
-        audioControl.classList.toggle('playing', isPlaying);
-    };
+const tick = () =>
+{
+    if (galaxyPaused) {
+        // Keep rendering the current frame without updating motion
+        controls.update()
+        renderer.render(scene, camera)
+        window.requestAnimationFrame(tick)
+        return
+    }
 
-    const toggleAudio = (event) => {
-        if (event) event.preventDefault();
-        
-        if (audioElement.paused) {
-            audioElement.play();
-            updateAudioIcon(true);
-        } else {
-            audioElement.pause();
-            updateAudioIcon(false);
+    const elapsedTime = clock.getElapsedTime()
+    const deltaTime = elapsedTime - lastElapsedTime
+
+    // Update hover intensity with smooth transition
+    hoverParameters.hoverIntensity += (hoverParameters.targetHoverIntensity - hoverParameters.hoverIntensity) * hoverParameters.transitionSpeed;
+    
+    // Update brightness multiplier with smooth easing
+    hoverParameters.currentBrightnessMultiplier += (hoverParameters.targetBrightnessMultiplier - hoverParameters.currentBrightnessMultiplier) * hoverParameters.brightnessTransitionSpeed;
+    
+    // Update material uniforms
+    material.uniforms.uTime.value = elapsedTime
+    material.uniforms.uHoverIntensity.value = hoverParameters.hoverIntensity
+    material.uniforms.uHoverSizeMultiplier.value = 1.0 + (hoverParameters.hoverIntensity * (hoverParameters.sizeMultiplier - 1.0))
+    
+    // Use vinyl spin speed if active, otherwise use hover-based spin
+    if (vinylSpinActive) {
+        // Vinyl spin takes priority - ignore hover effects
+        material.uniforms.uHoverSpinMultiplier.value = vinylSpinSpeed;
+        // Keep normal brightness - no color intensification on vinyl spin
+        material.uniforms.uHoverBrightnessMultiplier.value = 1.0;
+        // Accumulate rotation phase offset difference to avoid jump when we switch back
+        const spinDir = material && material.uniforms.uSpinDirection ? material.uniforms.uSpinDirection.value : 1.0;
+        const currentSpeed = 0.2 * vinylSpinSpeed * spinDir;
+        const normalSpeed = material && material.uniforms.uNormalRotationSpeed ? material.uniforms.uNormalRotationSpeed.value * spinDir : 0.05 * spinDir;
+        rotationPhaseOffset += Math.max(0, deltaTime) * (currentSpeed - normalSpeed);
+        if (material && material.uniforms.uRotationOffset) {
+            material.uniforms.uRotationOffset.value = rotationPhaseOffset;
         }
-    };
-
-    audioControl.addEventListener('click', toggleAudio);
-
-    // Autoplay with user interaction fallback
-    const startAudio = async () => {
-        try {
-            await audioElement.play();
-            updateAudioIcon(true);
-            
-            // Remove all listeners after successful start
-            window.removeEventListener('click', startAudio);
-            window.removeEventListener('touchstart', startAudio);
-            window.removeEventListener('keydown', startAudio);
-        } catch (error) {
-            console.log('Autoplay prevented, waiting for user interaction');
-            console.error(error);
+        // Debug: log every 60 frames (about once per second) when vinyl is active
+        if (Math.floor(elapsedTime) % 1 === 0 && Math.floor(elapsedTime * 60) % 60 === 0) {
+            console.log('FRAME: Vinyl spin active, speed:', vinylSpinSpeed, 'uniform value:', material.uniforms.uHoverSpinMultiplier.value);
         }
-    };
-
-    // Try autoplay, fallback to user interaction
-    startAudio();
-    window.addEventListener('click', startAudio);
-    window.addEventListener('touchstart', startAudio);
-    window.addEventListener('keydown', startAudio);
-};
-
-// Call audio initialization after other initializations
-window.addEventListener('load', initializeAudio);
-
-// Color Mode Toggle Functionality
-const switchColorMode = () => {
-    isBrightMode = !isBrightMode;
-    
-    // Toggle bright-mode class on body for background only
-    document.body.classList.toggle('bright-mode', isBrightMode);
-    
-    // Get current preset name
-    const currentPresetName = currentConfig.name;
-    let targetPresetList = isBrightMode ? brightModePresets : darkModePresets;
-    let newPresetName;
-    
-    if (isBrightMode) {
-        // Switch to bright mode - find equivalent or default to first bright preset
-        newPresetName = targetPresetList[0]; // Default to first bright preset
     } else {
-        // Switch to dark mode - find equivalent or default to first dark preset  
-        newPresetName = targetPresetList[0]; // Default to first dark preset
+        // Normal hover effects only when vinyl spin is not active
+        // Use smooth transitions for all hover effects
+        material.uniforms.uHoverSpinMultiplier.value = 1.0 + (hoverParameters.hoverIntensity * (hoverParameters.spinMultiplier - 1.0));
+        // Use smooth brightness easing instead of instant calculation
+        material.uniforms.uHoverBrightnessMultiplier.value = hoverParameters.currentBrightnessMultiplier;
+    }
+
+    // Smooth camera movement for button hover effects (only when not being controlled by user)
+    if (!controls.isUserInteracting) {
+        const easeFactor = 0.05;
+        const distance = Math.sqrt(
+            Math.pow(targetCameraPosition.x - camera.position.x, 2) +
+            Math.pow(targetCameraPosition.y - camera.position.y, 2) +
+            Math.pow(targetCameraPosition.z - camera.position.z, 2)
+        );
+        
+        // Only move if distance is significant enough
+        if (distance > 0.001) {
+            camera.position.x += (targetCameraPosition.x - camera.position.x) * easeFactor;
+            camera.position.y += (targetCameraPosition.y - camera.position.y) * easeFactor;
+            camera.position.z += (targetCameraPosition.z - camera.position.z) * easeFactor;
+        }
     }
     
-    // Find and apply the new preset
-    const newPreset = cameraConfigs.find(config => config.name === newPresetName);
-    if (newPreset) {
-        applyConfiguration(newPreset);
-        
-        // Set scene background color based on mode and preset
-        if (isBrightMode && newPreset.galaxyBackgroundColor) {
-            // Use the galaxyBackgroundColor from the preset configuration
-            scene.background = new THREE.Color(newPreset.galaxyBackgroundColor);
-        } else {
-            scene.background = new THREE.Color(0x000000); // Black background for dark mode or default
-        }
-        
-        // Update the preset index to match the new preset
-        currentPresetIndex = cameraConfigs.findIndex(config => config.name === newPresetName);
-        updatePresetDisplay();
-    }
+    // Make camera look at the galaxy center
+    camera.lookAt(0, 0, 0);
+
+    // Update controls
+    controls.update()
+
+    // Render
+    renderer.render(scene, camera)
+
+    // Call tick again on the next frame
+    window.requestAnimationFrame(tick)
+    lastElapsedTime = elapsedTime
+}
+
+tick()
+
+// Handle resize
+window.addEventListener('resize', () =>
+{
+    // Update sizes
+    sizes.width = window.innerWidth
+    sizes.height = window.innerHeight
+
+    // Update camera
+    camera.aspect = sizes.width / sizes.height
+    camera.updateProjectionMatrix()
+
+    // Update renderer
+    renderer.setSize(sizes.width, sizes.height)
+    // Keep the same cap on resize
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5))
+})
+
+// Simple cursor effect for buttons (performance optimized)
+function initSimpleCursorEffect() {
+    const buttons = document.querySelectorAll('.modern-button[href*="calendar.google.com"], .subscribe-button');
     
-    // Update the color mode icon appearance
-    const colorModeToggle = document.getElementById('color-mode-toggle');
-    const moonIcon = document.getElementById('moon-icon');
-    const sunIcon = document.getElementById('sun-icon');
-    
-    if (colorModeToggle && moonIcon && sunIcon) {
-        // Use the same color as the play button (galaxy outside color)
-        const galaxyColor = getComputedStyle(document.documentElement).getPropertyValue('--galaxy-outside-color').trim();
-        colorModeToggle.style.color = galaxyColor;
+    buttons.forEach(button => {
+        button.addEventListener('mousemove', (e) => {
+            const rect = button.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width) * 100;
+            const y = ((e.clientY - rect.top) / rect.height) * 100;
+            
+            button.style.setProperty('--mouse-x', `${x}%`);
+            button.style.setProperty('--mouse-y', `${y}%`);
+        });
         
-        if (isBrightMode) {
-            // Show moon icon in bright mode (to switch to dark)
-            sunIcon.style.display = 'none';
-            moonIcon.style.display = 'block';
-            colorModeToggle.setAttribute('aria-label', 'Switch to dark mode');
-        } else {
-            // Show sun icon in dark mode (to switch to bright)
-            moonIcon.style.display = 'none';
-            sunIcon.style.display = 'block';
-            colorModeToggle.setAttribute('aria-label', 'Switch to bright mode');
-        }
+        button.addEventListener('mouseleave', () => {
+            button.style.setProperty('--mouse-x', '50%');
+            button.style.setProperty('--mouse-y', '50%');
+        });
+    });
+}
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', initSimpleCursorEffect);
+
+// Button hover effects for camera zoom and galaxy color intensity
+const initButtonHoverEffects = () => {
+    const buttons = document.querySelectorAll('.modern-button, .corner-link, .subscribe-button');
+    
+    buttons.forEach(button => {
+        button.addEventListener('mouseenter', () => {
+            // Check if it's the "Add to Calendar" button for maximum effects
+            const isCalendarButton = button.textContent.includes('ADD TO CALENDAR') || 
+                                   button.textContent.includes('JOIN NOW') || 
+                                   button.textContent.includes('JOIN SOON');
+            
+            const isSubscribeButton = button.classList.contains('subscribe-button');
+            
+            if (isCalendarButton) {
+                // EPIC CALENDAR BUTTON EFFECTS - Current hover effect
+                hoverParameters.targetHoverIntensity = 1.0; // Maximum intensity
+                hoverParameters.isHovered = true;
+                
+                // Get current hover effect from config
+                const currentEffect = getCurrentHoverEffect();
+                const calendarEffects = currentEffect.calendarButton;
+                
+                // Set epic multipliers for calendar button from current effect
+                hoverParameters.sizeMultiplier = calendarEffects.sizeMultiplier;
+                hoverParameters.spinMultiplier = calendarEffects.spinMultiplier;
+                hoverParameters.brightnessMultiplier = calendarEffects.brightnessMultiplier;
+                // Set target brightness for smooth easing
+                hoverParameters.targetBrightnessMultiplier = calendarEffects.brightnessMultiplier;
+                
+                // Update spin direction in shader
+                if (material && material.uniforms.uSpinDirection) {
+                    material.uniforms.uSpinDirection.value = calendarEffects.spinDirection || 1;
+                }
+                
+                // Epic camera movement - configurable zoom, angle, and movement type
+                const zoomFactor = calendarEffects.zoomFactor;
+                const angleFactor = calendarEffects.angleFactor;
+                const cameraMovement = calendarEffects.cameraMovement || 'default';
+                const cameraOffset = calendarEffects.cameraOffset || {x: 0, y: 0, z: 0};
+                
+                // Apply camera movement based on effect type
+                applyCameraMovement(cameraMovement, zoomFactor, angleFactor, calendarEffects.heightMultiplier, cameraOffset);
+                
+                // Don't immediately set galaxy effects - let them transition smoothly
+                // The hover intensity will handle the smooth transition
+            } else {
+                // Normal button effects
+                hoverParameters.targetHoverIntensity = 0.3; // Light intensity
+                hoverParameters.isHovered = true;
+                
+                // Set target brightness for smooth easing
+                const currentEffect = getCurrentHoverEffect();
+                hoverParameters.targetBrightnessMultiplier = currentEffect.normalButtons.brightnessMultiplier;
+                
+                const zoomFactor = 0.8; // Normal zoom
+                targetCameraPosition.x *= zoomFactor;
+                targetCameraPosition.y *= zoomFactor;
+                targetCameraPosition.z *= zoomFactor;
+                
+                // Don't immediately set galaxy effects - let them transition smoothly
+                // The hover intensity will handle the smooth transition
+            }
+        });
+        
+        button.addEventListener('mouseleave', () => {
+            // Check if it's the "Add to Calendar" button for proper reset
+            const isCalendarButton = button.textContent.includes('ADD TO CALENDAR') || 
+                                   button.textContent.includes('JOIN NOW') || 
+                                   button.textContent.includes('JOIN SOON');
+            
+            const isSubscribeButton = button.classList.contains('subscribe-button');
+            
+            if (isCalendarButton) {
+                // Reset epic galaxy event - galaxy returns to normal size
+                hoverParameters.targetHoverIntensity = 0.0; // Reset to normal
+                hoverParameters.isHovered = false;
+                
+                // Reset multipliers back to normal values from current effect
+                const currentEffect = getCurrentHoverEffect();
+                hoverParameters.sizeMultiplier = currentEffect.normalButtons.sizeMultiplier;
+                hoverParameters.spinMultiplier = currentEffect.normalButtons.spinMultiplier;
+                hoverParameters.brightnessMultiplier = currentEffect.normalButtons.brightnessMultiplier;
+                // Reset target brightness for smooth easing back to normal
+                hoverParameters.targetBrightnessMultiplier = 1.0;
+                
+                // Reset spin direction to normal
+                if (material && material.uniforms.uSpinDirection) {
+                    material.uniforms.uSpinDirection.value = currentEffect.normalButtons.spinDirection || 1;
+                }
+                
+                // Return camera to original preset position
+                targetCameraPosition.x = originalCameraPosition.x;
+                targetCameraPosition.y = originalCameraPosition.y;
+                targetCameraPosition.z = originalCameraPosition.z;
+                
+                // Don't immediately reset galaxy effects - let them transition smoothly
+                // The hover intensity will handle the smooth transition back to normal
+            } else {
+                // Reset normal button effects
+                hoverParameters.targetHoverIntensity = 0.0; // Reset to normal
+                hoverParameters.isHovered = false;
+                
+                // Reset target brightness for smooth easing back to normal
+                hoverParameters.targetBrightnessMultiplier = 1.0;
+                
+                // Return camera to exact original position (same as calendar buttons)
+                targetCameraPosition.x = originalCameraPosition.x;
+                targetCameraPosition.y = originalCameraPosition.y;
+                targetCameraPosition.z = originalCameraPosition.z;
+                
+                // Don't immediately reset galaxy effects - let them transition smoothly
+                // The hover intensity will handle the smooth transition back to normal
+            }
+        });
+    });
+};
+
+// Initialize button hover effects
+document.addEventListener('DOMContentLoaded', initButtonHoverEffects);
+
+// Initialize hover effect switcher
+document.addEventListener('DOMContentLoaded', initHoverEffectSwitcher);
+
+// Simple camera system for button hover effects only
+let originalCameraPosition = { x: 3, y: 3, z: 3 }; // Default fallback
+let targetCameraPosition = { x: 3, y: 3, z: 3 };
+
+const initCameraSystem = () => {
+    // Store the current preset's camera position as the original
+    originalCameraPosition = {
+        x: camera.position.x,
+        y: camera.position.y,
+        z: camera.position.z
+    };
+    targetCameraPosition = { ...originalCameraPosition };
+    
+    // Camera animation is now handled in the main tick loop
+    // No separate animation loop needed
+};
+
+// Vinyl record spin effect for subscribe button
+let vinylSpinActive = false;
+let vinylSpinSpeed = 1.0;
+let newNormalRotationSpeed = 0.05; // This will be updated after vinyl spin
+
+const startVinylSpin = () => {
+    console.log('startVinylSpin called');
+    console.log('material exists:', !!material);
+    console.log('uHoverSpinMultiplier exists:', !!(material && material.uniforms.uHoverSpinMultiplier));
+    
+            if (material && material.uniforms.uHoverSpinMultiplier) {
+                console.log('Starting vinyl spin effect');
+        vinylSpinActive = true;
+        vinylSpinSpeed = 1.0; // Start at normal speed
+        
+        // Change camera position for vinyl spin - move to top view
+        targetCameraPosition.x = 0;
+        targetCameraPosition.y = 8; // Higher up for top-down view
+        targetCameraPosition.z = 0; // Directly above the galaxy
+        
+        console.log('Set vinylSpinActive to true, starting smooth spin animation');
+        
+        // Start smooth 2-second spin animation
+        animateVinylSpin();
+                    } else {
+        console.log('Cannot start vinyl spin - material or uniform not available');
     }
 };
 
-// Initialize color mode toggle
-document.addEventListener('DOMContentLoaded', () => {
-    const colorModeToggle = document.getElementById('color-mode-toggle');
-    if (colorModeToggle) {
-        colorModeToggle.addEventListener('click', switchColorMode);
+const animateVinylSpin = () => {
+    console.log('Starting smooth 2-second vinyl spin animation');
+    
+    const startTime = Date.now();
+    const totalDuration = 2000; // 2 seconds total
+    
+    const animate = () => {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / totalDuration, 1.0);
+        
+        if (vinylSpinActive && progress < 1.0) {
+            // Smooth ease-in-out curve: slow start, fast middle, slow end
+            const easeInOut = progress < 0.5 
+                ? 2 * progress * progress  // Ease in (first half)
+                : 1 - Math.pow(-2 * progress + 2, 3) / 2; // Ease out (second half)
+            
+            // Speed goes from 1.0 to 8.0 and back to 1.0 smoothly
+            const speedMultiplier = 1.0 + (7.0 * Math.sin(easeInOut * Math.PI)); // Sine wave for smooth curve
+            vinylSpinSpeed = speedMultiplier;
+            
+            // Continue animation
+            requestAnimationFrame(animate);
+            } else {
+            // Animation complete - finish smoothly
+            vinylSpinActive = false;
+            vinylSpinSpeed = 1.0;
+            
+            // Calculate rotation offset to maintain continuity
+            const currentTime = Date.now() / 1000; // Convert to seconds
+            const vinylRotationAtEnd = currentTime * 0.2 * 1.0; // Final vinyl rotation
+            const normalRotationAtEnd = currentTime * 0.05; // What normal rotation would be
+            const rotationOffset = vinylRotationAtEnd - normalRotationAtEnd;
+            
+            // Set the rotation offset to maintain continuity
+            if (material && material.uniforms.uRotationOffset) {
+                material.uniforms.uRotationOffset.value = rotationOffset;
+            }
+            
+            // Keep the normal rotation speed consistent (don't change it permanently)
+            // The galaxy should return to its original rotation speed
+            if (material && material.uniforms.uNormalRotationSpeed) {
+                material.uniforms.uNormalRotationSpeed.value = 0.05; // Keep original speed
+            }
+            
+            // Keep camera in top-down position - don't return to original
+            // targetCameraPosition stays at (0, 8, 0)
+            
+            console.log('Smooth vinyl spin animation completed - rotation offset set to:', rotationOffset);
+        }
+    };
+    
+    // Start animation
+    requestAnimationFrame(animate);
+};
+
+// Removed stop button logic
+
+const initVinylSpinEffect = () => {
+    const subscribeButtons = document.querySelectorAll('.subscribe-button');
+    console.log('Found subscribe buttons:', subscribeButtons.length);
+    
+    subscribeButtons.forEach((button, index) => {
+        console.log(`Adding click listener to button ${index}:`, button);
+        button.addEventListener('click', (e) => {
+            console.log('Subscribe button clicked - no galaxy effect triggered.');
+            // No galaxy effects on subscribe click
+        });
+    });
+    
+    // Stop button removed
+};
+
+// Initialize camera system after galaxy is created
+setTimeout(() => {
+    if (points) {
+        console.log('Initializing camera system and vinyl spin effect');
+        initCameraSystem();
+        initVinylSpinEffect();
+    } else {
+        console.log('Points not found, skipping vinyl spin effect initialization');
     }
-}); 
+}, 100);
+
+// Initialize keyboard controls for preset switching
+const initKeyboardControls = () => {
+    document.addEventListener('keydown', (event) => {
+        // Only handle arrow keys when not typing in input fields
+        const activeElement = document.activeElement;
+        const isInputField = activeElement && (
+            activeElement.tagName === 'INPUT' ||
+            activeElement.tagName === 'TEXTAREA' ||
+            activeElement.contentEditable === 'true'
+        );
+
+        if (isInputField) {
+            // Allow default behavior while typing
+            return;
+        }
+
+        // Toggle settings (color mode button and effect selector)
+        if ((event.ctrlKey || event.metaKey) && (event.key === 'o' || event.key === 'O')) {
+            event.preventDefault();
+            toggleSettingsVisibility();
+            return;
+        }
+
+        switch (event.key) {
+            case 'ArrowLeft':
+                event.preventDefault();
+                showPresetLoading();
+                // Previous preset
+                currentPresetIndex = (currentPresetIndex - 1 + presets.length) % presets.length;
+                applyPreset(presets[currentPresetIndex]);
+                updatePresetDisplay();
+                console.log(`Keyboard: Switched to previous preset "${presets[currentPresetIndex].name}"`);
+                // Hide loading after a short delay to show the transition
+                setTimeout(hidePresetLoading, 200);
+                break;
+
+            case 'ArrowRight':
+                event.preventDefault();
+                showPresetLoading();
+                // Next preset
+                currentPresetIndex = (currentPresetIndex + 1) % presets.length;
+                applyPreset(presets[currentPresetIndex]);
+                updatePresetDisplay();
+                console.log(`Keyboard: Switched to next preset "${presets[currentPresetIndex].name}"`);
+                // Hide loading after a short delay to show the transition
+                setTimeout(hidePresetLoading, 200);
+                break;
+        }
+    });
+
+    console.log('Keyboard controls initialized - use Left/Right arrow keys to switch presets');
+};
+
+// Also try to initialize vinyl spin effect when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM loaded, trying to initialize vinyl spin effect');
+    setTimeout(() => {
+        initVinylSpinEffect();
+    }, 500); // Wait a bit longer for all elements to be ready
+    
+    // Initialize keyboard controls
+    initKeyboardControls();
+    // Hide settings UI by default
+    setSettingsVisibility(false);
+});
+
+// Settings visibility (color mode button + hover effect selector)
+let settingsVisible = false;
+
+const setSettingsVisibility = (visible) => {
+    settingsVisible = !!visible;
+    const colorToggle = document.getElementById('color-mode-toggle');
+    const effectSection = document.querySelector('.hover-effect-section');
+    if (colorToggle) {
+        colorToggle.style.display = settingsVisible ? '' : 'none';
+    }
+    if (effectSection) {
+        effectSection.style.display = settingsVisible ? '' : 'none';
+    }
+};
+
+const toggleSettingsVisibility = () => {
+    setSettingsVisibility(!settingsVisible);
+};

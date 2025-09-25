@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     
     <!-- Google Tag Manager -->
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -90,20 +90,95 @@
     
     <canvas class="webgl" aria-label="Interactive 3D galaxy visualization"></canvas>
     
+    <!-- App Header -->
+    <header class="app-header">
+        <div class="header-content">
+            <h3 class="subscription-title">OVERVIBING</h3>
+            <form id="emailForm" class="subscription-form">
+                <div class="form-fields">
+                    <input 
+                        type="email" 
+                        id="emailInput" 
+                        placeholder="Enter your email" 
+                        required
+                        class="email-input"
+                        aria-label="Email address for subscription"
+                        inputmode="email" autocomplete="email" autocapitalize="none" spellcheck="false">
+                    <input 
+                        type="text" 
+                        id="projectInput" 
+                        placeholder="What do you want to build?"
+                        class="project-input"
+                        aria-label="What do you want to build">
+                    <input 
+                        type="text" 
+                        id="sourceInput" 
+                        placeholder="How did you hear about us?"
+                        class="source-input"
+                        aria-label="How did you hear about us?">
+                    <button type="submit" class="subscribe-button" aria-label="Subscribe to updates">
+                        <span class="button-text">SUBSCRIBE</span>
+                        <span class="button-loading" style="display: none;">⏳</span>
+                    </button>
+                </div>
+                <div class="subscription-message" id="subscriptionMessage"></div>
+            </form>
+        </div>
+    </header>
+    
     <main>  
         <div class="galaxy-title">
-            <div class="countdown-timer code-pill" aria-live="polite"></div>
-            <h1 class="galaxy-title__main">OVERVIBING</h1>
-            <p class="galaxy-title__subtitle">When Human and AI get lost together in the <code class="code-pill"><b>VIBE CODING</b></code> flow.</p>
-            <p class="galaxy-title__meeting">
-                Weekly discussions — every Tuesday at 17:00 (UTC+2)
-            </p>
-            <a href="https://meet.google.com/zzz-zzzz-zzz" 
-               target="_blank" 
-               rel="noopener noreferrer" 
-               class="modern-button"
-               aria-label="Join the meeting">JOIN NOW!</a>
+            <!-- Header Section -->
+            <div class="header-section">
+                <div class="countdown-timer code-pill" aria-live="polite"></div>
+                <h1 class="galaxy-title__main">OVERVIBING</h1>
+                <p class="galaxy-title__subtitle">When Human and AI get lost together in the <code class="code-pill"><b>VIBE CODING</b></code> flow.</p>
+            </div>
+            
+            <!-- Meeting Info Section -->
+            <div class="meeting-section">
+                <p class="galaxy-title__meeting">Weekly discussions — every Tuesday at 17:00 (UTC+2)</p>
+                <a href="https://meet.google.com/svb-xcme-opq" 
+                   target="_blank" 
+                   rel="noopener noreferrer" 
+                   class="modern-button"
+                   aria-label="Join the meeting">ADD TO CALENDAR!</a>
+            </div>
+            
+            <!-- Mobile Subscription Form -->
+            <form id="mobileEmailForm" class="subscription-form mobile-subscription-form">
+                <h3 class="mobile-form-title">Stay Updated</h3>
+                <div class="form-fields">
+                    <input 
+                        type="email" 
+                        id="mobileEmailInput" 
+                        placeholder="Enter your email" 
+                        required
+                        class="email-input"
+                        aria-label="Email address for subscription"
+                        inputmode="email" autocomplete="email" autocapitalize="none" spellcheck="false">
+                    <input 
+                        type="text" 
+                        id="mobileProjectInput" 
+                        placeholder="What do you want to build?"
+                        class="project-input"
+                        aria-label="What do you want to build">
+                    <input 
+                        type="text" 
+                        id="mobileSourceInput" 
+                        placeholder="How did you hear about us?"
+                        class="source-input"
+                        aria-label="How did you hear about us?">
+                    <button type="submit" class="subscribe-button" aria-label="Subscribe to updates">
+                        <span class="button-text">SUBSCRIBE</span>
+                        <span class="button-loading" style="display: none;">⏳</span>
+                    </button>
+                </div>
+                <div class="subscription-message" id="mobileSubscriptionMessage"></div>
+            </form>
+            
         </div>
+        
     </main>
 
     <div class="footer-bar">
@@ -117,6 +192,9 @@
                     </svg>
                 </button>
                 <div class="preset-name" id="currentPreset" aria-live="polite">Default Overvibing</div>
+                <div class="preset-loading" id="presetLoading" style="display: none;">
+                    <div class="loading-spinner"></div>
+                </div>
                 <button class="preset-arrow" 
                         id="nextPreset" 
                         aria-label="Next preset">
@@ -128,7 +206,12 @@
         </div>
         <div class="footer-section audio-control-section">
             <div id="audio-control"></div>
-                         <button id="color-mode-toggle" class="color-mode-toggle" aria-label="Switch to bright mode">
+            <button id="vinyl-stop-button" class="vinyl-stop-button" aria-label="Stop vinyl spin" style="display: none;">
+                <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                    <rect x="6" y="6" width="12" height="12" fill="currentColor"/>
+                </svg>
+            </button>
+            <button id="color-mode-toggle" class="color-mode-toggle" aria-label="Switch to bright mode">
                  <!-- Perfect Sun icon for dark mode (default) -->
                  <svg id="sun-icon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
                      <circle cx="12" cy="12" r="5" fill="currentColor"/>
@@ -154,6 +237,21 @@
                      <circle cx="12" cy="12" r="9" fill="currentColor" mask="url(#moon-mask)"/>
                  </svg>
              </button>
+        </div>
+        <div class="footer-section hover-effect-section">
+            <div class="hover-effect-switcher" role="region" aria-label="Hover effect controls">
+                <button class="hover-effect-arrow" 
+                        id="prevHoverEffect" 
+                        aria-label="Previous hover effect">
+                    ←
+                </button>
+                <div class="hover-effect-name" id="currentHoverEffect" aria-live="polite">Soft Epic</div>
+                <button class="hover-effect-arrow" 
+                        id="nextHoverEffect" 
+                        aria-label="Next hover effect">
+                    →
+                </button>
+            </div>
         </div>
         <div class="footer-section corner-link-section">
             <a href="https://www.one-front.com" 
