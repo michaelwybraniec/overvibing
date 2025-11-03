@@ -1386,18 +1386,21 @@ const initButtonHoverEffects = () => {
                 hoverParameters.sizeMultiplier = currentEffect.normalButtons.sizeMultiplier;
                 hoverParameters.spinMultiplier = currentEffect.normalButtons.spinMultiplier;
                 hoverParameters.brightnessMultiplier = currentEffect.normalButtons.brightnessMultiplier;
-                // Reset target brightness for smooth easing back to normal
-                hoverParameters.targetBrightnessMultiplier = 1.0;
+                // Reset target brightness for smooth easing back to effect's normal baseline (not hard 1.0)
+                hoverParameters.targetBrightnessMultiplier = currentEffect.normalButtons.brightnessMultiplier;
                 
                 // Reset spin direction to normal
                 if (material && material.uniforms.uSpinDirection) {
                     material.uniforms.uSpinDirection.value = currentEffect.normalButtons.spinDirection || 1;
                 }
                 
-                // Return camera to original preset position
-                targetCameraPosition.x = originalCameraPosition.x;
-                targetCameraPosition.y = originalCameraPosition.y;
-                targetCameraPosition.z = originalCameraPosition.z;
+                // Freeze camera at its current position to avoid visible shift
+                originalCameraPosition = {
+                    x: camera.position.x,
+                    y: camera.position.y,
+                    z: camera.position.z
+                };
+                targetCameraPosition = { ...originalCameraPosition };
                 
                 // Don't immediately reset galaxy effects - let them transition smoothly
                 // The hover intensity will handle the smooth transition back to normal
@@ -1406,13 +1409,17 @@ const initButtonHoverEffects = () => {
                 hoverParameters.targetHoverIntensity = 0.0; // Reset to normal
                 hoverParameters.isHovered = false;
                 
-                // Reset target brightness for smooth easing back to normal
-                hoverParameters.targetBrightnessMultiplier = 1.0;
+                // Reset target brightness for smooth easing back to effect's normal baseline (not hard 1.0)
+                const currentEffectNormal = getCurrentHoverEffect();
+                hoverParameters.targetBrightnessMultiplier = currentEffectNormal.normalButtons.brightnessMultiplier;
                 
-                // Return camera to exact original position (same as calendar buttons)
-                targetCameraPosition.x = originalCameraPosition.x;
-                targetCameraPosition.y = originalCameraPosition.y;
-                targetCameraPosition.z = originalCameraPosition.z;
+                // Freeze camera at its current position to avoid visible shift
+                originalCameraPosition = {
+                    x: camera.position.x,
+                    y: camera.position.y,
+                    z: camera.position.z
+                };
+                targetCameraPosition = { ...originalCameraPosition };
                 
                 // Don't immediately reset galaxy effects - let them transition smoothly
                 // The hover intensity will handle the smooth transition back to normal
