@@ -370,6 +370,7 @@ const hoverParameters = {
     // Smooth brightness easing
     currentBrightnessMultiplier: 1.0,
     targetBrightnessMultiplier: 1.0,
+    baselineBrightnessMultiplier: hoverEffectsConfig.hoverEffects[0].normalButtons.brightnessMultiplier,
     brightnessTransitionSpeed: 0.08, // Slower transition for smoother color easing
     colorShift: 0.3
 }
@@ -1226,6 +1227,10 @@ const tick = () =>
         // Normal hover effects only when vinyl spin is not active
         // Use smooth transitions for all hover effects
         material.uniforms.uHoverSpinMultiplier.value = 1.0 + (hoverParameters.hoverIntensity * (hoverParameters.spinMultiplier - 1.0));
+        // Ensure baseline brightness target is maintained when not hovered
+        if (!hoverParameters.isHovered) {
+            hoverParameters.targetBrightnessMultiplier = hoverParameters.baselineBrightnessMultiplier;
+        }
         // Use smooth brightness easing instead of instant calculation
         material.uniforms.uHoverBrightnessMultiplier.value = hoverParameters.currentBrightnessMultiplier;
     }
@@ -1388,6 +1393,7 @@ const initButtonHoverEffects = () => {
                 hoverParameters.brightnessMultiplier = currentEffect.normalButtons.brightnessMultiplier;
                 // Reset target brightness for smooth easing back to effect's normal baseline (not hard 1.0)
                 hoverParameters.targetBrightnessMultiplier = currentEffect.normalButtons.brightnessMultiplier;
+                hoverParameters.baselineBrightnessMultiplier = currentEffect.normalButtons.brightnessMultiplier;
                 
                 // Reset spin direction to normal
                 if (material && material.uniforms.uSpinDirection) {
@@ -1412,6 +1418,7 @@ const initButtonHoverEffects = () => {
                 // Reset target brightness for smooth easing back to effect's normal baseline (not hard 1.0)
                 const currentEffectNormal = getCurrentHoverEffect();
                 hoverParameters.targetBrightnessMultiplier = currentEffectNormal.normalButtons.brightnessMultiplier;
+                hoverParameters.baselineBrightnessMultiplier = currentEffectNormal.normalButtons.brightnessMultiplier;
                 
                 // Freeze camera at its current position to avoid visible shift
                 originalCameraPosition = {
