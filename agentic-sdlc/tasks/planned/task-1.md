@@ -1,6 +1,6 @@
 # Task ID: 1
 # Title: Discovery & triage (analyze hover handlers, render loop, shader uniforms)
-# Status: [ ] Pending
+# Status: [x] In Progress
 # Priority: high
 # Owner: Dev Team
 # Estimated Effort: 4h
@@ -25,6 +25,18 @@ Essential for achieving project goals and success criteria
 
 ## Notes
 Phase 1 of 8: Discovery & triage (analyze hover handlers, render loop, shader uniforms)
+Started: Set status to In Progress per AWP next (3.2)
+
+## Findings
+- Explicit reset on mouseleave sets `targetHoverIntensity` to 0 and restores "normalButtons" multipliers, producing the perceived return to default after a short easing period.
+- Brightness easing (`currentBrightnessMultiplier` → `targetBrightnessMultiplier`) is directed back to 1.0 on leave, which visually reads as a reset after waiting.
+- Spin direction is reset to the normal button value on leave, further reinforcing the baseline look.
+- No idle timers or auto-preset reapplication detected; behavior is deterministic and driven by hover state transitions only.
+
+## Cleanup Candidates (no behavior change yet)
+- Parameterize the mouseleave baseline via config (effect normal baseline) instead of hard-coded `1.0` for brightness, without altering current visual output.
+- Centralize hover-out reset logic to reduce duplication and magic values.
+- Ensure spin direction resets consistently from config to avoid surprises.
 
 ## Sub-tasks
 - [ ] Analyze requirements for this phase
