@@ -337,10 +337,11 @@ const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
 controls.enabled = true // Enable OrbitControls for mouse interaction
 
-// Track and temporarily disable autoRotate during hover/decay
-let autoRotateTemporarilyDisabled = false
-let previousAutoRotate = controls.autoRotate
-let previousAutoRotateSpeed = controls.autoRotateSpeed || 0
+// Lock controls during hover decay to prevent camera shifts
+let controlsDecayLockActive = false
+let previousControlsEnabled = true
+let previousAutoRotateState = controls.autoRotate
+let previousAutoRotateSpeedState = controls.autoRotateSpeed || 0
 
 // Renderer
 const renderer = new THREE.WebGLRenderer({
@@ -1235,8 +1236,8 @@ const tick = () =>
         material.uniforms.uHoverBrightnessMultiplier.value = hoverParameters.currentBrightnessMultiplier;
     }
 
-    // Smooth camera movement for button hover effects (only when not being controlled by user)
-    if (!controls.isUserInteracting) {
+    // Smooth camera movement for button hover effects (only when not being controlled by user or when decay lock is inactive)
+    if (!controls.isUserInteracting && !controlsDecayLockActive) {
         const easeFactor = 0.05;
         const distance = Math.sqrt(
             Math.pow(targetCameraPosition.x - camera.position.x, 2) +
@@ -1252,27 +1253,14 @@ const tick = () =>
         }
     }
     
-    // Option 1: Temporarily disable autoRotate while hover is active or decaying
-    const hoverActiveOrDecaying = hoverParameters.isHovered || hoverParameters.hoverIntensity > 0.01;
-    if (hoverActiveOrDecaying && !autoRotateTemporarilyDisabled) {
-        previousAutoRotate = controls.autoRotate;
-        previousAutoRotateSpeed = controls.autoRotateSpeed || 0;
-        controls.autoRotate = false;
-        autoRotateTemporarilyDisabled = true;
-    }
-    if (!hoverActiveOrDecaying && autoRotateTemporarilyDisabled) {
-        controls.autoRotate = previousAutoRotate;
-        controls.autoRotateSpeed = previousAutoRotateSpeed;
-        autoRotateTemporarilyDisabled = false;
+    // Re-enable controls when decay completes
+    if (controlsDecayLockActive && hoverParameters.hoverIntensity <= 0.01) {
+        controls.enabled = previousControlsEnabled
+        controls.autoRotate = previousAutoRotateState
+        controls.autoRotateSpeed = previousAutoRotateSpeedState
+        controlsDecayLockActive = false
     }
 
-    // Option 2: Pin targetCameraPosition to live camera position while decaying after hover-out
-    if (!hoverParameters.isHovered && hoverParameters.hoverIntensity > 0.01) {
-        targetCameraPosition.x = camera.position.x;
-        targetCameraPosition.y = camera.position.y;
-        targetCameraPosition.z = camera.position.z;
-    }
-    
     // Make camera look at the galaxy center
     camera.lookAt(0, 0, 0);
 
@@ -1412,8 +1400,8 @@ const initButtonHoverEffects = () => {
                 hoverParameters.sizeMultiplier = currentEffect.normalButtons.sizeMultiplier;
                 hoverParameters.spinMultiplier = currentEffect.normalButtons.spinMultiplier;
                 hoverParameters.brightnessMultiplier = currentEffect.normalButtons.brightnessMultiplier;
-                // Reset target brightness for smooth easing back to normal
-                hoverParameters.targetBrightnessMultiplier = 1.0;
+                // Reset brightness to effect's normal baseline (avoid hard 1.0 default)
+                hoverParameters.targetBrightnessMultiplier = currentEffect.normalButtons.brightnessMultiplier;
                 
                 // Reset spin direction to normal
                 if (material && material.uniforms.uSpinDirection) {
@@ -1432,8 +1420,9 @@ const initButtonHoverEffects = () => {
                 hoverParameters.targetHoverIntensity = 0.0; // Reset to normal
                 hoverParameters.isHovered = false;
                 
-                // Reset target brightness for smooth easing back to normal
-                hoverParameters.targetBrightnessMultiplier = 1.0;
+                // Reset brightness to effect's normal baseline (avoid hard 1.0 default)
+                const currentEffectNormal = getCurrentHoverEffect();
+                hoverParameters.targetBrightnessMultiplier = currentEffectNormal.normalButtons.brightnessMultiplier;
                 
                 // Return camera to exact original position (same as calendar buttons)
                 targetCameraPosition.x = originalCameraPosition.x;
