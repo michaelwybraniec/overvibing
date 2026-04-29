@@ -106,8 +106,9 @@ See [Project Backlog](tasks/project-backlog.md) for detailed task breakdown and 
 
 ## Unplanned Tasks
 
-- [ ] 1.1: Unplanned task, Name, Title, Description, etc.
-- [ ] 1.2: Unplanned task, Name, Title, Description, etc.
+- [x] 1.1: Manual galaxy camera control, allow user orbit controls to pause automatic camera motion and resume preset auto-rotation only after inactivity.
+- [x] 1.2: Header typography alignment, match VIBE CODING and `www.one-front.com` font stack to the subscribe header button.
+- [x] 1.3: One-front hover treatment, keep the glossy transparent blur style on hover.
 
 
 ## Procedures

@@ -1,118 +1,18 @@
 {
   "presets": [
     {
-      "name": "Current Galaxy",
-     
-      "hover": {
-        "camera": {
-      
-          "position": {
-            "x": 4,
-            "y": 0,
-            "z": 2
-          }
-        },
-        "galaxy": {
-          "radius": 100.0,
-          "branches": 1,
-          "spin": 20.5,
-          "count": 10,
-          "randomness": 30,
-          "randomnessPower": 1.2
-        
-        }
-      },
-   
+      "name": "Binary System",
       "galaxy": {
         "count": 1000000,
-        "size": 0,
-        "radius": 10.0,
-        "branches": 1,
-        "spin": 20.5,
-        "normalRotationSpeed": 0.05,
-        "randomness": 0.8,
-        "randomnessPower": 2.1,
-        "seed": 24242,
-        "insideColor": "#ff6030",
-        "outsideColor": "#5100FF"
-      },
-      "camera": {
-        "basic": {
-          "enableRotate": true,
-          "enableZoom": true,
-          "enablePan": false,
-          "smoothness": 0.3
-        },
-        "position": {
-          "x": 15,
-          "y": 2,
-          "z": 0
-        },
-        "movement": {
-          "autoRotate": true,
-          "rotationDirection": "clockwise",
-          "rotationSpeed": 0.7,
-          "zoomSpeed": 2.4,
-          "minDistance": 3,
-          "maxDistance": 20,
-          "minAngle": 0.1,
-          "maxAngle": 3.0
-        },
-        "automation": {
-          "enabled": true,
-          "path": "spiral",
-          "pathSpeed": 0.45,
-          "oscillation": {
-            "enabled": false,
-            "amplitude": 0,
-            "frequency": 0
-          },
-          "zoom": {
-            "enabled": true,
-            "min": 9,
-            "max": 22,
-            "speed": 0.1
-          }
-        }
-      }
-  
-    },
-    {
-      "name": "Binary System",
-      "hover": {
-        "camera": {
-          "movement": {
-            "rotationSpeed": 3.3
-          },
-          "position": {
-            "x": 2,
-            "y": 10,
-            "z": 8
-          }
-        },
-        "galaxy": {
-        
-          "size": 50,
-          "radius": 20.0,
-          "branches":8,
-       
-          "randomness": 0,
-          "randomnessPower": 0.2
-        
-         
-        }
-      },
-      "galaxy": {
-        "count": 100000,
-        "size": 20,
-        "radius": 16.0,
-        "branches":8,
-        "spin": -20,
-        "randomness": 0,
-        "randomnessPower": 0.1,
-      
-        "insideColor": "#00FBFB",
-        "outsideColor": "#942B94"
+        "size": 0.04,
+        "radius": 12.0,
+        "branches": 2,
+        "spin": -0.85,
+        "randomness": 0.325,
+        "randomnessPower": 5,
+        "seed": 424242,
+        "insideColor": "#00ffff",
+        "outsideColor": "#ff00ff"
       },
       "camera": {
         "basic": {
@@ -123,8 +23,8 @@
         },
         "position": {
           "x": 0,
-          "y": 0,
-          "z": 0
+          "y": 8,
+          "z": 10
         },
         "movement": {
           "autoRotate": false,
@@ -152,41 +52,19 @@
           }
         }
       }
-    
     },
     {
       "name": "Aqua Dream",
-      "hover": {
-        "camera": {
-          "movement": {
-            "rotationSpeed": 1.15,
-            "rotationDirection": "clockwise"
-          },
-          "position": {
-            "x": -1.8,
-            "y": 3.8,
-            "z": 4.4
-          }
-        },
-        "galaxy": {
-          "size": 0.44,
-          "radius": 24.0,
-          "branches": 3,
-          "spin": 12.5,
-          "randomness": 0.85,
-          "randomnessPower": 1.1
-        }
-      },
       "galaxy": {
         "count": 16000,
-        "size": 0.3,
+        "size": 0.1,
         "radius": 13.85,
         "branches": 7,
         "spin": -1.91,
         "randomness": 0.167,
         "randomnessPower": 2.36,
-        "insideColor": "#00FFEA",
-        "outsideColor": "#0FBCB1"
+        "insideColor": "#ffffff",
+        "outsideColor": "#00fff0"
       },
       "camera": {
         "basic": {
@@ -201,9 +79,8 @@
           "z": 0
         },
         "movement": {
-          "autoRotate": true,
-          "rotationSpeed": 0.05,
-          "rotationDirection": "clockwise",
+          "autoRotate": false,
+          "rotationSpeed": 0.4,
           "zoomSpeed": 3,
           "minDistance": 1,
           "maxDistance": 30,
@@ -278,10 +155,6 @@
             "speed": 0.5
           }
         }
-      },
-      "hoverEffect": {
-        "name": "Galaxy Tilt",
-        "index": 15
       }
     },
     {
@@ -334,24 +207,20 @@
             "speed": 0.5
           }
         }
-      },
-      "hoverEffect": {
-        "name": "Acid Lava Surge",
-        "index": 29
       }
     },
     {
       "name": "Cinematic",
       "galaxy": {
-        "count": 200000,
-        "size": 10,
-        "radius": 12,
-        "branches": 2,
-        "spin": 10,
-        "randomness": 0.2,
-        "randomnessPower": 2.1,
-        "insideColor": "#00FFE5",
-        "outsideColor": "#5400C9"
+        "count": 1000000,
+        "size": 0.020,
+        "radius": 8.5,
+        "branches": 15,
+        "spin": 1.7,
+        "randomness": 1.4,
+        "randomnessPower": 1.9,
+        "insideColor": "#ff6030",
+        "outsideColor": "#000000"
       },
       "camera": {
         "basic": {
@@ -361,9 +230,9 @@
           "smoothness": 0.15
         },
         "position": {
-          "x": 0,
-          "y": -15,
-          "z": 0
+          "x": -5,
+          "y": 2,
+          "z": 5
         },
         "movement": {
           "autoRotate": true,
@@ -390,10 +259,6 @@
             "speed": 0.2
           }
         }
-      },
-      "hoverEffect": {
-        "name": "Orbital Dance",
-        "index": 13
       }
     },
     {
@@ -446,16 +311,12 @@
             "speed": 0
           }
         }
-      },
-      "hoverEffect": {
-        "name": "Soft Epic",
-        "index": 0
       }
     },
     {
       "name": "Maximum",
       "galaxy": {
-        "count": 500000,
+        "count": 2500000,
         "size": 0.03,
         "radius": 12,
         "branches": 12,
@@ -473,16 +334,16 @@
           "smoothness": 0.2
         },
         "position": {
-          "x": 4.8,
-          "y": 2.6,
-          "z": 4.8
+          "x": 10,
+          "y": 8,
+          "z": 10
         },
         "movement": {
           "autoRotate": true,
           "rotationSpeed": 0.4,
           "zoomSpeed": 1.0,
-          "minDistance": 3,
-          "maxDistance": 18,
+          "minDistance": 5,
+          "maxDistance": 25,
           "minAngle": 0.2,
           "maxAngle": 2.0
         },
@@ -497,15 +358,11 @@
           },
           "zoom": {
             "enabled": true,
-            "min": 6,
-            "max": 12,
+            "min": 10,
+            "max": 20,
             "speed": 0.3
           }
         }
-      },
-      "hoverEffect": {
-        "name": "Soft Epic",
-        "index": 0
       }
     },
     {
@@ -513,13 +370,13 @@
       "galaxy": {
         "count": 424000,
         "size": 0.06,
-        "radius": 5,
+        "radius": 5.5,
         "branches": 5,
         "spin": 2.5,
-        "randomness": 0.1,
-        "randomnessPower": 0,
+        "randomness": 2.5,
+        "randomnessPower": 3.0,
         "insideColor": "#00ff77",
-        "outsideColor": "#4C00FF"
+        "outsideColor": "#ff00ff"
       },
       "camera": {
         "basic": {
@@ -558,16 +415,12 @@
             "speed": 0.4
           }
         }
-      },
-      "hoverEffect": {
-        "name": "Soft Epic",
-        "index": 0
       }
     },
     {
       "name": "Ultra Blast",
       "galaxy": {
-        "count": 200000,
+        "count": 2000000,
         "size": 0.04,
         "radius": 9.0,
         "branches": 8,
@@ -585,9 +438,9 @@
           "smoothness": 0.25
         },
         "position": {
-          "x": 9,
-          "y": 6,
-          "z": 0
+          "x": 12,
+          "y": 8,
+          "z": 12
         },
         "movement": {
           "autoRotate": true,
@@ -609,9 +462,61 @@
           },
           "zoom": {
             "enabled": true,
-            "min": 9,
-            "max": 18,
+            "min": 12,
+            "max": 25,
             "speed": 0.5
+          }
+        }
+      }
+    },
+    {
+      "name": "Black Hole",
+      "galaxy": {
+        "count": 1800000,
+        "size": 0.025,
+        "radius": 20,
+        "branches": 1,
+        "spin": 5.0,
+        "randomness": 0.5,
+        "randomnessPower": 10,
+        "insideColor": "#000000",
+        "outsideColor": "#ffffff"
+      },
+      "camera": {
+        "basic": {
+          "enableRotate": true,
+          "enableZoom": true,
+          "enablePan": false,
+          "smoothness": 0.3
+        },
+        "position": {
+          "x": 0,
+          "y": 15,
+          "z": 0
+        },
+        "movement": {
+          "autoRotate": true,
+          "rotationSpeed": 0.2,
+          "zoomSpeed": 0.4,
+          "minDistance": 3,
+          "maxDistance": 20,
+          "minAngle": 0.1,
+          "maxAngle": 3.0
+        },
+        "automation": {
+          "enabled": true,
+          "path": "spiral",
+          "pathSpeed": 0.15,
+          "oscillation": {
+            "enabled": false,
+            "amplitude": 0,
+            "frequency": 0
+          },
+          "zoom": {
+            "enabled": true,
+            "min": 4,
+            "max": 18,
+            "speed": 0.1
           }
         }
       }
@@ -666,10 +571,6 @@
             "speed": 0
           }
         }
-      },
-      "hoverEffect": {
-        "name": "Soft Epic",
-        "index": 0
       }
     },
     {
@@ -722,10 +623,6 @@
             "speed": 0
           }
         }
-      },
-      "hoverEffect": {
-        "name": "Soft Epic",
-        "index": 0
       }
     },
     {
@@ -778,10 +675,6 @@
             "speed": 0
           }
         }
-      },
-      "hoverEffect": {
-        "name": "Soft Epic",
-        "index": 0
       }
     },
     {
@@ -886,14 +779,10 @@
             "speed": 0.5
           }
         }
-      },
-      "hoverEffect": {
-        "name": "Soft Epic",
-        "index": 0
       }
     },
     {
-      "name": "Sun Matter Field",
+      "name": "Sun Matter Field", 
       "galaxy": {
         "count": 500000,
         "size": 5.22,
@@ -943,10 +832,6 @@
             "speed": 0.1
           }
         }
-      },
-      "hoverEffect": {
-        "name": "Soft Epic",
-        "index": 0
       }
     },
     {
@@ -1000,10 +885,6 @@
             "speed": 0
           }
         }
-      },
-      "hoverEffect": {
-        "name": "Soft Epic",
-        "index": 0
       }
     },
     {
@@ -1057,10 +938,6 @@
             "speed": 0
           }
         }
-      },
-      "hoverEffect": {
-        "name": "Soft Epic",
-        "index": 0
       }
     },
     {
@@ -1114,45 +991,42 @@
             "speed": 0
           }
         }
-      },
-      "hoverEffect": {
-        "name": "Soft Epic",
-        "index": 0
       }
     },
     {
-      "name": "Hover Galaxy",
+      "name": "Deep Forest Nebula",
       "galaxy": {
-        "count": 40000,
-        "size": 20,
-        "radius": 50,
-        "branches": 2,
-        "spin": 1.5,
-        "randomness": 3.5,
-        "randomnessPower": 20.0,
-        "insideColor": "#00ff88",
-        "outsideColor": "#ff0088"
+        "count": 800000,
+        "size": 0.06,
+        "radius": 13.0,
+        "branches": 6,
+        "spin": -1.8,
+        "randomness": 1.2,
+        "randomnessPower": 3.5,
+        "insideColor": "#DDA0DD",
+        "outsideColor": "#E6E6FA"
       },
+      "galaxyBackgroundColor": "#4A3A4A",
       "camera": {
         "basic": {
           "enableRotate": true,
           "enableZoom": true,
           "enablePan": true,
-          "smoothness": 0.1
+          "smoothness": 0.08
         },
         "position": {
-          "x": 5,
-          "y": 3,
-          "z": 5
+          "x": -7,
+          "y": 5,
+          "z": 10
         },
         "movement": {
           "autoRotate": false,
-          "rotationSpeed": 0,
-          "zoomSpeed": 1.0,
-          "minDistance": 3,
-          "maxDistance": 15,
-          "minAngle": 0.2,
-          "maxAngle": 2.0
+          "rotationSpeed": 0.6,
+          "zoomSpeed": 1.2,
+          "minDistance": 4,
+          "maxDistance": 20,
+          "minAngle": 0.3,
+          "maxAngle": 2.2
         },
         "automation": {
           "enabled": false,
@@ -1170,10 +1044,6 @@
             "speed": 0
           }
         }
-      },
-      "hoverEffect": {
-        "name": "Mystic Whirl",
-        "index": 6
       }
     },
     {
@@ -1186,8 +1056,8 @@
         "spin": 3.2,
         "randomness": 0.6,
         "randomnessPower": 5.0,
-        "insideColor": "#FF8800",
-        "outsideColor": "#FF4400"
+        "insideColor": "#87CEEB",
+        "outsideColor": "#B0E0E6"
       },
       "galaxyBackgroundColor": "#1A3A4A",
       "camera": {
@@ -1199,7 +1069,7 @@
         },
         "position": {
           "x": 0,
-          "y": 5,
+          "y": 12,
           "z": 15
         },
         "movement": {
@@ -1227,26 +1097,22 @@
             "speed": 0
           }
         }
-      },
-      "hoverEffect": {
-        "name": "Soft Epic",
-        "index": 0
       }
     },
     {
       "name": "Deep Sea Reef",
       "galaxy": {
-        "count": 10000,
+        "count": 900000,
         "size": 0.07,
-        "radius": 10.0,
-        "branches": 1,
+        "radius": 11.0,
+        "branches": 5,
         "spin": -2.5,
-        "randomness": 1.2,
+        "randomness": 1.5,
         "randomnessPower": 2.8,
-        "insideColor": "#0400FF",
-        "outsideColor": "#004D66"
+        "insideColor": "#FFA07A",
+        "outsideColor": "#FFB6C1"
       },
-      "galaxyBackgroundColor": "#1B62E6",
+      "galaxyBackgroundColor": "#4A2A2A",
       "camera": {
         "basic": {
           "enableRotate": true,
@@ -1255,9 +1121,9 @@
           "smoothness": 0.09
         },
         "position": {
-          "x": 0,
-          "y": 10,
-          "z": 0
+          "x": 8,
+          "y": 6,
+          "z": 8
         },
         "movement": {
           "autoRotate": false,
@@ -1284,10 +1150,6 @@
             "speed": 0
           }
         }
-      },
-      "hoverEffect": {
-        "name": "Galactic Tsunami",
-        "index": 25
       }
     },
     {
@@ -1300,8 +1162,8 @@
         "spin": 1.8,
         "randomness": 0.7,
         "randomnessPower": 3.2,
-        "insideColor": "#0095FF",
-        "outsideColor": "#004CFF"
+        "insideColor": "#FFA600",
+        "outsideColor": "#00FFB7"
       },
       "galaxyBackgroundColor": "#2A1A00",
       "camera": {
@@ -1313,8 +1175,8 @@
         },
         "position": {
           "x": -6,
-          "y": 2,
-          "z": 10
+          "y": 8,
+          "z": 12
         },
         "movement": {
           "autoRotate": true,
@@ -1341,125 +1203,59 @@
             "speed": 0
           }
         }
-      },
-      "hoverEffect": {
-        "name": "Crystal Shimmer",
-        "index": 9
       }
     },
-   
     {
-      "name": "Black Singularity",
+      "name": "Current Galaxy",
       "galaxy": {
-        "count": 1000000,
-        "size": 0.025,
-        "radius": 15,
-        "branches": 2,
-        "spin": -1.0,
-        "randomness": 0,
-        "randomnessPower": 10,
-        "insideColor": "#000000",
-        "outsideColor": "#919191"
+        "count": 100000,
+        "size": 0.01,
+        "radius": 5,
+        "branches": 3,
+        "spin": 1,
+        "randomness": 0.2,
+        "randomnessPower": 3,
+        "insideColor": "#ff6030",
+        "outsideColor": "#7700FF"
       },
       "camera": {
         "basic": {
           "enableRotate": true,
           "enableZoom": true,
-          "enablePan": false,
-          "smoothness": 0.3
+          "enablePan": true,
+          "smoothness": 0.1
         },
         "position": {
-          "x": 0,
-          "y": 2,
-          "z": 6
+          "x": 3,
+          "y": 3,
+          "z": 3
         },
         "movement": {
-          "autoRotate": true,
-          "rotationSpeed": 0.2,
-          "zoomSpeed": 0.4,
-          "minDistance": 3,
+          "autoRotate": false,
+          "rotationSpeed": 0,
+          "zoomSpeed": 1.0,
+          "minDistance": 1,
           "maxDistance": 20,
           "minAngle": 0.1,
-          "maxAngle": 3.0
+          "maxAngle": 2.0
         },
         "automation": {
-          "enabled": true,
-          "path": "spiral",
-          "pathSpeed": 0.15,
+          "enabled": false,
+          "path": "none",
+          "pathSpeed": 0,
           "oscillation": {
             "enabled": false,
             "amplitude": 0,
             "frequency": 0
           },
           "zoom": {
-            "enabled": true,
-            "min": 4,
-            "max": 18,
-            "speed": 0.1
-          }
-        }
-      },
-      "hoverEffect": {
-        "name": "Galaxy Tilt",
-        "index": 15
-      }
-    },
-    {
-      "name": "Black Hole",
-      "galaxy": {
-        "count": 1800000,
-        "size": 0.025,
-        "radius": 20,
-        "branches": 1,
-        "spin": 5.0,
-        "randomness": 0.5,
-        "randomnessPower": 10,
-        "insideColor": "#000000",
-        "outsideColor": "#919191"
-      },
-      "camera": {
-        "basic": {
-          "enableRotate": true,
-          "enableZoom": true,
-          "enablePan": false,
-          "smoothness": 0.3
-        },
-        "position": {
-          "x": 0,
-          "y": 5,
-          "z": 0
-        },
-        "movement": {
-          "autoRotate": true,
-          "rotationSpeed": 0.2,
-          "zoomSpeed": 0.4,
-          "minDistance": 3,
-          "maxDistance": 20,
-          "minAngle": 0.1,
-          "maxAngle": 3.0
-        },
-        "automation": {
-          "enabled": true,
-          "path": "spiral",
-          "pathSpeed": 0.15,
-          "oscillation": {
             "enabled": false,
-            "amplitude": 0,
-            "frequency": 0
-          },
-          "zoom": {
-            "enabled": true,
-            "min": 4,
-            "max": 18,
-            "speed": 0.1
+            "min": 0,
+            "max": 0,
+            "speed": 0
           }
         }
-      },
-      "hoverEffect": {
-        "name": "Soft Epic",
-        "index": 0
       }
     }
-    
   ]
-}
+} 

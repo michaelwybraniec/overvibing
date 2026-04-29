@@ -4,6 +4,7 @@
     --galaxy-primary: var(--galaxy-outside-color);
     --galaxy-secondary: var(--galaxy-inside-color);
     --galaxy-accent: var(--galaxy-outside-color);
+    --subscribe-header-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 *
@@ -19,6 +20,15 @@ body
     width: 100%;
     /* Use dynamic viewport height to avoid mobile URL bar jumps */
     min-height: 100dvh;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+input,
+textarea
+{
+    user-select: text;
+    -webkit-user-select: text;
 }
 
 #container {
@@ -38,6 +48,14 @@ canvas {
     width: 100%;
     height: 100%;
     object-fit: contain;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+canvas:active {
+    cursor: grabbing;
 }
 
 .dg.ac {
@@ -69,6 +87,40 @@ body[data-dev-mode="false"] .dg {
     top: 0;
     left: 0;
     outline: none;
+    -webkit-touch-callout: none;
+    z-index: 0;
+    pointer-events: auto;
+}
+
+main,
+.galaxy-title,
+.app-header,
+.footer-bar {
+    pointer-events: none;
+}
+
+main a,
+main button,
+main input,
+main textarea,
+main select,
+.galaxy-title a,
+.galaxy-title button,
+.galaxy-title input,
+.galaxy-title textarea,
+.galaxy-title select,
+.app-header a,
+.app-header button,
+.app-header input,
+.app-header textarea,
+.app-header select,
+.footer-bar a,
+.footer-bar button,
+.footer-bar input,
+.footer-bar textarea,
+.footer-bar select,
+#audio-control {
+    pointer-events: auto;
 }
 
 /* Respect notches and home-indicator on mobile */
@@ -88,21 +140,32 @@ html {
     text-align: center;
     color: white;
     z-index: 9999;
-    pointer-events: auto;
     font-family: 'JetBrains Mono', monospace;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 2.5rem 1.5rem;
-    background: rgba(0, 0, 0, 0.15);
+    background:
+        radial-gradient(circle at 30% 22%,
+            rgba(255, 255, 255, 0.14) 0%,
+            rgba(255, 255, 255, 0.05) 24%,
+            rgba(255, 255, 255, 0.0) 46%),
+        radial-gradient(circle at center,
+            rgba(0, 0, 0, 0.42) 0%,
+            rgba(0, 0, 0, 0.27) 44%,
+            rgba(0, 0, 0, 0.10) 70%,
+            rgba(0, 0, 0, 0.03) 86%,
+            rgba(0, 0, 0, 0.0) 100%);
     width: 750px;
     height: 750px;
     max-width: 90vw;
-    backdrop-filter: blur(120px);
+    backdrop-filter: blur(128px) saturate(112%);
     border-radius: 100%;
     box-sizing: border-box;
     /* margin: 10px; */
+    overflow: hidden;
+    transition: background 0.45s ease, backdrop-filter 0.45s ease;
 }
 
 .galaxy-title__main {
@@ -173,8 +236,8 @@ html {
     background: color-mix(in srgb, var(--galaxy-outside-color) 20%, transparent) !important;
 }
 
-/* Glossy iPhone-Style Calendar Button */
-.modern-button[href*="calendar.google.com"] {
+/* Glossy iPhone-Style epic button (used for calendar / one-front teaser) */
+.modern-button--epic {
     background: 
         linear-gradient(135deg, 
             color-mix(in srgb, var(--galaxy-inside-color) 30%, transparent) 0%,
@@ -197,7 +260,7 @@ html {
     text-shadow: none;
     transition: all 0.3s ease;
     cursor: pointer;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: var(--subscribe-header-font);
     box-shadow: none;
     animation: gradientFlow 4s ease-in-out infinite;
     flex-shrink: 0;
@@ -211,14 +274,16 @@ html {
     z-index: 10001;
 }
 
-.modern-button[href*="calendar.google.com"]:hover {
+.modern-button--epic:hover {
     animation-duration: 1s !important;
     background: 
         linear-gradient(45deg, 
-            var(--galaxy-outside-color) 0%,
-            var(--galaxy-inside-color) 100%
+            color-mix(in srgb, var(--galaxy-outside-color) 34%, transparent) 0%,
+            color-mix(in srgb, var(--galaxy-inside-color) 34%, transparent) 100%
         ) !important;
     background-size: 200% 200% !important;
+    -webkit-backdrop-filter: blur(10px) saturate(120%);
+    backdrop-filter: blur(10px) saturate(120%);
 }
 
 @keyframes gradientFlow {
@@ -401,13 +466,17 @@ html {
     color: var(--galaxy-outside-color);
     padding: 0.2em 0.8em;
     border-radius: 100px;
-    font-weight: 900;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 1em;
+    font-weight: 800;
+    font-family: var(--subscribe-header-font);
+    font-size: 0.75rem;
     backdrop-filter: blur(85px);
     margin: 0;
     display: inline;
     /* text-shadow: 0 0 20px var(--galaxy-outside-color); */
+}
+
+.code-pill b {
+    font-weight: inherit;
 }
 
 .countdown-timer {
@@ -1622,6 +1691,7 @@ body.bright-mode .toast-message {
     }
 }
 
+
 /* Enhanced button loading states */
 .subscribe-button .button-text,
 .subscribe-button .button-loading {
@@ -2231,7 +2301,7 @@ body.bright-mode .toast-message {
     text-shadow: none;
     transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     cursor: pointer;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: var(--subscribe-header-font);
     box-shadow: none;
     animation: gradientFlow 4s ease-in-out infinite;
     flex-shrink: 0;
@@ -2277,6 +2347,17 @@ body.bright-mode .toast-message {
             var(--galaxy-inside-color) 100%
         ) !important;
     background-size: 200% 200% !important;
+}
+
+/* Keep the one-front CTA link visually identical to subscribe button text styling */
+.meeting-section > a.subscribe-button,
+.meeting-section > a.subscribe-button:hover,
+.meeting-section > a.subscribe-button:focus,
+.meeting-section > a.subscribe-button:visited {
+    text-decoration: none !important;
+    font-family: var(--subscribe-header-font) !important;
+    font-size: 0.7rem !important;
+    font-weight: 800 !important;
 }
 
 
@@ -3090,4 +3171,81 @@ body.bright-mode .toast-message {
         font-size: 0.8rem !important;
     }
     .subscription-message { margin: var(--m-gap) 0 0 0 !important; font-size: 0.75rem; }
+}
+
+/* Keep hero content readable above the Three.js sphere */
+.galaxy-title {
+    background: none !important;
+    backdrop-filter: none !important;
+    -webkit-mask-image: none !important;
+    mask-image: none !important;
+    box-shadow: none !important;
+}
+
+.galaxy-title__main,
+.galaxy-title__subtitle,
+.galaxy-title__subtitle .code-pill {
+    color: #ffffff;
+    opacity: 1;
+    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.45);
+}
+
+/* Normal button look with gentle motion transition */
+.modern-button--epic {
+    background: color-mix(in srgb, var(--galaxy-outside-color) 10%, transparent) !important;
+    border: 1px solid color-mix(in srgb, var(--galaxy-outside-color) 38%, transparent);
+    -webkit-backdrop-filter: blur(16px) saturate(130%);
+    backdrop-filter: blur(16px) saturate(130%);
+    filter: saturate(1) brightness(1);
+    box-shadow:
+        inset 0 1px 0 color-mix(in srgb, #ffffff 50%, transparent),
+        0 8px 24px color-mix(in srgb, #000000 35%, transparent) !important;
+    text-shadow: none !important;
+    transition: background 0.45s ease, box-shadow 0.45s ease, transform 0.45s ease, filter 0.45s ease, border-color 0.45s ease;
+    animation: none;
+    overflow: hidden;
+}
+
+.modern-button--epic::before {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: inherit;
+    background: linear-gradient(
+        180deg,
+        color-mix(in srgb, #ffffff 28%, transparent) 0%,
+        color-mix(in srgb, #ffffff 10%, transparent) 38%,
+        color-mix(in srgb, #ffffff 0%, transparent) 100%
+    );
+    pointer-events: none;
+    z-index: 0;
+}
+
+.modern-button--epic > * {
+    position: relative;
+    z-index: 1;
+}
+
+.modern-button--epic:hover {
+    transform: translateY(-1px);
+    background: color-mix(in srgb, var(--galaxy-outside-color) 16%, transparent) !important;
+    border-color: color-mix(in srgb, var(--galaxy-outside-color) 52%, transparent);
+    filter: saturate(1.08) brightness(1.04);
+    box-shadow:
+        inset 0 1px 0 color-mix(in srgb, #ffffff 60%, transparent),
+        0 10px 26px color-mix(in srgb, #000000 40%, transparent) !important;
+    text-shadow: none !important;
+}
+
+/* Keep desktop hero as a true sphere with transparent edge fade */
+@media (min-width: 601px) {
+    .galaxy-title {
+        width: min(750px, 90vw) !important;
+        height: min(750px, 90vw) !important;
+        max-width: 90vw !important;
+        max-height: 90vw !important;
+        border-radius: 50% !important;
+        overflow: hidden !important;
+        transform: translate(-50%, -50%) !important;
+    }
 }

@@ -1,0 +1,726 @@
+{
+  "currentEffectIndex": 0,
+  "transitionSpeed": 0.03,
+  "hoverEffects": [
+    {
+      "name": "Soft Epic",
+      "description": "Gentle, elegant hover with smooth transitions",
+      "normalButtons": {
+        "sizeMultiplier": 1.2,
+        "spinMultiplier": 1.1,
+        "brightnessMultiplier": 1.3,
+        "zoomFactor": 0.9,
+        "angleFactor": 1.0,
+        "cameraMovement": "gentle_zoom",
+        "spinDirection": 1
+      },
+      "calendarButton": {
+        "sizeMultiplier": 1.6,
+        "spinMultiplier": 1.8,
+        "brightnessMultiplier": 1.9,
+        "zoomFactor": 0.8,
+        "angleFactor": 0.9,
+        "heightMultiplier": 1.2,
+        "cameraMovement": "gentle_orbit",
+        "spinDirection": 1,
+        "cameraOffset": {"x": 0, "y": 0, "z": 0}
+      }
+    },
+    {
+      "name": "Epic Absolute",
+      "description": "Maximum dramatic effects with extreme intensity",
+      "normalButtons": {
+        "sizeMultiplier": 1.4,
+        "spinMultiplier": 1.5,
+        "brightnessMultiplier": 1.8,
+        "zoomFactor": 0.7,
+        "angleFactor": 1.0,
+        "cameraMovement": "dramatic_zoom",
+        "spinDirection": 1
+      },
+      "calendarButton": {
+        "sizeMultiplier": 3.5,
+        "spinMultiplier": 6.0,
+        "brightnessMultiplier": 4.5,
+        "zoomFactor": 0.3,
+        "angleFactor": 0.5,
+        "heightMultiplier": 2.2,
+        "cameraMovement": "extreme_close",
+        "spinDirection": -1,
+        "cameraOffset": {"x": 0, "y": 0, "z": 0}
+      }
+    },
+    {
+      "name": "Dorne Flows",
+      "description": "Flowing, organic movements with wave-like patterns",
+      "normalButtons": {
+        "sizeMultiplier": 1.3,
+        "spinMultiplier": 1.4,
+        "brightnessMultiplier": 1.6,
+        "zoomFactor": 0.8,
+        "angleFactor": 1.2,
+        "cameraMovement": "wave_motion",
+        "spinDirection": 1
+      },
+      "calendarButton": {
+        "sizeMultiplier": 2.2,
+        "spinMultiplier": 2.8,
+        "brightnessMultiplier": 2.8,
+        "zoomFactor": 0.5,
+        "angleFactor": 1.5,
+        "heightMultiplier": 1.8,
+        "cameraMovement": "flowing_orbit",
+        "spinDirection": 1,
+        "cameraOffset": {"x": 2, "y": 1, "z": -1}
+      }
+    },
+    {
+      "name": "Quantum Pulse",
+      "description": "Rapid, energetic pulses with quantum-like behavior",
+      "normalButtons": {
+        "sizeMultiplier": 1.5,
+        "spinMultiplier": 2.0,
+        "brightnessMultiplier": 2.0,
+        "zoomFactor": 0.6,
+        "angleFactor": 0.8,
+        "cameraMovement": "rapid_pulse",
+        "spinDirection": -1
+      },
+      "calendarButton": {
+        "sizeMultiplier": 2.8,
+        "spinMultiplier": 4.5,
+        "brightnessMultiplier": 3.5,
+        "zoomFactor": 0.4,
+        "angleFactor": 0.7,
+        "heightMultiplier": 1.6,
+        "cameraMovement": "quantum_teleport",
+        "spinDirection": -1,
+        "cameraOffset": {"x": -3, "y": 2, "z": 3}
+      }
+    },
+    {
+      "name": "Cosmic Drift",
+      "description": "Slow, majestic movements like cosmic entities",
+      "normalButtons": {
+        "sizeMultiplier": 1.1,
+        "spinMultiplier": 1.2,
+        "brightnessMultiplier": 1.4,
+        "zoomFactor": 0.9,
+        "angleFactor": 1.1,
+        "cameraMovement": "slow_drift",
+        "spinDirection": 1
+      },
+      "calendarButton": {
+        "sizeMultiplier": 1.8,
+        "spinMultiplier": 2.2,
+        "brightnessMultiplier": 2.2,
+        "zoomFactor": 0.7,
+        "angleFactor": 1.3,
+        "heightMultiplier": 1.4,
+        "cameraMovement": "cosmic_perspective",
+        "spinDirection": 1,
+        "cameraOffset": {"x": 0, "y": 5, "z": 0}
+      }
+    },
+    {
+      "name": "Neon Burst",
+      "description": "Electric, neon-like effects with sharp transitions",
+      "normalButtons": {
+        "sizeMultiplier": 1.6,
+        "spinMultiplier": 1.8,
+        "brightnessMultiplier": 2.2,
+        "zoomFactor": 0.5,
+        "angleFactor": 0.9,
+        "cameraMovement": "electric_snap",
+        "spinDirection": -1
+      },
+      "calendarButton": {
+        "sizeMultiplier": 3.2,
+        "spinMultiplier": 5.5,
+        "brightnessMultiplier": 4.2,
+        "zoomFactor": 0.35,
+        "angleFactor": 0.6,
+        "heightMultiplier": 1.9,
+        "cameraMovement": "neon_flash",
+        "spinDirection": -1,
+        "cameraOffset": {"x": 4, "y": 0, "z": -4}
+      }
+    },
+    {
+      "name": "Mystic Whirl",
+      "description": "Mystical, swirling effects with ethereal movements",
+      "normalButtons": {
+        "sizeMultiplier": 1.3,
+        "spinMultiplier": 1.6,
+        "brightnessMultiplier": 1.7,
+        "zoomFactor": 0.8,
+        "angleFactor": 1.4,
+        "cameraMovement": "mystic_swirl",
+        "spinDirection": 1
+      },
+      "calendarButton": {
+        "sizeMultiplier": 2.5,
+        "spinMultiplier": 3.8,
+        "brightnessMultiplier": 3.2,
+        "zoomFactor": 0.45,
+        "angleFactor": 1.6,
+        "heightMultiplier": 1.7,
+        "cameraMovement": "ethereal_whirl",
+        "spinDirection": 1,
+        "cameraOffset": {"x": -2, "y": 3, "z": 2}
+      }
+    },
+    {
+      "name": "Void Echo",
+      "description": "Dark, echoing effects with deep space vibes",
+      "normalButtons": {
+        "sizeMultiplier": 1.2,
+        "spinMultiplier": 1.3,
+        "brightnessMultiplier": 1.5,
+        "zoomFactor": 0.9,
+        "angleFactor": 0.8,
+        "cameraMovement": "void_echo",
+        "spinDirection": -1
+      },
+      "calendarButton": {
+        "sizeMultiplier": 2.0,
+        "spinMultiplier": 2.5,
+        "brightnessMultiplier": 2.8,
+        "zoomFactor": 0.6,
+        "angleFactor": 0.7,
+        "heightMultiplier": 1.3,
+        "cameraMovement": "deep_space",
+        "spinDirection": -1,
+        "cameraOffset": {"x": 0, "y": -2, "z": 0}
+      }
+    },
+    {
+      "name": "Solar Flare",
+      "description": "Intense, solar-like bursts with radiant energy",
+      "normalButtons": {
+        "sizeMultiplier": 1.7,
+        "spinMultiplier": 2.2,
+        "brightnessMultiplier": 2.5,
+        "zoomFactor": 0.4,
+        "angleFactor": 0.9,
+        "cameraMovement": "solar_burst",
+        "spinDirection": 1
+      },
+      "calendarButton": {
+        "sizeMultiplier": 4.0,
+        "spinMultiplier": 7.0,
+        "brightnessMultiplier": 5.0,
+        "zoomFactor": 0.25,
+        "angleFactor": 0.5,
+        "heightMultiplier": 2.5,
+        "cameraMovement": "radiant_explosion",
+        "spinDirection": 1,
+        "cameraOffset": {"x": 0, "y": 0, "z": 0}
+      }
+    },
+    {
+      "name": "Crystal Shimmer",
+      "description": "Delicate, crystalline effects with subtle sparkles",
+      "normalButtons": {
+        "sizeMultiplier": 1.1,
+        "spinMultiplier": 1.1,
+        "brightnessMultiplier": 1.3,
+        "zoomFactor": 0.95,
+        "angleFactor": 1.0,
+        "cameraMovement": "crystal_sparkle",
+        "spinDirection": 1
+      },
+      "calendarButton": {
+        "sizeMultiplier": 1.5,
+        "spinMultiplier": 1.8,
+        "brightnessMultiplier": 2.0,
+        "zoomFactor": 0.8,
+        "angleFactor": 1.1,
+        "heightMultiplier": 1.1,
+        "cameraMovement": "delicate_glow",
+        "spinDirection": 1,
+        "cameraOffset": {"x": 1, "y": 1, "z": 1}
+      }
+    },
+    {
+      "name": "Galaxy Shift",
+      "description": "Shifts galaxy from center with dramatic perspective",
+      "normalButtons": {
+        "sizeMultiplier": 0,
+        "spinMultiplier": 0,
+        "brightnessMultiplier": 1,
+        "zoomFactor": 0,
+        "angleFactor": 0,
+        "cameraMovement": "galaxy_shift",
+        "spinDirection": 1
+      },
+      "calendarButton": {
+        "sizeMultiplier": 0,
+        "spinMultiplier": 3.0,
+        "brightnessMultiplier": 2.8,
+        "zoomFactor": 1,
+        "angleFactor": 1.0,
+        "heightMultiplier": 1.0,
+        "cameraMovement": "dramatic_shift",
+        "spinDirection": -1,
+        "cameraOffset": {"x": 1, "y": 0, "z": 0}
+      }
+    },
+    {
+      "name": "Wormhole",
+      "description": "Creates wormhole effect with extreme zoom out",
+      "normalButtons": {
+        "sizeMultiplier": 1.4,
+        "spinMultiplier": 1.6,
+        "brightnessMultiplier": 1.8,
+        "zoomFactor": 1.2,
+        "angleFactor": 1.0,
+        "cameraMovement": "wormhole_zoom",
+        "spinDirection": -1
+      },
+      "calendarButton": {
+        "sizeMultiplier": 1.4,
+        "spinMultiplier": 1.6,
+        "brightnessMultiplier": 1.8,
+        "zoomFactor": 1.2,
+        "angleFactor": 1.0,
+        "heightMultiplier": 1.2,
+        "cameraMovement": "extreme_zoom_out",
+        "spinDirection": -1,
+        "cameraOffset": {"x": 0, "y": 10, "z": 0}
+      }
+    },
+    {
+      "name": "Spiral Dive",
+      "description": "Camera spirals down into the galaxy center",
+      "normalButtons": {
+        "sizeMultiplier": 1.3,
+        "spinMultiplier": 1.5,
+        "brightnessMultiplier": 1.6,
+        "zoomFactor": 0.7,
+        "angleFactor": 1.0,
+        "cameraMovement": "spiral_dive",
+        "spinDirection": 1
+      },
+      "calendarButton": {
+        "sizeMultiplier": 2.8,
+        "spinMultiplier": 3.5,
+        "brightnessMultiplier": 3.0,
+        "zoomFactor": 0.2,
+        "angleFactor": 1.0,
+        "heightMultiplier": 0.5,
+        "cameraMovement": "deep_spiral",
+        "spinDirection": 1,
+        "cameraOffset": {"x": 0, "y": -5, "z": 0}
+      }
+    },
+    {
+      "name": "Orbital Dance",
+      "description": "Camera orbits around galaxy in circular motion",
+      "normalButtons": {
+        "sizeMultiplier": 1.2,
+        "spinMultiplier": 1.4,
+        "brightnessMultiplier": 1.5,
+        "zoomFactor": 0.8,
+        "angleFactor": 1.0,
+        "cameraMovement": "orbital_dance",
+        "spinDirection": 1
+      },
+      "calendarButton": {
+        "sizeMultiplier": 2.2,
+        "spinMultiplier": 2.8,
+        "brightnessMultiplier": 2.5,
+        "zoomFactor": 0.6,
+        "angleFactor": 1.0,
+        "heightMultiplier": 1.0,
+        "cameraMovement": "circular_orbit",
+        "spinDirection": 1,
+        "cameraOffset": {"x": 6, "y": 0, "z": 6}
+      }
+    },
+    {
+      "name": "Black Hole",
+      "description": "Galaxy gets sucked into black hole effect",
+      "normalButtons": {
+        "sizeMultiplier": 1.5,
+        "spinMultiplier": 2.0,
+        "brightnessMultiplier": 2.2,
+        "zoomFactor": 0.5,
+        "angleFactor": 1.0,
+        "cameraMovement": "black_hole",
+        "spinDirection": -1
+      },
+      "calendarButton": {
+        "sizeMultiplier": 4.5,
+        "spinMultiplier": 8.0,
+        "brightnessMultiplier": 5.5,
+        "zoomFactor": 0.15,
+        "angleFactor": 1.0,
+        "heightMultiplier": 0.3,
+        "cameraMovement": "event_horizon",
+        "spinDirection": -1,
+        "cameraOffset": {"x": 0, "y": 0, "z": 0}
+      }
+    },
+    {
+      "name": "Galaxy Tilt",
+      "description": "Tilts camera for dramatic diagonal perspective",
+      "normalButtons": {
+        "sizeMultiplier": 1.3,
+        "spinMultiplier": 1.4,
+        "brightnessMultiplier": 1.6,
+        "zoomFactor": 0.9,
+        "angleFactor": 1.0,
+        "cameraMovement": "galaxy_tilt",
+        "spinDirection": 1
+      },
+      "calendarButton": {
+        "sizeMultiplier": 2.0,
+        "spinMultiplier": 2.5,
+        "brightnessMultiplier": 2.8,
+        "zoomFactor": 0.7,
+        "angleFactor": 1.0,
+        "heightMultiplier": 1.0,
+        "cameraMovement": "dramatic_tilt",
+        "spinDirection": 1,
+        "cameraOffset": {"x": 5, "y": 5, "z": -5}
+      }
+    },
+    {
+      "name": "Time Warp",
+      "description": "Creates time distortion effect with multiple perspectives",
+      "normalButtons": {
+        "sizeMultiplier": 1.4,
+        "spinMultiplier": 1.8,
+        "brightnessMultiplier": 2.0,
+        "zoomFactor": 0.6,
+        "angleFactor": 1.0,
+        "cameraMovement": "time_warp",
+        "spinDirection": -1
+      },
+      "calendarButton": {
+        "sizeMultiplier": 3.5,
+        "spinMultiplier": 6.0,
+        "brightnessMultiplier": 4.0,
+        "zoomFactor": 0.3,
+        "angleFactor": 1.0,
+        "heightMultiplier": 1.0,
+        "cameraMovement": "temporal_distortion",
+        "spinDirection": -1,
+        "cameraOffset": {"x": -4, "y": 4, "z": 4}
+      }
+    },
+    {
+      "name": "Galaxy Edge",
+      "description": "Views galaxy from the edge with side perspective",
+      "normalButtons": {
+        "sizeMultiplier": 1.2,
+        "spinMultiplier": 1.3,
+        "brightnessMultiplier": 1.4,
+        "zoomFactor": 1.0,
+        "angleFactor": 1.0,
+        "cameraMovement": "galaxy_edge",
+        "spinDirection": 1
+      },
+      "calendarButton": {
+        "sizeMultiplier": 1.8,
+        "spinMultiplier": 2.2,
+        "brightnessMultiplier": 2.5,
+        "zoomFactor": 1.2,
+        "angleFactor": 1.0,
+        "heightMultiplier": 1.0,
+        "cameraMovement": "edge_perspective",
+        "spinDirection": 1,
+        "cameraOffset": {"x": 12, "y": 0, "z": 0}
+      }
+    },
+    {
+      "name": "Cosmic Zoom",
+      "description": "Zooms out to show galaxy in cosmic context",
+      "normalButtons": {
+        "sizeMultiplier": 1.1,
+        "spinMultiplier": 1.2,
+        "brightnessMultiplier": 1.3,
+        "zoomFactor": 1.3,
+        "angleFactor": 1.0,
+        "cameraMovement": "cosmic_zoom",
+        "spinDirection": 1
+      },
+      "calendarButton": {
+        "sizeMultiplier": 1.5,
+        "spinMultiplier": 1.8,
+        "brightnessMultiplier": 2.0,
+        "zoomFactor": 3.0,
+        "angleFactor": 1.0,
+        "heightMultiplier": 1.0,
+        "cameraMovement": "universe_view",
+        "spinDirection": 1,
+        "cameraOffset": {"x": 0, "y": 15, "z": 0}
+      }
+    },
+    {
+      "name": "Galactic Tornado",
+      "description": "Galaxy becomes a spinning tornado with extreme camera spirals",
+      "normalButtons": {
+        "sizeMultiplier": 1.8,
+        "spinMultiplier": 4.0,
+        "brightnessMultiplier": 2.8,
+        "zoomFactor": 0.3,
+        "angleFactor": 1.0,
+        "cameraMovement": "tornado_spiral",
+        "spinDirection": -1
+      },
+      "calendarButton": {
+        "sizeMultiplier": 6.0,
+        "spinMultiplier": 12.0,
+        "brightnessMultiplier": 8.0,
+        "zoomFactor": 0.1,
+        "angleFactor": 1.0,
+        "heightMultiplier": 0.2,
+        "cameraMovement": "extreme_tornado",
+        "spinDirection": -1,
+        "cameraOffset": {"x": 0, "y": -10, "z": 0}
+      }
+    },
+    {
+      "name": "Supernova Explosion",
+      "description": "Galaxy explodes outward with massive size and brightness",
+      "normalButtons": {
+        "sizeMultiplier": 2.5,
+        "spinMultiplier": 3.0,
+        "brightnessMultiplier": 4.0,
+        "zoomFactor": 2.0,
+        "angleFactor": 1.0,
+        "cameraMovement": "explosion_outward",
+        "spinDirection": 1
+      },
+      "calendarButton": {
+        "sizeMultiplier": 15.0,
+        "spinMultiplier": 20.0,
+        "brightnessMultiplier": 25.0,
+        "zoomFactor": 5.0,
+        "angleFactor": 1.0,
+        "heightMultiplier": 1.0,
+        "cameraMovement": "supernova_burst",
+        "spinDirection": 1,
+        "cameraOffset": {"x": 0, "y": 0, "z": 0}
+      }
+    },
+    {
+      "name": "Dimensional Rift",
+      "description": "Creates a dimensional portal effect with extreme camera warping",
+      "normalButtons": {
+        "sizeMultiplier": 1.6,
+        "spinMultiplier": 2.5,
+        "brightnessMultiplier": 3.0,
+        "zoomFactor": 0.4,
+        "angleFactor": 1.0,
+        "cameraMovement": "dimensional_warp",
+        "spinDirection": -1
+      },
+      "calendarButton": {
+        "sizeMultiplier": 8.0,
+        "spinMultiplier": 15.0,
+        "brightnessMultiplier": 12.0,
+        "zoomFactor": 0.05,
+        "angleFactor": 1.0,
+        "heightMultiplier": 0.1,
+        "cameraMovement": "extreme_rift",
+        "spinDirection": -1,
+        "cameraOffset": {"x": 0, "y": 0, "z": 0}
+      }
+    },
+    {
+      "name": "Cosmic Dance",
+      "description": "Galaxy performs an epic dance with complex camera choreography",
+      "normalButtons": {
+        "sizeMultiplier": 1.4,
+        "spinMultiplier": 2.2,
+        "brightnessMultiplier": 2.5,
+        "zoomFactor": 0.6,
+        "angleFactor": 1.0,
+        "cameraMovement": "dance_moves",
+        "spinDirection": 1
+      },
+      "calendarButton": {
+        "sizeMultiplier": 5.0,
+        "spinMultiplier": 8.0,
+        "brightnessMultiplier": 6.0,
+        "zoomFactor": 0.2,
+        "angleFactor": 1.0,
+        "heightMultiplier": 0.5,
+        "cameraMovement": "epic_dance",
+        "spinDirection": 1,
+        "cameraOffset": {"x": 8, "y": 4, "z": -8}
+      }
+    },
+    {
+      "name": "Galaxy Flip",
+      "description": "Galaxy flips and tumbles through space with dramatic camera movements",
+      "normalButtons": {
+        "sizeMultiplier": 1.7,
+        "spinMultiplier": 3.5,
+        "brightnessMultiplier": 3.2,
+        "zoomFactor": 0.5,
+        "angleFactor": 1.0,
+        "cameraMovement": "flip_tumble",
+        "spinDirection": -1
+      },
+      "calendarButton": {
+        "sizeMultiplier": 7.0,
+        "spinMultiplier": 18.0,
+        "brightnessMultiplier": 10.0,
+        "zoomFactor": 0.15,
+        "angleFactor": 1.0,
+        "heightMultiplier": 0.3,
+        "cameraMovement": "extreme_flip",
+        "spinDirection": -1,
+        "cameraOffset": {"x": 12, "y": -6, "z": 12}
+      }
+    },
+    {
+      "name": "Quantum Entanglement",
+      "description": "Galaxy splits into multiple quantum states with teleporting camera",
+      "normalButtons": {
+        "sizeMultiplier": 1.9,
+        "spinMultiplier": 2.8,
+        "brightnessMultiplier": 3.5,
+        "zoomFactor": 0.7,
+        "angleFactor": 1.0,
+        "cameraMovement": "quantum_split",
+        "spinDirection": 1
+      },
+      "calendarButton": {
+        "sizeMultiplier": 9.0,
+        "spinMultiplier": 16.0,
+        "brightnessMultiplier": 2.5,
+        "zoomFactor": 0.3,
+        "angleFactor": 1.0,
+        "heightMultiplier": 0.4,
+        "cameraMovement": "extreme_quantum",
+        "spinDirection": 1,
+        "cameraOffset": {"x": -15, "y": 8, "z": 15}
+      }
+    },
+    {
+      "name": "Galactic Tsunami",
+      "description": "Galaxy creates a massive wave effect with sweeping camera movements",
+      "normalButtons": {
+        "sizeMultiplier": 2.2,
+        "spinMultiplier": 3.2,
+        "brightnessMultiplier": 3.8,
+        "zoomFactor": 1.2,
+        "angleFactor": 1.0,
+        "cameraMovement": "tsunami_wave",
+        "spinDirection": 1
+      },
+      "calendarButton": {
+        "sizeMultiplier": 12.0,
+        "spinMultiplier": 22.0,
+        "brightnessMultiplier": 2.8,
+        "zoomFactor": 2.5,
+        "angleFactor": 1.0,
+        "heightMultiplier": 0.8,
+        "cameraMovement": "extreme_tsunami",
+        "spinDirection": 1,
+        "cameraOffset": {"x": 20, "y": 0, "z": -20}
+      }
+    },
+    {
+      "name": "Black Hole Singularity",
+      "description": "Galaxy gets sucked into an extreme black hole with infinite zoom",
+      "normalButtons": {
+        "sizeMultiplier": 1.5,
+        "spinMultiplier": 4.5,
+        "brightnessMultiplier": 2.2,
+        "zoomFactor": 0.2,
+        "angleFactor": 1.0,
+        "cameraMovement": "singularity_pull",
+        "spinDirection": -1
+      },
+      "calendarButton": {
+        "sizeMultiplier": 25.0,
+        "spinMultiplier": 50.0,
+        "brightnessMultiplier": 2.2,
+        "zoomFactor": 0.01,
+        "angleFactor": 1.0,
+        "heightMultiplier": 0.05,
+        "cameraMovement": "extreme_singularity",
+        "spinDirection": -1,
+        "cameraOffset": {"x": 0, "y": 0, "z": 0}
+      }
+    },
+    {
+      "name": "Galaxy Rave",
+      "description": "Galaxy goes into full rave mode with strobe-like effects",
+      "normalButtons": {
+        "sizeMultiplier": 2.0,
+        "spinMultiplier": 5.0,
+        "brightnessMultiplier": 4.5,
+        "zoomFactor": 0.8,
+        "angleFactor": 1.0,
+        "cameraMovement": "rave_strobe",
+        "spinDirection": 1
+      },
+      "calendarButton": {
+        "sizeMultiplier": 18.0,
+        "spinMultiplier": 35.0,
+        "brightnessMultiplier": 3.0,
+        "zoomFactor": 0.4,
+        "angleFactor": 1.0,
+        "heightMultiplier": 0.6,
+        "cameraMovement": "extreme_rave",
+        "spinDirection": 1,
+        "cameraOffset": {"x": 10, "y": 5, "z": -10}
+      }
+    },
+    {
+      "name": "Cosmic Whirlpool",
+      "description": "Galaxy becomes a massive whirlpool with spiraling camera descent",
+      "normalButtons": {
+        "sizeMultiplier": 1.8,
+        "spinMultiplier": 3.8,
+        "brightnessMultiplier": 3.0,
+        "zoomFactor": 0.6,
+        "angleFactor": 1.0,
+        "cameraMovement": "whirlpool_spiral",
+        "spinDirection": -1
+      },
+      "calendarButton": {
+        "sizeMultiplier": 11.0,
+        "spinMultiplier": 28.0,
+        "brightnessMultiplier": 2.6,
+        "zoomFactor": 0.08,
+        "angleFactor": 1.0,
+        "heightMultiplier": 0.15,
+        "cameraMovement": "extreme_whirlpool",
+        "spinDirection": -1,
+        "cameraOffset": {"x": 0, "y": -15, "z": 0}
+      }
+    },
+    {
+      "name": "Acid Lava Surge",
+      "description": "Smooth cinematic hover tuned for Acid Waves lava planet",
+      "normalButtons": {
+        "sizeMultiplier": 1.36,
+        "spinMultiplier": 1.55,
+        "brightnessMultiplier": 1.85,
+        "zoomFactor": 0.72,
+        "angleFactor": 1.1,
+        "cameraMovement": "orbital_dance",
+        "spinDirection": 1
+      },
+      "calendarButton": {
+        "sizeMultiplier": 2.6,
+        "spinMultiplier": 3.6,
+        "brightnessMultiplier": 3.1,
+        "zoomFactor": 0.52,
+        "angleFactor": 1.2,
+        "heightMultiplier": 1.4,
+        "cameraMovement": "orbital_dance",
+        "spinDirection": 1,
+        "cameraOffset": {"x": 3, "y": 2, "z": -3}
+      }
+    }
+  ]
+}
